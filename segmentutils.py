@@ -10,9 +10,85 @@ import json
 import networkx as nx
 import math
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 
 class SegmentUtils:
+
+    @staticmethod
+    def index_graph_labels(graph):
+        label_counts = {}
+        indexed_labels = {}
+
+        for node, data in graph.nodes(data=True):
+            label = data.get("label", "unknown")  # Obtém o label original
+
+
+            indexed_label = f"{label}"
+            indexed_labels[node] = indexed_label  # Associa o novo label ao nó
+
+            # Atualiza o label do nó no grafo
+            graph.nodes[node]["indexed_label"] = indexed_label
+
+        # Retorna o mapeamento original -> indexado
+        return indexed_labels
+
+    @staticmethod
+    def create_graph(final_segments, obstacles):
+        G = nx.Graph()
+
+        # **1. Criar um dicionário para armazenar os pontos mais próximos de cada obstáculo**
+        obstacle_node_dict = defaultdict(list)
+
+        # **2. Normalizar todos os pontos e associar ao obstáculo mais próximo**
+        unique_nodes = set()
+        for segment in final_segments:
+            x1, y1, x2, y2 = segment
+
+            # Arredonda as coordenadas para uma casa decimal
+            x1, y1 = round(x1, 1), round(y1, 1)
+            x2, y2 = round(x2, 1), round(y2, 1)
+
+            # Adiciona os nós únicos ao conjunto
+            unique_nodes.add((x1, y1))
+            unique_nodes.add((x2, y2))
+
+        # **3. Atribuir um índice a cada nó baseado no obstáculo mais próximo**
+        node_labels = {}
+        for node in sorted(unique_nodes):  # Ordenação para garantir índices consistentes
+            nearest_label = SegmentUtils.get_nearest_obstacle_label(node, obstacles)
+            node_index = len(obstacle_node_dict[nearest_label])  # Índice do nó dentro do obstáculo
+            full_label = f"{nearest_label}_{node_index}"  # Exemplo: "obstaculo_3"
+            obstacle_node_dict[nearest_label].append(node)  # Adiciona ao dicionário
+            node_labels[node] = full_label  # Salva o rótulo do nó
+
+        # **4. Criar o grafo com os novos labels**
+        for segment in final_segments:
+            x1, y1, x2, y2 = segment
+            x1, y1 = round(x1, 1), round(y1, 1)
+            x2, y2 = round(x2, 1), round(y2, 1)
+
+            distance = math.dist((x1, y1), (x2, y2))
+
+            G.add_node((x1, y1), label=node_labels[(x1, y1)])
+            G.add_node((x2, y2), label=node_labels[(x2, y2)])
+            G.add_edge((x1, y1), (x2, y2), weight=distance)
+
+        # **5. Conectar subgrafos desconectados**
+        G, new_connections = SegmentUtils.connect_disconnected_subgraphs(G)
+        return G
+
+    @staticmethod
+    def get_nearest_obstacle_label(point, obstacles):
+        min_distance = float('inf')
+        nearest_label = None
+        for obs in obstacles:
+            obs_x, obs_y = obs["pos"]
+            distance = math.dist(point, (obs_x, obs_y))
+            if distance < min_distance:
+                min_distance = distance
+                nearest_label = obs["label"]
+        return nearest_label
 
     ###############################################################################
     # Função para transformar grafo em segmentos
@@ -252,12 +328,12 @@ class SegmentUtils:
         return segs
 
     @staticmethod
-    def add_perimeter_segments(aabbs, threshold, segments):
+    def add_perimeter_segments(aabbs, segments, threshold_ponto_por_distancia=4 ):
         """
         Gera subsegmentos no perímetro de cada AABB e adiciona em 'segments'.
         """
         for aabb in aabbs:
-            subs = SegmentUtils.create_perimeter_segments(aabb, threshold)
+            subs = SegmentUtils.create_perimeter_segments(aabb, threshold_ponto_por_distancia)
             segments.extend(subs)
         return segments
 

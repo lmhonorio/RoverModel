@@ -328,6 +328,10 @@ def main():
             pwm_inputs = np.array([pwm_left, pwm_right, pwm_left, pwm_right])
             # 3) update rover
             rover_state = rover.dynamics(rover_state, pwm_inputs, dt, battery_voltage)
+
+
+
+
         print(f"Completou aresta de {idxA} -> {idxB}")
 
     print("Chegou no goal ou parou a sim.")

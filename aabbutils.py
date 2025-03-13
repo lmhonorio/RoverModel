@@ -1,12 +1,15 @@
 import math
 import numpy as np
-
+import networkx as nx
 
 
 ###############################################################################
 # CLASSE: AABBUtils
 ###############################################################################
 class AABBUtils:
+
+
+
     @staticmethod
     def merge_overlapping_aabbs(aabbs):
         merged = []
@@ -36,20 +39,27 @@ class AABBUtils:
     def get_aabbs(obstacles, margin):
         """
         Cria AABBs a partir de obstacles, adicionando 'margin'.
-        Retorna lista [((ax, ay), w, h), ...].
+        Retorna lista [((ax, ay), w, h, label), ...].
         """
         aabbs = []
         for obs in obstacles:
             x, y = obs["pos"]
             w, h = obs["size"]
+
             aabb_x = x - (w / 2 + margin)
             aabb_y = y - (h / 2 + margin)
             aabb_w = w + 2 * margin
             aabb_h = h + 2 * margin
+
+            # Agora cada AABB carrega o label do obstáculo original
             aabbs.append(((aabb_x, aabb_y), aabb_w, aabb_h))
 
-        # Dupla fusão para garantir
-        return AABBUtils.merge_overlapping_aabbs(AABBUtils.merge_overlapping_aabbs(aabbs))
+        # Dupla fusão para garantir, mantendo os labels junto dos AABBs
+        merged_aabbs = AABBUtils.merge_overlapping_aabbs(
+            AABBUtils.merge_overlapping_aabbs(aabbs)
+        )
+
+        return merged_aabbs
 
     @staticmethod
     def distance_between_aabbs(aabb1, aabb2):

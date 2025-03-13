@@ -2,7 +2,6 @@ from roverclass import ObstacleLoader
 from segmentutils import SegmentUtils
 from plotutils import PlotUtils
 from aabbutils import AABBUtils
-import networkx as nx
 import math
 import matplotlib.pyplot as plt
 import pickle
@@ -17,7 +16,7 @@ def main():
     file_path = "obstaculos_processado2.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
-    margin = 2
+    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
@@ -25,6 +24,8 @@ def main():
 
     # AABBs
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
+
+    PlotUtils.plot_obstacles_aabbs(obstacles,aabbs)
 
     # Determinar extents
     x_min = min(o["pos"][0] for o in obstacles) - padding
@@ -50,33 +51,22 @@ def main():
     #prefinal_segments = []
 
     # Adiciona subsegmentos do perímetro
-    final_segments = SegmentUtils.add_perimeter_segments(aabbs, 4, prefinal_segments)
+    final_segments = SegmentUtils.add_perimeter_segments(aabbs, prefinal_segments, threshold_ponto_por_distancia= 4)
 
-    # # Ajustar nós para garantir conectividade total
-    # final_segments = SegmentUtils.add_perimeter_segments(aabbs, 4, prefinal_segments)
 
     # Plot final
-    PlotUtils.plot_segments_with_vertices(final_segments, raio=1.0)
+    #PlotUtils.plot_segments_with_vertices(final_segments, raio=1.0)
     # Criar grafo
-    G = nx.Graph()
+    G = SegmentUtils.create_graph(final_segments,obstacles)
 
-    # Adicionar nós e arestas
-    for segment in final_segments:
-        (x1, y1, x2, y2) = segment
-        distance = math.dist((x1, y1), (x2, y2))
-        x1, y1, x2, y2 = round(x1, 1), round(y1, 1), round(x2, 1), round(y2, 1)
-        G.add_edge((x1, y1), (x2, y2), weight=distance)
+    #new_indexed_labels = SegmentUtils.index_graph_labels(G)
 
-    # Plot subgrafos desconectados
-    PlotUtils.plot_subgraphs(G)
+    #print(new_indexed_labels)
 
-    # PlotUtils.plot_grafo(G, "grafo.png", (8000, 8000), "grafo subestacao")
+    #PlotUtils.plot_graph_with_indexed_labels(G, new_indexed_labels)
 
 
-    # Conectar subgrafos desconectados
-    G, new_connections = SegmentUtils.connect_disconnected_subgraphs(G)
-
-    # Plot subgrafos desconectados
+    # Plot subgrafos conectados
     PlotUtils.plot_subgraphs(G)
 
     # PlotUtils.plot_grafo(G, "grafo.png", (8000, 8000), "grafo subestacao")
@@ -88,8 +78,9 @@ def main():
 
 
     # Salvar grafo e segmentos
-    SegmentUtils.save_graph(G, "graph2.pkl")
+    SegmentUtils.save_graph(G, "graph3.pkl")
     SegmentUtils.save_segments(new_segments, "segments2.json")
+
 
 
 

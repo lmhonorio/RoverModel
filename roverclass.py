@@ -99,8 +99,22 @@ class ObstacleLoader:
 
     def load_obstacles(self):
         df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
+
+        def extract_model_name(full_name):
+            if isinstance(full_name, str):
+                return full_name.split("::")[-1]  # Pega o último elemento após os ::
+            return full_name  # Retorna o valor original caso não seja string
+
+        df["Model Name"] = df["Model Name"].apply(extract_model_name)
+
+
         self.obstacles = [
-            {"pos": (row["Px"], row["Py"]), "size": (row["Vx_altura"], row["Vy_largura"]), "color": (255, 0, 0)}
+            {
+                "pos": (row["Px"], row["Py"]),
+                "size": (row["Vx_altura"], row["Vy_largura"]),
+                "color": (255, 0, 0),
+                "label": row["Model Name"]
+            }
             for _, row in df.iterrows()
         ]
 

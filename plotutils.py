@@ -13,9 +13,28 @@ import networkx as nx
 class PlotUtils:
 
     @staticmethod
+    def plot_graph_with_indexed_labels(G, indexed_labels):
+        plt.figure(figsize=(10, 10))
+        pos = {node: node for node in G.nodes()}  # Usa as coordenadas dos nós para posicionamento
+
+        # Extrai cores distintas para os labels
+        unique_labels = list(set(indexed_labels.values()))
+        color_map = {label: plt.cm.rainbow(i / len(unique_labels)) for i, label in enumerate(unique_labels)}
+
+        node_colors = [color_map[indexed_labels[node]] for node in G.nodes()]
+
+        # Desenha o grafo
+        nx.draw(G, pos, node_color=node_colors, edge_color='gray', with_labels=True, font_size=8)
+
+        # Adiciona os labels numerados aos nós
+        node_labels = {node: indexed_labels[node] for node in G.nodes()}
+        nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=10, font_color='black')
+
+        plt.show()
     ###############################################################################
     # Função para plotar subgrafos em cores diferentes
     ###############################################################################
+    @staticmethod
     def plot_subgraphs(G):
         subgraphs = [G.subgraph(c).copy() for c in nx.connected_components(G)]
         colors = plt.cm.rainbow(range(len(subgraphs)))
@@ -23,7 +42,9 @@ class PlotUtils:
         plt.figure(figsize=(10, 10))
         for subgraph, color in zip(subgraphs, colors):
             pos = {node: node for node in subgraph.nodes()}
+            labels = nx.get_node_attributes(subgraph, 'label')  # Obtendo os labels dos nós
             nx.draw(subgraph, pos, node_color=[color], edge_color=[color], with_labels=False)
+            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=8, font_color='black')
         plt.show()
 
     @staticmethod
@@ -65,29 +86,30 @@ class PlotUtils:
         plt.show()
 
     @staticmethod
-    def plot_obstacles_aabbs_segments(obstacles, aabbs, segments):
-        fig, ax = plt.subplots(figsize=(10,10))
+    def plot_obstacles_aabbs(obstacles, aabbs):
+        fig, ax = plt.subplots(figsize=(10, 10))  # Ajuste do tamanho do gráfico
         ax.grid(True, linestyle='--', color='lightgray', alpha=0.7)
 
-        # Obstáculos
+        # Obstáculos (retângulos vermelhos)
         for obs in obstacles:
-            x, y=obs["pos"]
-            w, h=obs["size"]
-            rect=plt.Rectangle((x-w/2,y-h/2), w,h,color='red',alpha=0.7)
+            x, y = obs["pos"]
+            w, h = obs["size"]
+            rect = plt.Rectangle((x - w / 2, y - h / 2), w, h, color='red', alpha=0.5, label="Obstáculo")
             ax.add_patch(rect)
 
-        # AABBs
-        for (aabb_x,aabb_y),aabb_w,aabb_h in aabbs:
-            arect=plt.Rectangle((aabb_x,aabb_y),aabb_w,aabb_h,edgecolor='blue',facecolor='none',linewidth=1.5)
+        # AABBs (retângulos azuis)
+        for (aabb_x, aabb_y), aabb_w, aabb_h in aabbs:
+            arect = plt.Rectangle((aabb_x, aabb_y), aabb_w, aabb_h, edgecolor='blue', facecolor='none', linewidth=1.5,
+                                  label="AABB")
             ax.add_patch(arect)
 
-        # Segmentos
-        for (x1,y1,x2,y2) in segments:
-            ax.plot([x1,x2],[y1,y2],color='green',linewidth=1.5)
+        # Ajuste dos limites do gráfico
+        ax.autoscale()
 
-        ax.set_xlabel("X(m)")
-        ax.set_ylabel("Y(m)")
-        ax.set_title("Obstáculos, AABBs e Segmentos")
+        ax.set_xlabel("X (m)")
+        ax.set_ylabel("Y (m)")
+        ax.set_title("Obstáculos e AABBs")
+        plt.legend(["Obstáculo", "AABB"], loc="upper right")
         plt.show()
 
     @staticmethod
