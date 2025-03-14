@@ -8,6 +8,26 @@ import networkx as nx
 ###############################################################################
 class AABBUtils:
 
+    @staticmethod
+    def convert_graph_to_dict(G):
+        """
+        Converte um grafo NetworkX em um dicionário no formato especificado.
+        """
+        grafo_mapa = {"states": set(), "transitions": {}}
+
+        # Criar os estados com labels
+        for node, data in G.nodes(data=True):
+            label = data.get("label", str(node))  # Usa o label ou a posição se não houver label
+            grafo_mapa["states"].add(label)
+
+        # Criar as transições com pesos
+        for u, v, data in G.edges(data=True):
+            label_u = G.nodes[u].get("label", str(u))
+            label_v = G.nodes[v].get("label", str(v))
+            weight = data.get("weight", 1.0)  # Se não houver peso, assume 1.0
+            grafo_mapa["transitions"][(label_u, label_v)] = weight
+
+        return grafo_mapa
 
 
     @staticmethod

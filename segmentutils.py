@@ -11,9 +11,40 @@ import networkx as nx
 import math
 import matplotlib.pyplot as plt
 from collections import defaultdict
+from scipy.spatial import distance
 
 
 class SegmentUtils:
+
+
+
+    @staticmethod
+    def save_graph_json(G, filename):
+        graph_data = {
+            "nodes": {str(node): G.nodes[node] for node in G.nodes()},
+            "edges": [(str(u), str(v), G.edges[u, v]["weight"]) for u, v in G.edges()]
+        }
+        with open(filename, "w") as f:
+            json.dump(graph_data, f, indent=4)
+
+    @staticmethod
+    def load_graph_json(filename):
+        with open(filename, "r") as f:
+            graph_data = json.load(f)
+
+        G = nx.Graph()
+
+        # Restaurar nós com labels
+        for node, attr in graph_data["nodes"].items():
+            G.add_node(eval(node), **attr)  # Converte string para tupla novamente
+
+        # Restaurar arestas com peso
+        for u, v, weight in graph_data["edges"]:
+            G.add_edge(eval(u), eval(v), weight=weight)
+
+        return G
+
+
 
     @staticmethod
     def index_graph_labels(graph):
@@ -37,11 +68,13 @@ class SegmentUtils:
     def create_graph(final_segments, obstacles):
         G = nx.Graph()
 
-        # **1. Criar um dicionário para armazenar os pontos mais próximos de cada obstáculo**
+        # Criar um dicionário para armazenar os pontos mais próximos de cada obstáculo
         obstacle_node_dict = defaultdict(list)
 
-        # **2. Normalizar todos os pontos e associar ao obstáculo mais próximo**
+        # Normalizar todos os pontos e associar ao obstáculo mais próximo
         unique_nodes = set()
+        segment_map = {}  # Para mapear cada segmento aos seus nós
+
         for segment in final_segments:
             x1, y1, x2, y2 = segment
 
@@ -53,7 +86,10 @@ class SegmentUtils:
             unique_nodes.add((x1, y1))
             unique_nodes.add((x2, y2))
 
-        # **3. Atribuir um índice a cada nó baseado no obstáculo mais próximo**
+            # Mapeia os segmentos para seus nós
+            segment_map[(x1, y1, x2, y2)] = [(x1, y1), (x2, y2)]
+
+        # Atribuir um índice a cada nó baseado no obstáculo mais próximo
         node_labels = {}
         for node in sorted(unique_nodes):  # Ordenação para garantir índices consistentes
             nearest_label = SegmentUtils.get_nearest_obstacle_label(node, obstacles)
@@ -62,7 +98,7 @@ class SegmentUtils:
             obstacle_node_dict[nearest_label].append(node)  # Adiciona ao dicionário
             node_labels[node] = full_label  # Salva o rótulo do nó
 
-        # **4. Criar o grafo com os novos labels**
+        # Criar o grafo com os novos labels
         for segment in final_segments:
             x1, y1, x2, y2 = segment
             x1, y1 = round(x1, 1), round(y1, 1)
@@ -74,9 +110,86 @@ class SegmentUtils:
             G.add_node((x2, y2), label=node_labels[(x2, y2)])
             G.add_edge((x1, y1), (x2, y2), weight=distance)
 
-        # **5. Conectar subgrafos desconectados**
+        # Conectar nós que ficaram isolados dentro do cluster
+        for node in unique_nodes:
+            connected_neighbors = list(G.neighbors(node))
+
+            if len(connected_neighbors) == 0:  # Nó isolado
+                # Encontrar o segmento ao qual esse nó pertence
+                for (sx1, sy1, sx2, sy2), seg_nodes in segment_map.items():
+                    if node in seg_nodes:
+                        # Conectar o nó isolado aos extremos do segmento original
+                        G.add_edge(node, (sx1, sy1), weight=math.dist(node, (sx1, sy1)))
+                        G.add_edge(node, (sx2, sy2), weight=math.dist(node, (sx2, sy2)))
+                        break
+
+        # Conectar subgrafos desconectados
         G, new_connections = SegmentUtils.connect_disconnected_subgraphs(G)
         return G
+
+    @staticmethod
+    def fix_missing_connections(G):
+        """
+        Identifica nós que pertencem a uma mesma classe (base do label, ex: 'TPC1')
+        e verifica se cada nó está conectado a pelo menos 1 outro nó da mesma classe.
+        Se não estiver, adiciona esse nó à lista de 'isolados', busca os dois nós mais próximos
+        da mesma classe e adiciona conexões a eles no grafo G.
+        """
+        # Agrupar nós por classe => base_name
+        groups = defaultdict(list)
+        for node in G.nodes():
+            label = G.nodes[node].get("label", "unknown")
+            base_name = label.rsplit("_", 1)[0]  # ex: TPC1_3 => TPC1
+            groups[base_name].append(node)
+
+        # Lista para armazenar nós isolados com os dois nós mais próximos
+        isolated_nodes_with_neighbors = []
+
+        for base_name, nodes in groups.items():
+            for n in nodes:
+                neighbors = list(G.neighbors(n))
+
+                # Verifica se pelo menos um vizinho tem o mesmo base_name
+                has_cluster_neighbor = any(
+                    G.nodes[neighbor].get("label", "").rsplit("_", 1)[0] == base_name
+                    for neighbor in neighbors
+                )
+
+                # Se o nó está isolado dentro do cluster, buscar os dois nós mais próximos
+                if not has_cluster_neighbor:
+                    # Calcular distâncias para os outros nós do mesmo cluster
+                    distances = [
+                        (other, distance.euclidean(n, other))
+                        for other in nodes if other != n
+                    ]
+
+                    # Ordenar pela menor distância e pegar os dois primeiros
+                    closest_nodes = sorted(distances, key=lambda x: x[1])[:2]
+
+                    # Criar lista com as coordenadas e labels dos nós mais próximos
+                    closest_nodes_info = [
+                        {"coordinate": node[0], "label": G.nodes[node[0]].get("label", "")}
+                        for node in closest_nodes
+                    ]
+
+                    # Adicionar à lista de nós isolados
+                    isolated_nodes_with_neighbors.append({
+                        "label": G.nodes[n].get("label", ""),  # Nome do nó
+                        "coordinate": n,  # Coordenada do nó
+                        "closest_nodes": closest_nodes_info  # Lista com os dois nós mais próximos (coordenada + label)
+                    })
+
+                    # **Adicionar as conexões no grafo**
+                    for node_data in closest_nodes_info:
+                        neighbor_coord = node_data["coordinate"]
+                        distance_value = distance.euclidean(n, neighbor_coord)
+
+                        # Adiciona aresta no grafo com peso igual à distância
+                        G.add_edge(n, neighbor_coord, weight=distance_value)
+
+        return G  # Retorna para testes
+
+
 
     @staticmethod
     def get_nearest_obstacle_label(point, obstacles):

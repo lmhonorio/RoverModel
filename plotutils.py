@@ -38,13 +38,15 @@ class PlotUtils:
     def plot_subgraphs(G):
         subgraphs = [G.subgraph(c).copy() for c in nx.connected_components(G)]
         colors = plt.cm.rainbow(range(len(subgraphs)))
+        if len(subgraphs)==1:
+            colors = [plt.cm.rainbow(0.20)]
 
-        plt.figure(figsize=(10, 10))
+        plt.figure(figsize=(15, 15))
         for subgraph, color in zip(subgraphs, colors):
             pos = {node: node for node in subgraph.nodes()}
             labels = nx.get_node_attributes(subgraph, 'label')  # Obtendo os labels dos nós
             nx.draw(subgraph, pos, node_color=[color], edge_color=[color], with_labels=False)
-            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=8, font_color='black')
+            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=16, font_color='black')
         plt.show()
 
     @staticmethod

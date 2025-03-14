@@ -6,6 +6,7 @@ import math
 import matplotlib.pyplot as plt
 import pickle
 import json
+from baseclasses import *
 
 
 ###############################################################################
@@ -13,7 +14,7 @@ import json
 ###############################################################################
 def main():
     # Config
-    file_path = "obstaculos_processado2.xlsx"
+    file_path = "obstaculos_processado4.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
     margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
@@ -59,6 +60,8 @@ def main():
     # Criar grafo
     G = SegmentUtils.create_graph(final_segments,obstacles)
 
+    G = SegmentUtils.fix_missing_connections(G)
+
     #new_indexed_labels = SegmentUtils.index_graph_labels(G)
 
     #print(new_indexed_labels)
@@ -74,12 +77,29 @@ def main():
     new_segments = SegmentUtils.graph_to_segments(G)
 
     # Plot final
-    PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
+    #PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
 
+    file_path = "graph8.json"
 
     # Salvar grafo e segmentos
-    SegmentUtils.save_graph(G, "graph3.pkl")
-    SegmentUtils.save_segments(new_segments, "segments2.json")
+    SegmentUtils.save_graph_json(G, file_path)
+    SegmentUtils.save_segments(new_segments, "segments4.json")
+
+
+    # Exemplo de uso:
+    g = SegmentUtils.load_graph_json(file_path)
+    grafo_mapa = AABBUtils.convert_graph_to_dict(g)
+
+    g = Grafo()
+    G1 = g.xml_to_graph(grafo_mapa)
+    agraph1 = to_agraph(G1)
+    agraph1.layout(prog='dot')
+    agraph1.draw('graph_with_weights.png')  # Gerar o arquivo de imagem
+
+    img = plt.imread('graph_with_weights.png')
+    plt.imshow(img)
+    plt.axis('off')  # Remover eixos
+    plt.show()
 
 
 
