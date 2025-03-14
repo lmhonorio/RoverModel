@@ -88,7 +88,7 @@ def move_add_effects(robot: Instance, tolocation: Instance, state, pgrafo_mapa):
             for pb in state.predicates:
                 if pb.name == "Btry" and pb.args[0] == robot.name:
                     bateria = pb.args[1]
-                    new_predicates.append(Predicate("Btry", robot.name, bateria - 0))
+                    new_predicates.append(Predicate("Btry", robot.name, bateria - 1))
 
     return new_predicates
 

@@ -26,6 +26,7 @@ class AABBUtils:
             label_v = G.nodes[v].get("label", str(v))
             weight = data.get("weight", 1.0)  # Se não houver peso, assume 1.0
             grafo_mapa["transitions"][(label_u, label_v)] = weight
+            grafo_mapa["transitions"][(label_v, label_u)] = weight
 
         return grafo_mapa
 
