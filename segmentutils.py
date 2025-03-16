@@ -109,6 +109,7 @@ class SegmentUtils:
             G.add_node((x1, y1), label=node_labels[(x1, y1)])
             G.add_node((x2, y2), label=node_labels[(x2, y2)])
             G.add_edge((x1, y1), (x2, y2), weight=distance)
+            G.add_edge((x2, y2), (x1, y1), weight=distance)
 
         # Conectar nós que ficaram isolados dentro do cluster
         for node in unique_nodes:
@@ -186,6 +187,7 @@ class SegmentUtils:
 
                         # Adiciona aresta no grafo com peso igual à distância
                         G.add_edge(n, neighbor_coord, weight=distance_value)
+                        G.add_edge(neighbor_coord, n, weight=distance_value)
 
         return G  # Retorna para testes
 

@@ -4,105 +4,113 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import networkx.algorithms.approximation as nx_app
 from networkx.drawing.nx_agraph import to_agraph
-from baseclasses import *
-from aplanner import *
+
+# Import das classes e funções
+from baseclasses import Instance, Predicate, State, Operator
+from aplanner import AStarPlanner
 from roverclass import ObstacleLoader
 from segmentutils import SegmentUtils
 from plotutils import PlotUtils
 from aabbutils import AABBUtils
 from planning_functions import *
 
-# Example usage:
+
+
+
+def build_goal_predicates_func(mission_scenarios):
+    """
+    Gera predicados de objetivo a partir das missões.
+    Cada missão concluída se torna `MissaoAtendida(local, True)`, e esse estado nunca muda.
+    """
+    goal_set = set()
+    for local, _ in mission_scenarios:
+        goal_set.add(Predicate("MissaoAtendida", local, True))  # O objetivo final é que todas as missões sejam atendidas
+
+    def _goal_predicates_func():
+        return goal_set
+
+    return _goal_predicates_func
+
+
+def is_mission_accomplished(state, goal_predicates):
+    """
+    Verifica se todas as missões foram atendidas **em algum momento**.
+    Se um local foi marcado como `MissaoAtendida(local, True)`, então a missão daquele local foi concluída permanentemente.
+    """
+    mission_status = {p.args[0]: p.args[1] for p in state.predicates if p.name == "MissaoAtendida"}
+
+    for gp in goal_predicates:
+        if gp.name == "MissaoAtendida":
+            local = gp.args[0]
+            if mission_status.get(local, False) is not True:
+                return False  # A missão ainda não foi atendida
+
+    return True
+
+
+# ==================== PLANO PRINCIPAL ==================== #
+
 if __name__ == "__main__":
-    # Define instances for robots and locations
-
-
-    # Exemplo de uso:
-    file_path = "graph8.json"  # Altere para o caminho correto do arquivo
+    # Carregar o grafo
+    file_path = "./jsons/graph8.json"
     g = SegmentUtils.load_graph_json(file_path)
     grafo_mapa = AABBUtils.convert_graph_to_dict(g)
 
-    # g = Grafo()
-    # G1 = g.xml_to_graph(grafo_mapa)
-    # agraph1 = to_agraph(G1)
-    # agraph1.layout(prog='dot')
-    # agraph1.draw('graph_with_weights.png')  # Gerar o arquivo de imagem
-    #
-    # img = plt.imread('graph_with_weights.png')
-    # plt.imshow(img)
-    # plt.axis('off')  # Remover eixos
-    # plt.show()
+    # Definir robôs e posições iniciais
+    robots = [
+        Instance("Robot", "R1"),
+        Instance("Robot", "R2"),
+    ]
+    pred_iniciais = [
+        Predicate("Em", robots[0], "PR11_2"),
+        Predicate("Em", robots[1], "PR12_7"),
+    ]
 
-    robots = []
-    posicoes =[]
-    baterias = []
-    chargePositions = []
+    # Missões principais
+    mission_scenarios = [
+        ("TPC3_5", "ANY"),
+        ("TPC2_6", "R2")
+    ]
 
-    robots.append(Instance("Robot", "R1"))
-    robots.append(Instance("Robot", "R2"))
-    posicoes.append(Predicate("Em", robots[0], "PR11_2"))
-    posicoes.append(Predicate("Em", robots[1], "PR12_7"))
-    baterias.append(Predicate("Btry", 'R1', 20000))
-    baterias.append(Predicate("Btry", 'R2', 20000))
-    chargePositions.append(Predicate("ChrPos", 'PR11_6'))
-    # Instance("Robot", f"R2")
+    # Construir predicados de objetivo
+    goal_predicates_func = build_goal_predicates_func(mission_scenarios)
 
+    # Adicionar `MissaoAtendida` inicial como False
+    for local, _ in mission_scenarios:
+        pred_iniciais.append(Predicate("MissaoAtendida", local, False))
 
-    locations = [Instance("Place", i) for i in sorted(grafo_mapa['states'], key=str)]
+    # Estado inicial
+    initial_state = State(pred_iniciais, 0)
 
-
-
-    # Combine all predicates into the initial state
-    initial_state = State(posicoes + baterias + chargePositions, 0)
-
-   # print("Estados do grafo:", grafo_mapa['states'])
-
-
-    # Define the list of operators
+    # Definir operadores SEM bateria
     operators = [
         Operator(
             "Mover(robo, posicao)",
             preconditions_func=move_preconditions,
             add_effects_func=move_add_effects,
             del_effects_func=move_del_effects,
-            cost=1  # Assume all movements have equal cost
+            cost=1
         ),
-        Operator(
-            "Carregar(robo)",
-            preconditions_func=charge_preconditions,
-            add_effects_func=charge_add_effects,
-            del_effects_func=charge_del_effects,
-            cost=1  # Assume all movements have equal cost
-        )
     ]
 
+    # Criar um novo planejador que usa os predicados de missão
+    class MissionPlanner(AStarPlanner):
+        def is_goal(self, state):
+            goal_preds = self.goal_predicates_func()
+            return is_mission_accomplished(state, goal_preds)
 
-    # def goal_predicates_func():
-    #     # We want each position to have exactly one robot.
-    #     goal_predicates = set()
-    #     goal_predicates.add(Predicate("Full", "PR11_0"))
-    #     #goal_predicates.add(Predicate("Full", "P5"))
-    #     #goal_predicates.add(Predicate("Carga", Instance("Robot", "robo1"), 100))
-    #     #goal_predicates.add(Predicate("Carga", Instance("Robot", "robo2"), 100))
-    #     return goal_predicates
+    planner = MissionPlanner(
+        initial_state,
+        goal_predicates_func,
+        operators,
+        robots,
+        grafo_mapa,
+        get_goal_state_predicates=None
+    )
 
-    goal_predicates_func = lambda: {Predicate("Full", "TPC1_0"), Predicate("Full", "TPC3_6") }
-
-
-
-    # Create the planner
-    planner = AStarPlanner(initial_state, goal_predicates_func, operators, robots, grafo_mapa, get_goal_state_predicates)
-
-    # Find the optimal plan
-    plan, final_state = planner.plan()
-    if plan:
-        print("Optimal Plan:")
-        for action, robot, location in plan:
-            print(f"{robot.name} executes {action.name} to {location.name}")
+    # Executar o plano
+    path = planner.plan_graph_based()
+    if path:
+        print("✅ Caminho final:", path)
     else:
-        print("No plan found")
-
-    print("\nEstado Final:")
-
-    for predicate in sorted(final_state.predicates, key=str):
-        print(predicate)
+        print("❌ Nenhum caminho encontrado!")

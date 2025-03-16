@@ -14,7 +14,7 @@ from baseclasses import *
 ###############################################################################
 def main():
     # Config
-    file_path = "obstaculos_processado4.xlsx"
+    file_path = "./planilhas/obstaculos_processado4.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
     margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
@@ -79,11 +79,11 @@ def main():
     # Plot final
     #PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
 
-    file_path = "graph8.json"
+    file_path = "./jsons/graph8.json"
 
     # Salvar grafo e segmentos
     SegmentUtils.save_graph_json(G, file_path)
-    SegmentUtils.save_segments(new_segments, "segments4.json")
+    SegmentUtils.save_segments(new_segments, "./jsons/segments4.json")
 
 
     # Exemplo de uso:
@@ -94,9 +94,9 @@ def main():
     G1 = g.xml_to_graph(grafo_mapa)
     agraph1 = to_agraph(G1)
     agraph1.layout(prog='dot')
-    agraph1.draw('graph_with_weights.png')  # Gerar o arquivo de imagem
+    agraph1.draw('./figuras/graph_with_weights.png')  # Gerar o arquivo de imagem
 
-    img = plt.imread('graph_with_weights.png')
+    img = plt.imread('./figuras/graph_with_weights.png')
     plt.imshow(img)
     plt.axis('off')  # Remover eixos
     plt.show()
