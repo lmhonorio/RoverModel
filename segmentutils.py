@@ -12,10 +12,53 @@ import math
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from scipy.spatial import distance
+import itertools
+import matplotlib.colors as mcolors
 
 
 class SegmentUtils:
 
+    @staticmethod
+    def xml_to_graph(graphxml):
+        # Criar um grafo não direcionado
+        G = nx.Graph()
+
+        # Adicionar estados
+        G.add_nodes_from(graphxml['states'])
+
+        # Adicionar transições
+        for (current_state, target_state), nweight in graphxml['transitions'].items():
+            G.add_edge(current_state, target_state, label=nweight, weight=nweight)
+
+        # Definir estados finais
+        if 'accepting_states' in graphxml and graphxml['accepting_states']:
+            for state in graphxml['accepting_states']:
+                G.nodes[state]['accepting_state'] = True
+                G.nodes[state]['shape'] = 'doublecircle'
+
+        if 'start' in graphxml and graphxml['start']:
+            G.graph['start'] = graphxml['start']
+            G.nodes[graphxml['start']]['color'] = 'red'
+
+        # Agrupar nós com mesmo nome e índices diferentes
+        node_groups = {}
+        for node in G.nodes:
+            if '_' in node:
+                base_name = node.rsplit('_', 1)[0]  # Obtém o nome sem o índice
+                if base_name not in node_groups:
+                    node_groups[base_name] = []
+                node_groups[base_name].append(node)
+
+        # Gerar cores distintas para cada grupo
+        color_palette = itertools.cycle(mcolors.TABLEAU_COLORS.values())
+        node_colors = {}
+
+        for base_name, nodes in node_groups.items():
+            color = next(color_palette)
+            for node in nodes:
+                G.nodes[node]['color'] = color
+
+        return G
 
 
     @staticmethod

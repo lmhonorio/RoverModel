@@ -12,7 +12,7 @@ class Grafo:
     def __init__(self):
         return
 
-    def xml_to_graph(self, graphxml):
+    def xml_to_graph(graphxml):
         # Criar um grafo não direcionado
         G = nx.Graph()
 

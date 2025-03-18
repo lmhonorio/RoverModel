@@ -2,11 +2,12 @@ from roverclass import ObstacleLoader
 from segmentutils import SegmentUtils
 from plotutils import PlotUtils
 from aabbutils import AABBUtils
+from networkx.drawing.nx_agraph import to_agraph
 import math
 import matplotlib.pyplot as plt
 import pickle
 import json
-from baseclasses import *
+# from baseclasses import *
 
 
 ###############################################################################
@@ -14,7 +15,7 @@ from baseclasses import *
 ###############################################################################
 def main():
     # Config
-    file_path = "./planilhas/obstaculos_processado4.xlsx"
+    file_path = "./planilhas/obstaculos_processado2.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
     margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
@@ -79,7 +80,7 @@ def main():
     # Plot final
     #PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
 
-    file_path = "./jsons/graph8.json"
+    file_path = "./jsons/graph9.json"
 
     # Salvar grafo e segmentos
     SegmentUtils.save_graph_json(G, file_path)
@@ -90,8 +91,8 @@ def main():
     g = SegmentUtils.load_graph_json(file_path)
     grafo_mapa = AABBUtils.convert_graph_to_dict(g)
 
-    g = Grafo()
-    G1 = g.xml_to_graph(grafo_mapa)
+
+    G1 = SegmentUtils.xml_to_graph(grafo_mapa)
     agraph1 = to_agraph(G1)
     agraph1.layout(prog='dot')
     agraph1.draw('./figuras/graph_with_weights.png')  # Gerar o arquivo de imagem

@@ -1,16 +1,5 @@
-from queue import PriorityQueue
-from collections import defaultdict
-import networkx as nx
-import matplotlib.pyplot as plt
-import networkx.algorithms.approximation as nx_app
-from networkx.drawing.nx_agraph import to_agraph
-
 # Import das classes e funções
-from baseclasses import Instance, Predicate, State, Operator
-from aplanner import AStarPlanner
-from roverclass import ObstacleLoader
 from segmentutils import SegmentUtils
-from plotutils import PlotUtils
 from aabbutils import AABBUtils
 from planning_functions import *
 
@@ -52,7 +41,7 @@ def is_mission_accomplished(state, goal_predicates):
 
 if __name__ == "__main__":
     # Carregar o grafo
-    file_path = "./jsons/graph8.json"
+    file_path = "../jsons/graph8.json"
     g = SegmentUtils.load_graph_json(file_path)
     grafo_mapa = AABBUtils.convert_graph_to_dict(g)
 

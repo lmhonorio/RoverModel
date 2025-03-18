@@ -89,6 +89,65 @@ class SkidSteerRoverModel:
         return np.array([x, y, theta, v, omega])
 
 
+
+class RoverController:
+    """
+    Controlador de heading e velocidade (PI/PID simples)
+    e alocação para PWM (modelo de equações simplificadas).
+    """
+    def __init__(self, kp_heading=2.0, kd_heading=0.0,
+                 kp_speed=1.0, kd_speed=0.0,
+                 pwm_max=100, wheelbase=0.5):
+        self.kp_heading = kp_heading
+        self.kd_heading = kd_heading
+        self.kp_speed   = kp_speed
+        self.kd_speed   = kd_speed
+        self.pwm_max    = pwm_max
+        self.L          = wheelbase  # Distância entre rodas
+
+        # Estados para derivadas
+        self.prev_heading_error = 0.0
+        self.prev_speed_error   = 0.0
+
+    def compute_control(self, heading_error, heading_error_dot,
+                        speed_error, speed_error_dot):
+        """
+        Retorna (u_heading, u_speed) => sinal de controle para heading e speed.
+        """
+        # PID/PI simplificado, sem integral por exemplo.
+        # heading
+        ctrl_heading = self.kp_heading * heading_error + self.kd_heading * heading_error_dot
+        # speed
+        ctrl_speed   = self.kp_speed   * speed_error   + self.kd_speed   * speed_error_dot
+        return ctrl_heading, ctrl_speed
+
+    def pwm_allocator(self, v_des, w_des, battery_voltage):
+        """
+        Converte (v_des, w_des) -> (pwm_left, pwm_right).
+        Modelo simples de skid-steer:
+            v_des = (wL + wR)/2 * R
+            w_des = (wR - wL)/L * R
+        em que R = raio da roda => assumido 1 para simplificar
+        e 'pwm' ~ w(angular)
+        """
+        # Para simplificar, assumimos:
+        # w_left  = (v_des - w_des * L/2)/R
+        # w_right = (v_des + w_des * L/2)/R
+        # E pwm ~ w*(pwm_max / w_max). Faltam escalas exatas, mas é um ex.
+        # Se a bateria estiver com 48 V, apenas normalizamos por pwm_max.
+
+        R = 1.0  # Raio fictício
+        w_left  = (v_des - w_des*(self.L/2)) / R
+        w_right = (v_des + w_des*(self.L/2)) / R
+
+        # Limit w_(left/right) para a pwm
+        # Exemplo: pwm ~ w. Ajuste se quiser um mapeamento real.
+        pwm_left  = np.clip(w_left,  -self.pwm_max, self.pwm_max)
+        pwm_right = np.clip(w_right, -self.pwm_max, self.pwm_max)
+        return 90*pwm_left, 90*pwm_right
+
+
+
 # Classe para carregar obstáculos a partir da planilha
 class ObstacleLoader:
     def __init__(self, file_path, sheet_name):
