@@ -15,7 +15,7 @@ import json
 ###############################################################################
 def main():
     # Config
-    file_path = "./planilhas/obstaculos_processado2.xlsx"
+    file_path = "./planilhas/obstaculos_processado4.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
     margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
