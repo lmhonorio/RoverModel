@@ -46,8 +46,9 @@ class PlotUtils:
             pos = {node: node for node in subgraph.nodes()}
             labels = nx.get_node_attributes(subgraph, 'label')  # Obtendo os labels dos nós
             nx.draw(subgraph, pos, node_color=[color], edge_color=[color], with_labels=False)
-            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=16, font_color='black')
+            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=2, font_color='black')
         plt.show()
+
 
     @staticmethod
     def plot_grafo(G, filename, figsize=(35, 35), titulo=None):

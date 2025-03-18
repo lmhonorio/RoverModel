@@ -78,9 +78,9 @@ def main():
     new_segments = SegmentUtils.graph_to_segments(G)
 
     # Plot final
-    #PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
+    PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
 
-    file_path = "./jsons/graph9.json"
+    file_path = "./jsons/graph6.json"
 
     # Salvar grafo e segmentos
     SegmentUtils.save_graph_json(G, file_path)

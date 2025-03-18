@@ -22,8 +22,8 @@ robots_positions = {
     "R2": "PR11_2"
 }
 destinations = {
-    "R1": "PR13_1",
-    "R2": "SECH23_4"
+    "R1": "PR2_2",
+    "R2": "IP3_30"
 }
 
 planner = MultiGraphPlanner(grafo_mapa, None, None, None, None, None)
