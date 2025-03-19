@@ -18,7 +18,7 @@ def meters_to_pixels(x, y):
     return int(WIDTH // 2 + x * PIXELS_PER_METER), int(HEIGHT // 2 - y * PIXELS_PER_METER)
 
 # Carregar e processar a imagem do rover
-image = pygame.image.load("./figuras/robo3.png")  # Substitua pelo caminho correto da imagem
+image = pygame.image.load("../figuras/robo3.png")  # Substitua pelo caminho correto da imagem
 rover_width, rover_height = int(image.get_width() * 0.1), int(image.get_height() * 0.1)
 image = pygame.transform.scale(image, (rover_width, rover_height))  # Reduz imagem
 image = pygame.transform.rotate(image, 90)  # Rotaciona 90° anti-horário para alinhar com o referencial correto
@@ -55,7 +55,7 @@ state = np.array([0, 0, 0, 0, 0])
 # ]
 
 # Carregar obstáculos da planilha
-file_path = "./planilhas/obstaculos_processado2.xlsx"
+file_path = "../planilhas/obstaculos_processado2.xlsx"
 sheet_name = "Parnaiba3_Transformado"
 obstacle_loader = ObstacleLoader(file_path, sheet_name)
 obstacles = obstacle_loader.get_obstacles()

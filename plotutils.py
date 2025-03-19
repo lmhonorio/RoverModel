@@ -13,6 +13,21 @@ import networkx as nx
 class PlotUtils:
 
     @staticmethod
+    def plot_mission_graph(G_m):
+        """ Plota o grafo de missões G_m """
+        plt.figure(figsize=(8, 6))
+
+        pos = nx.spring_layout(G_m)  # Define um layout para os nós
+        nx.draw(G_m, pos, with_labels=True, node_color="lightblue", edge_color="gray", node_size=2000, font_size=10,
+                font_weight="bold")
+
+        edge_labels = {(u, v): f"{u} → {v}" for u, v in G_m.edges()}
+        nx.draw_networkx_edge_labels(G_m, pos, edge_labels=edge_labels, font_size=8, font_color="red")
+
+        plt.title("Grafo de Dependências das Missões (G_m)")
+        plt.show()
+
+    @staticmethod
     def plot_graph_with_indexed_labels(G, indexed_labels):
         plt.figure(figsize=(10, 10))
         pos = {node: node for node in G.nodes()}  # Usa as coordenadas dos nós para posicionamento

@@ -5,6 +5,7 @@ import heapq
 from itertools import permutations
 import matplotlib.pyplot as plt
 from aabbutils import AABBUtils
+from plotutils import PlotUtils
 
 
 # G_p = nx.Graph()
@@ -39,6 +40,23 @@ G_p = AABBUtils.convert_graph_to_dict(G_mapa)
 #
 # # 📌 Criando o grafo de missões (dependências)
 G_m.add_edges_from([("M_A", "M_B"), ("M_B", "M_C"), ("M_C", "M_D")])
+
+
+# G_m.add_edges_from([
+#     ("Start", "M_A"), ("Start", "M_B"),  # M_A e M_B podem começar imediatamente
+#     ("M_A", "M_C"),  # M_C depende de M_A
+#     ("M_B", "M_D")   # M_D depende de M_B
+# ])
+
+# G_m.add_edges_from([
+#     ("Start", "M_A"), ("Start", "M_B"),  # M_A e M_B podem começar imediatamente
+#     ("Start", "M_C"),  # M_C depende de M_A
+#     ("Start", "M_D")   # M_D depende de M_B
+# ])
+
+# PlotUtils.plot_mission_graph(G_m)
+
+
 #
 # # 📌 Ligando missões às posições no mapa
 mission_positions = {"M_A": "PR13_7", "M_B": "TPC2_4", "M_C": "TPC3_0", "M_D": "PR12_4"}
