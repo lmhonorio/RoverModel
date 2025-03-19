@@ -65,7 +65,7 @@ mission_positions = {"M_A": "PR13_7", "M_B": "TPC2_4", "M_C": "TPC3_0", "M_D": "
 mission_times = {"M_A": 2, "M_B": 3, "M_C": 3, "M_D": 2}
 #
 # # 📌 Restrições de execução de missões
-mission_execution = {"M_A": ["R1", "R2"], "M_B": ["R1", "R2"], "M_C": ["R1", "R2"], "M_D": ["R1","R2"]}
+mission_execution = {"M_A": ["R1", "R2"], "M_B": ["R1", "R2"], "M_C": ["R1"], "M_D": ["R1","R2"]}
 #
 robots_positions = {"R1": "PR11_0", "R2": "PR11_2"}
 
