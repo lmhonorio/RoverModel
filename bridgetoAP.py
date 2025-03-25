@@ -6,6 +6,25 @@ from pymavlink import mavutil
 from pymavlink.mavwp import MAVWPLoader
 import time
 
+def reebot(udp_channel):
+    # Conecta ao ArduPilot (ex: via UDP)
+    master = mavutil.mavlink_connection(udp_channel)
+    master.wait_heartbeat()
+    print("✅ Conectado ao ArduPilot")
+
+    # Envia comando de reboot
+    master.mav.command_long_send(
+        master.target_system,
+        master.target_component,
+        mavutil.mavlink.MAV_CMD_PREFLIGHT_REBOOT_SHUTDOWN,
+        0,  # Confirmation
+        1,  # Param1 = 1 => reboot autopilot
+        0, 0, 0, 0, 0, 0
+    )
+
+    print("♻️ Reboot enviado.")
+
+
 def iniciar_missao(master):
     master.arducopter_arm()
     master.motors_armed_wait()
@@ -34,7 +53,10 @@ def enviar_missao(udp_channel, mission_points, ALT=2.0):
     wp = MAVWPLoader()
     mission_points_sorted = sorted(mission_points, key=lambda x: x['id'])
 
+    lastpoint = None
+
     for i, point in enumerate(mission_points_sorted):
+        lastpoint = point
         wp.add(
             mavutil.mavlink.MAVLink_mission_item_message(
                 target_system=master.target_system,
@@ -59,7 +81,7 @@ def enviar_missao(udp_channel, mission_points, ALT=2.0):
             current=0,
             autocontinue=1,
             param1=0, param2=0, param3=0, param4=0,
-            x=0, y=0, z=0
+            x=lastpoint["lat"], y=lastpoint["lon"], z=ALT
         )
     )
 
@@ -75,12 +97,13 @@ def enviar_missao(udp_channel, mission_points, ALT=2.0):
             if msg is not None:
                 print(f"📥 Solicitação recebida: WP {msg.seq}")
                 master.mav.send(wp.wp(i))
+                time.sleep(0.2)
                 print(f"📤 Waypoint {i} enviado (tentativa {attempt + 1}).")
                 success = True
                 break
             else:
                 print(f"⏳ Tentativa {attempt + 1} falhou para WP {i}. Reenviando...")
-                time.sleep(0.5)
+                time.sleep(0.1)
         if not success:
             print(f"❌ Falha após {max_attempts} tentativas para WP {i}. Abortando.")
             return
@@ -100,6 +123,51 @@ def enviar_missao(udp_channel, mission_points, ALT=2.0):
 
     print("\n📋 Verificando missão armazenada no robô...\n")
     master.mav.mission_request_list_send(master.target_system, master.target_component)
+    msg = master.recv_match(type='MISSION_COUNT', blocking=True, timeout=timeout)
+    if msg is None:
+        print("❌ Timeout esperando MISSION_COUNT.")
+        return
+    wp_count = msg.count
+    print(f"➡️  {wp_count} waypoints armazenados.\n")
+    if wp_count != wp.count():
+        print(f"➡️  armazenamento de wp inconsistente.. erro!.\n")
+
+
+    waypoints = []
+    for i in range(wp_count):
+        for attempt in range(max_attempts):
+            master.mav.mission_request_send(master.target_system, master.target_component, i)
+            msg = master.recv_match(type='MISSION_ITEM', blocking=True, timeout=timeout)
+            if msg:
+                break
+            else:
+                print(f"⏳ Tentativa {attempt + 1} esperando MISSION_ITEM {i}...")
+                time.sleep(0.5)
+        else:
+            print(f"❌ Timeout esperando MISSION_ITEM {i} após {max_attempts} tentativas.")
+            return
+
+        waypoints.append(msg)
+        if msg.command == mavutil.mavlink.MAV_CMD_NAV_WAYPOINT:
+            print(f"📍 WP {msg.seq}: Navegar para (lat: {msg.x:.6f}, lon: {msg.y:.6f}, alt: {msg.z:.1f})")
+        elif msg.command == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH:
+            print(f"🔙 WP {msg.seq}: RETURN TO LAUNCH")
+        else:
+            print(f"⚠️ WP {msg.seq}: comando desconhecido ({msg.command})")
+        time.sleep(0.2)
+
+    if waypoints and waypoints[-1].command == mavutil.mavlink.MAV_CMD_NAV_RETURN_TO_LAUNCH:
+        print("\n✅ RTL corretamente posicionado como último waypoint.")
+    else:
+        print("\n⚠️ RTL não encontrado como último waypoint.")
+
+    print("\n✅ Verificação completa.")
+    return master
+
+def conferir_missao(master, timeout=5, max_attempts=5):
+    print("\n📋 Verificando missão armazenada no robô...\n")
+    master.mav.mission_request_list_send(master.target_system, master.target_component)
+
     msg = master.recv_match(type='MISSION_COUNT', blocking=True, timeout=timeout)
     if msg is None:
         print("❌ Timeout esperando MISSION_COUNT.")
@@ -136,7 +204,6 @@ def enviar_missao(udp_channel, mission_points, ALT=2.0):
         print("\n⚠️ RTL não encontrado como último waypoint.")
 
     print("\n✅ Verificação completa.")
-    return master
 
 
 # Coordenadas GPS da missão
@@ -164,8 +231,16 @@ mission_points_2 = [
 
 ALT = 2.0  # Altitude padrão
 
+# reebot("udp:0.0.0.0:14551")
+# reebot("udp:0.0.0.0:14552")
+# time.sleep(5.0)
+
+print("acordou.")
+
 robo1 = enviar_missao("udp:0.0.0.0:14551", mission_points_1)
 robo2 = enviar_missao("udp:0.0.0.0:14552", mission_points_2)
+
+conferir_missao(robo1)
 
 
 if robo1:
