@@ -163,7 +163,7 @@ class ObstacleLoader:
         self.obstacles = [
             {
                 "pos": (row["Px"], row["Py"]),
-                "size": (row["Vx_altura"], row["Vy_largura"]),
+                "size": (row["Vx_largura"], row["Vy_altura"]),
                 "color": (255, 0, 0),
                 "label": row["ID"]
             }

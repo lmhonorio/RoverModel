@@ -105,7 +105,7 @@ class PlotUtils:
 
     @staticmethod
     def plot_obstacles_aabbs(obstacles, aabbs):
-        fig, ax = plt.subplots(figsize=(10, 10))  # Ajuste do tamanho do gráfico
+        fig, ax = plt.subplots()  # Ajuste do tamanho do gráfico
         ax.grid(True, linestyle='--', color='lightgray', alpha=0.7)
 
         # Obstáculos (retângulos vermelhos)

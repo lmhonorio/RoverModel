@@ -25,11 +25,11 @@ class AjustePlanilha:
         return (lon - lon_ref) * (111320.0 * math.cos(math.radians(lat_ref)))
 
     def separar_altura(self, lista):
-        daltura = [y for x, y in lista]
+        daltura = [lat for lat, lon in lista]
         return 2 * abs(daltura[0] - daltura[1]) * 111132.0
 
     def separar_largura(self, lista):
-        dlargura = [x for x, y in lista]
+        dlargura = [lon for lat, lon in lista]
         return 2 * abs(dlargura[0] - dlargura[1]) * 111320.0 * math.cos(math.radians(self.med_lat))
 
     def salvar_parametros_conversao(self, writer):
@@ -56,8 +56,8 @@ class AjustePlanilha:
 
         df["Py"] = df["Latitude"].apply(lambda x: self.posicao_em_metros_lat(x, self.med_lat))
         df["Px"] = df["Longitude"].apply(lambda x: self.posicao_em_metros_lon(x, self.med_lon, self.med_lat))
-        df["Vx_altura"] = df["Vx"].apply(self.separar_largura)
-        df["Vy_largura"] = df["Vy"].apply(self.separar_altura)
+        df["Vx_largura"] = df["Vx"].apply(self.separar_largura)
+        df["Vy_altura"] = df["Vy"].apply(self.separar_altura)
 
         def gerar_id_simplificado(full_name):
             if not isinstance(full_name, str) or "::" not in full_name:
