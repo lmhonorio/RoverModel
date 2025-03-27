@@ -12,18 +12,18 @@ from multigraphplanner import MultiGraphPlanner
 ##################################################
 # 1) CARREGA O GRAFO
 ##################################################
-file_path_grafo = "./jsons/graph9.json"  # Ajuste se necessário
+file_path_grafo = "./jsons/graph6.json"  # Ajuste se necessário
 graph_nx = SegmentUtils.load_graph_json(file_path_grafo)
 grafo_mapa = AABBUtils.convert_graph_to_dict(graph_nx)
 
 # Definindo pontos de partida e destino (labels)
 robots_positions = {
-    "R1": "PR11_0",
-    "R2": "PR11_2"
+    "R1": "b_busip4_3",
+    "R2": "ls_pr1_1"
 }
 destinations = {
-    "R1": "PR2_2",
-    "R2": "IP3_30"
+    "R1": "ef_pr11_4",
+    "R2": "b_busip40_6"
 }
 
 planner = MultiGraphPlanner(grafo_mapa, None, None, None, None, None)
@@ -93,7 +93,7 @@ def meters_to_pixels(x, y):
 ##################################################
 # 4) CARREGA OBSTÁCULOS DO EXCEL
 ##################################################
-file_path_obst = "./planilhas/obstaculos_processado2.xlsx"
+file_path_obst = "./planilhas/obstaculos_processado6.xlsx"
 sheet_name = "Parnaiba3_Transformado"
 obstacle_loader = ObstacleLoader(file_path_obst, sheet_name)
 obstacles = obstacle_loader.get_obstacles()

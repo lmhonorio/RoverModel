@@ -98,6 +98,13 @@ def main():
     print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
     G_corrigido = SegmentUtils.fix_missing_connections_safe(G_corrigido, aabbs)
 
+    hasislands = SegmentUtils.has_islands(G_corrigido)
+
+    print(f"verificando ilhas {hasislands}")
+
+    print("🔹 plotando grafo...")
+    PlotUtils.plot_subgraphs(G_corrigido)
+
 
     print("🔹 Extraindo segmentos do grafo final...")
     new_segments = SegmentUtils.graph_to_segments(G_corrigido)

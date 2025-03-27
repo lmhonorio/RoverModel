@@ -110,6 +110,19 @@ class SegmentUtils:
         # Retorna o mapeamento original -> indexado
         return indexed_labels
 
+    @staticmethod
+    def has_islands(G):
+        """
+        Verifica se o grafo G possui ilhas (componentes desconexos).
+        Retorna:
+            - True se houver mais de uma ilha;
+            - False se for totalmente conectado;
+            - Lista com os componentes desconexos.
+        """
+        components = list(nx.connected_components(G))
+        has_isolated = len(components) > 1
+        return has_isolated, components
+
 
     @staticmethod
     def create_graph_with_passage_points(segments, passage_points, obstacles):
