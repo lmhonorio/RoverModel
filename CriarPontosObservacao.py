@@ -27,7 +27,7 @@ def main():
     # AABBs
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
 
-    PlotUtils.plot_obstacles_aabbs(obstacles,aabbs)
+    #PlotUtils.plot_obstacles_aabbs(obstacles,aabbs)
 
     # Determinar extents
     x_min = min(o["pos"][0] for o in obstacles) - padding
@@ -35,72 +35,99 @@ def main():
     y_min = min(o["pos"][1] for o in obstacles) - padding
     y_max = max(o["pos"][1] for o in obstacles) + padding
 
-    # Gera caminhos horizontais e verticais
+
     horizontal_paths, vertical_paths = SegmentUtils.get_paths(aabbs, x_min, x_max, y_min, y_max)
 
-    # Subdivisão fora de AABB (índice par-ímpar)
+
     valid_segments = SegmentUtils.split_and_filter_paths(horizontal_paths, vertical_paths, aabbs)
 
-    # Filtrar pelos endpoints e centro
-    filtered_segments = SegmentUtils.filter_segments_by_distance(valid_segments, aabbs,
-                                                                 endpoint_threshold=3.0,
-                                                                 center_threshold=5.0)
 
-    # Filtra paralelos duplicados
+
+    filtered_segments = SegmentUtils.filter_segments_by_distance(
+        valid_segments, aabbs,
+        endpoint_threshold=5.0,
+        center_threshold=20.0
+    )
+
+
     prefinal_segments = SegmentUtils.filter_similar_segments(filtered_segments, aabbs,
                                                              parallel_threshold=15.0)
 
-    #prefinal_segments = []
 
-    # Adiciona subsegmentos do perímetro
-    final_segments = SegmentUtils.add_perimeter_segments(aabbs, prefinal_segments, threshold_ponto_por_distancia= 4)
+    final_segments = SegmentUtils.add_perimeter_segments(aabbs, prefinal_segments,
+                                                         threshold_ponto_por_distancia=4)
+    print(f"🔹 Total de segmentos finais (com perímetro): {len(final_segments)}")
 
 
-    # Plot final
+
+
+    print("🔹 Plotando segmentos e vértices...")
     PlotUtils.plot_segments_with_vertices(final_segments, raio=0.5)
-    # Criar grafo
-    G = SegmentUtils.create_graph(final_segments,obstacles)
-
-    G = SegmentUtils.fix_missing_connections(G)
-
-    #new_indexed_labels = SegmentUtils.index_graph_labels(G)
-
-    #print(new_indexed_labels)
-
-    #PlotUtils.plot_graph_with_indexed_labels(G, new_indexed_labels)
 
 
-    # Plot subgrafos conectados
-    PlotUtils.plot_subgraphs(G)
 
-    # PlotUtils.plot_grafo(G, "grafo.png", (8000, 8000), "grafo subestacao")
 
+    print("🔹 Criando grafo a partir dos segmentos...")
+    G = SegmentUtils.create_graph(final_segments, obstacles)
+
+
+
+
+    print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
+    G = SegmentUtils.fix_missing_connections_safe(G, aabbs)
+
+
+
+
+    print("🔹 Extraindo segmentos do grafo final...")
     new_segments = SegmentUtils.graph_to_segments(G)
 
-    # Plot final
+
+
+    print("🔹 Quebrando segmentos com interseccao...")
+    broken_segments, added_points = SegmentUtils.resolve_segment_intersections(new_segments,2)
+
+
+    print("🔹 Plotando segmentos com AABBs preenchidas...")
+    PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, raio=0.5)
+
+    print("🔹 recriando o grafo ...")
+    G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, added_points, obstacles)
+
+
+    print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
+    G_corrigido = SegmentUtils.fix_missing_connections_safe(G_corrigido, aabbs)
+
+
+    print("🔹 Extraindo segmentos do grafo final...")
+    new_segments = SegmentUtils.graph_to_segments(G_corrigido)
+
+    print("🔹 Plotando novos segmentos finais segmentos com AABBs preenchidas...")
     PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
 
-    file_path = "./jsons/graph6.json"
 
-    # Salvar grafo e segmentos
-    SegmentUtils.save_graph_json(G, file_path)
-    SegmentUtils.save_segments(new_segments, "./jsons/segments4.json")
+
+    file_path = "./jsons/graph6.json"
+    print(f"🔹 Salvando grafo em: {file_path}")
+    SegmentUtils.save_graph_json(G_corrigido, file_path)
+
+    print("✅ Fim do processo ---")
 
 
     # Exemplo de uso:
-    g = SegmentUtils.load_graph_json(file_path)
-    grafo_mapa = AABBUtils.convert_graph_to_dict(g)
+    # g = SegmentUtils.load_graph_json(file_path)
+    # grafo_mapa = AABBUtils.convert_graph_to_dict(g)
 
 
-    G1 = SegmentUtils.xml_to_graph(grafo_mapa)
-    agraph1 = to_agraph(G1)
-    agraph1.layout(prog='dot')
-    agraph1.draw('./figuras/graph_with_weights.png')  # Gerar o arquivo de imagem
-
-    img = plt.imread('./figuras/graph_with_weights.png')
-    plt.imshow(img)
-    plt.axis('off')  # Remover eixos
-    plt.show()
+    # G1 = SegmentUtils.xml_to_graph(grafo_mapa)
+    # agraph1 = to_agraph(G1)
+    # agraph1.layout(prog='dot')
+    # agraph1.draw('./figuras/graph_with_weights.png')  # Gerar o arquivo de imagem
+    #
+    # img = plt.imread('./figuras/graph_with_weights.png')
+    # plt.imshow(img)
+    # plt.axis('off')  # Remover eixos
+    # plt.show()
 
 
 

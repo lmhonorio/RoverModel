@@ -2,6 +2,9 @@
 # CLASSE: SegmentUtils
 ###############################################################################
 import math
+
+from sympy import false
+
 from roverclass import ObstacleLoader
 from plotutils import PlotUtils
 from aabbutils import AABBUtils
@@ -106,6 +109,125 @@ class SegmentUtils:
 
         # Retorna o mapeamento original -> indexado
         return indexed_labels
+
+
+    @staticmethod
+    def create_graph_with_passage_points(segments, passage_points, obstacles):
+        from collections import defaultdict
+        G = nx.Graph()
+        obstacle_node_dict = defaultdict(list)
+        node_labels = {}
+        passage_label_map = {}
+        passage_points_set = set((round(px, 4), round(py, 4)) for px, py in passage_points)
+        label_counter = 1
+
+        unique_nodes = set()
+        for x1, y1, x2, y2 in segments:
+            p1 = (round(x1, 4), round(y1, 4))
+            p2 = (round(x2, 4), round(y2, 4))
+            unique_nodes.add(p1)
+            unique_nodes.add(p2)
+
+        for node in sorted(unique_nodes):
+            if node in passage_points_set:
+                label = f"pp_{label_counter}"
+                label_counter += 1
+            else:
+                nearest_label = SegmentUtils.get_nearest_obstacle_label(node, obstacles)
+                index = len(obstacle_node_dict[nearest_label])
+                label = f"{nearest_label}_{index}"
+                obstacle_node_dict[nearest_label].append(node)
+
+            node_labels[node] = label
+            G.add_node(node, label=label)
+
+        for x1, y1, x2, y2 in segments:
+            p1 = (round(x1, 4), round(y1, 4))
+            p2 = (round(x2, 4), round(y2, 4))
+            dist = math.dist(p1, p2)
+            G.add_edge(p1, p2, weight=dist)
+
+        return G
+
+    @staticmethod
+    def resolve_segment_intersections(segments, threshold=1.0):
+        def is_horizontal(s):
+            return math.isclose(s[1], s[3], abs_tol=1e-6)
+
+        def is_vertical(s):
+            return math.isclose(s[0], s[2], abs_tol=1e-6)
+
+        def distance(p1, p2):
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+        horizontal_segments = []
+        vertical_segments = []
+        for seg in segments:
+            if is_horizontal(seg):
+                horizontal_segments.append(seg)
+            elif is_vertical(seg):
+                vertical_segments.append(seg)
+
+        new_segments = []
+        new_points = []
+
+        for h in horizontal_segments:
+            xh1, yh, xh2, _ = h
+            xh_min, xh_max = sorted([xh1, xh2])
+
+            for v in vertical_segments:
+                xv, yv1, _, yv2 = v
+                yv_min, yv_max = sorted([yv1, yv2])
+
+                # Testa se intersectam
+                if (xh_min < xv < xh_max) and (yv_min < yh < yv_max):
+                    ip = (xv, yh)
+
+                    # Checar se as divisões seriam válidas
+                    if (
+                            distance((xh1, yh), ip) < threshold or
+                            distance((xh2, yh), ip) < threshold or
+                            distance((xv, yv1), ip) < threshold or
+                            distance((xv, yv2), ip) < threshold
+                    ):
+                        continue
+
+                    # Quebrar h e v em 2 cada
+                    new_segments.extend([
+                        (xh1, yh, xv, yh),  # h1
+                        (xv, yh, xh2, yh),  # h2
+                        (xv, yv1, xv, yh),  # v1
+                        (xv, yh, xv, yv2)  # v2
+                    ])
+                    new_points.append(ip)
+                else:
+                    # Sem interseção: manter originais
+                    continue
+
+        # Agora precisamos adicionar os segmentos que **não foram quebrados**
+        # Ou seja, aqueles que não participaram de interseção
+
+        broken_set = set()
+        for s in new_segments:
+            broken_set.add(((s[0], s[1]), (s[2], s[3])))
+
+        # Para evitar duplicidade, normalizamos extremidades
+        def normalize(p1, p2):
+            return tuple(sorted([p1, p2]))
+
+        original_set = set()
+        for s in segments:
+            p1 = (s[0], s[1])
+            p2 = (s[2], s[3])
+            original_set.add(normalize(p1, p2))
+
+        new_normalized = set(normalize((s[0], s[1]), (s[2], s[3])) for s in new_segments)
+        untouched = original_set - new_normalized
+
+        untouched_segments = [(p1[0], p1[1], p2[0], p2[1]) for p1, p2 in untouched]
+        final_segments = untouched_segments + new_segments
+
+        return final_segments, new_points
 
     @staticmethod
     def create_graph(final_segments, obstacles):
@@ -268,6 +390,52 @@ class SegmentUtils:
             if intersect((x1, y1), (x2, y2), p1, p2):
                 return True
         return False
+
+    @staticmethod
+    def build_safe_graph(G, aabbs):
+        G_safe = nx.Graph()
+        for u, v, data in G.edges(data=True):
+            if SegmentUtils.path_is_clear(u, v, aabbs):
+                G_safe.add_edge(u, v, **data)
+        for n, attrs in G.nodes(data=True):
+            G_safe.add_node(n, **attrs)
+        return G_safe
+
+    @staticmethod
+    def fix_missing_connections_safe(G, aabbs):
+        from collections import defaultdict
+        G_safe = SegmentUtils.build_safe_graph(G, aabbs)
+
+        groups = defaultdict(list)
+        for node in G.nodes():
+            label = G.nodes[node].get("label", "unknown")
+            base = label.rsplit("_", 1)[0]
+            groups[base].append(node)
+
+        for base, nodes in groups.items():
+            for n in nodes:
+                neighbors = list(G.neighbors(n))
+                cluster_neighbors = [nbr for nbr in neighbors
+                                     if G.nodes[nbr].get("label", "").rsplit("_", 1)[0] == base]
+
+                if not cluster_neighbors:
+                    # Isolado
+                    distances = [(other, math.dist(n, other)) for other in nodes if other != n]
+                    closest = sorted(distances, key=lambda x: x[1])[:2]
+
+                    for target, _ in closest:
+                        if G_safe.has_node(n) and G_safe.has_node(target):
+                            try:
+                                path = nx.shortest_path(G_safe, source=n, target=target, weight='weight')
+                                # Se for possível, adiciona as arestas do caminho no grafo original
+                                for i in range(len(path) - 1):
+                                    u, v = path[i], path[i + 1]
+                                    if not G.has_edge(u, v):
+                                        dist = math.dist(u, v)
+                                        G.add_edge(u, v, weight=dist)
+                            except nx.NetworkXNoPath:
+                                continue
+        return G
 
     @staticmethod
     def get_nearest_obstacle_label(point, obstacles):
@@ -454,11 +622,14 @@ class SegmentUtils:
         return subs
 
     @staticmethod
-    def get_paths(aabbs, x_min, x_max, y_min, y_max):
+    def get_paths(aabbs, x_min, x_max, y_min, y_max, comments = False):
         """
         Gera caminhos horizontais e verticais que tangenciam o topo, fundo,
         esquerda e direita de cada AABB.
         """
+        if comments:
+            print("🔹 Gerando caminhos horizontais e verticais...")
+
         horizontal_paths = set()
         vertical_paths = set()
 
@@ -635,10 +806,13 @@ class SegmentUtils:
         return filtered
 
     @staticmethod
-    def split_and_filter_paths(horizontal_paths, vertical_paths, aabbs):
+    def split_and_filter_paths(horizontal_paths, vertical_paths, aabbs, comments=false):
         """
         Lógica par-ímpar => subsegmentos fora da AABB.
         """
+        if comments:
+            print("🔹 Subdividindo caminhos fora das AABBs...")
+
         valid = []
         # horizontais
         for (y, xs, xe) in horizontal_paths:
