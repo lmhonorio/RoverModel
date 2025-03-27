@@ -57,7 +57,7 @@ def main():
 
 
     # Plot final
-    #PlotUtils.plot_segments_with_vertices(final_segments, raio=1.0)
+    PlotUtils.plot_segments_with_vertices(final_segments, raio=0.5)
     # Criar grafo
     G = SegmentUtils.create_graph(final_segments,obstacles)
 
@@ -78,7 +78,7 @@ def main():
     new_segments = SegmentUtils.graph_to_segments(G)
 
     # Plot final
-    PlotUtils.plot_segments_with_vertices(new_segments, raio=1.0)
+    PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
 
     file_path = "./jsons/graph6.json"
 

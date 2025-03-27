@@ -104,6 +104,35 @@ class PlotUtils:
         plt.show()
 
     @staticmethod
+    def plot_segments_aabbs_vertices(segments, aabbs, raio=0.5):
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.grid(True, linestyle='--', color='lightgray', alpha=0.7)
+
+        # Plotar AABBs preenchidas em vermelho claro
+        for (aabb_x, aabb_y), aabb_w, aabb_h in aabbs:
+            rect = plt.Rectangle(
+                (aabb_x, aabb_y), aabb_w, aabb_h,
+                facecolor='lightcoral', edgecolor='red', alpha=0.4
+            )
+            ax.add_patch(rect)
+
+        # Plotar segmentos e vértices
+        for (x1, y1, x2, y2) in segments:
+            # Linha verde para o segmento
+            ax.plot([x1, x2], [y1, y2], color='green', linewidth=1.5)
+            # Círculos vermelhos nas extremidades
+            c1 = plt.Circle((x1, y1), raio, color='red', fill=True)
+            c2 = plt.Circle((x2, y2), raio, color='red', fill=True)
+            ax.add_patch(c1)
+            ax.add_patch(c2)
+
+        ax.set_aspect('equal', 'box')
+        ax.set_xlabel("X")
+        ax.set_ylabel("Y")
+        ax.set_title("AABBs (vermelho claro), Segmentos (verde), Vértices (vermelho)")
+        plt.show()
+
+    @staticmethod
     def plot_obstacles_aabbs(obstacles, aabbs):
         fig, ax = plt.subplots()  # Ajuste do tamanho do gráfico
         ax.grid(True, linestyle='--', color='lightgray', alpha=0.7)

@@ -172,7 +172,7 @@ class SegmentUtils:
         return G
 
     @staticmethod
-    def fix_missing_connections(G):
+    def fix_missing_connections(G, aabbs):
         """
         Identifica nós que pertencem a uma mesma classe (base do label, ex: 'TPC1')
         e verifica se cada nó está conectado a pelo menos 1 outro nó da mesma classe.
@@ -229,12 +229,45 @@ class SegmentUtils:
                         distance_value = distance.euclidean(n, neighbor_coord)
 
                         # Adiciona aresta no grafo com peso igual à distância
-                        G.add_edge(n, neighbor_coord, weight=distance_value)
-                        G.add_edge(neighbor_coord, n, weight=distance_value)
+                        if SegmentUtils.path_is_clear(n, neighbor_coord, aabbs):
+                            G.add_edge(n, neighbor_coord, weight=distance_value)
+                            G.add_edge(neighbor_coord, n, weight=distance_value)
 
         return G  # Retorna para testes
 
+    @staticmethod
+    def path_is_clear(n1, n2, aabbs):
+        x1, y1 = n1
+        x2, y2 = n2
+        for aabb in aabbs:
+            if SegmentUtils.segment_intersects_aabb(x1, y1, x2, y2, aabb):
+                return False
+        return True
 
+    @staticmethod
+    def segment_intersects_aabb(x1, y1, x2, y2, aabb):
+        (ax, ay), aw, ah = aabb
+        rx1, ry1 = ax, ay
+        rx2, ry2 = ax + aw, ay + ah
+
+        # Cohen-Sutherland line clipping ou teste rápido de separação
+        def ccw(A, B, C):
+            return (C[1] - A[1]) * (B[0] - A[0]) > (B[1] - A[1]) * (C[0] - A[0])
+
+        def intersect(A, B, C, D):
+            return ccw(A, C, D) != ccw(B, C, D) and ccw(A, B, C) != ccw(A, B, D)
+
+        rect_edges = [
+            ((rx1, ry1), (rx2, ry1)),
+            ((rx2, ry1), (rx2, ry2)),
+            ((rx2, ry2), (rx1, ry2)),
+            ((rx1, ry2), (rx1, ry1)),
+        ]
+
+        for (p1, p2) in rect_edges:
+            if intersect((x1, y1), (x2, y2), p1, p2):
+                return True
+        return False
 
     @staticmethod
     def get_nearest_obstacle_label(point, obstacles):
