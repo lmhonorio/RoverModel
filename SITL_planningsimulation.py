@@ -12,7 +12,7 @@ from ajusteplanilha import AjustePlanilha
 file_path_grafo = "./jsons/graph6.json"
 file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Excel com aba 'ParametrosConversao'
 
-# Carregar o grafo
+# Carregar o grafo x
 graph_nx = SegmentUtils.load_graph_json(file_path_grafo)
 grafo_mapa = AABBUtils.convert_graph_to_dict(graph_nx)
 
