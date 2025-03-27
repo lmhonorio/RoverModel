@@ -15,10 +15,10 @@ import json
 ###############################################################################
 def main():
     # Config
-    file_path = "./planilhas/obstaculos_processado4.xlsx"
+    file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
     padding = 15
-    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
