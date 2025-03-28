@@ -13,6 +13,52 @@ import networkx as nx
 class PlotUtils:
 
     @staticmethod
+    def plot_aabbs_obstacles_points(obstacles, aabbs, points, point_color=None, point_radius=0.5):
+        import matplotlib.pyplot as plt
+        import matplotlib.cm as cm
+
+        fig, ax = plt.subplots(figsize=(10, 10))
+        ax.grid(True, linestyle='--', color='lightgray', alpha=0.7)
+
+        # Criar mapa de cores por label (se necessário)
+        if point_color is None:
+            labels = sorted(set(label for _, _, label in points))
+            cmap = cm.get_cmap('tab20', len(labels))
+            label_colors = {label: cmap(i) for i, label in enumerate(labels)}
+        else:
+            label_colors = None
+
+        # Plotar obstáculos com cor do label (mesma dos pontos)
+        for obs in obstacles:
+            (x, y) = obs["pos"]
+            w, h = obs["size"]
+            x0 = x - w / 2
+            y0 = y - h / 2
+            label = obs.get("label", "unknown")
+            color = point_color if point_color else label_colors.get(label, 'gray')
+
+            rect = plt.Rectangle((x0, y0), w, h, facecolor=color, edgecolor=color, alpha=0.5)
+            ax.add_patch(rect)
+
+        # Plotar AABBs (preenchidas, vermelhas claras)
+        for (x, y), w, h in aabbs:
+            rect = plt.Rectangle((x, y), w, h, facecolor='lightcoral', edgecolor='red', alpha=0.2)
+            ax.add_patch(rect)
+
+        # Plotar pontos de observação (sem texto)
+        for (px, py, label) in points:
+            color = point_color if point_color else label_colors[label]
+            ax.plot(px, py, 'o', color=color, markersize=point_radius * 5)
+
+        ax.set_aspect('equal')
+        ax.set_xlabel("X (m)")
+        ax.set_ylabel("Y (m)")
+        ax.set_title("AABBs, Obstáculos e Pontos de Observação")
+        plt.show()
+
+
+
+    @staticmethod
     def plot_mission_graph(G_m):
         """ Plota o grafo de missões G_m """
         plt.figure(figsize=(8, 6))

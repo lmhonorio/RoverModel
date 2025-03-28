@@ -63,6 +63,272 @@ class SegmentUtils:
 
         return G
 
+    @staticmethod
+    def generate_segments_between_aabbs(aabbs, step=1.0):
+        import numpy as np
+
+        segments = []
+
+        x_min = min(x for (x, _), _, _ in aabbs)
+        x_max = max(x + w for (x, _), w, _ in aabbs)
+        y_min = min(y for (_, y), _, _ in aabbs)
+        y_max = max(y + h for (_, y), _, h in aabbs)
+
+        ys = np.arange(y_min, y_max + step, step)
+        xs = np.arange(x_min, x_max + step, step)
+
+        # Horizontais: varrendo de y_min a y_max
+        for y in ys:
+            cut_ranges = []
+            for (aabb_x, aabb_y), w, h in aabbs:
+                if aabb_y <= y <= aabb_y + h:
+                    cut_ranges.append((aabb_x, aabb_x + w))
+            cut_ranges.sort()
+
+            for i in range(len(cut_ranges) - 1):
+                x1 = cut_ranges[i][1]
+                x2 = cut_ranges[i + 1][0]
+                if x2 > x1:
+                    segments.append((x1, y, x2, y))
+
+        # Verticais: varrendo de x_min a x_max
+        for x in xs:
+            cut_ranges = []
+            for (aabb_x, aabb_y), w, h in aabbs:
+                if aabb_x <= x <= aabb_x + w:
+                    cut_ranges.append((aabb_y, aabb_y + h))
+            cut_ranges.sort()
+
+            for i in range(len(cut_ranges) - 1):
+                y1 = cut_ranges[i][1]
+                y2 = cut_ranges[i + 1][0]
+                if y2 > y1:
+                    segments.append((x, y1, x, y2))
+
+        return segments
+
+    @staticmethod
+    def generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0):
+        import math
+        import random
+        from collections import defaultdict
+
+        def point_distance(p1, p2):
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+        def nearest_obstacle_label(x, y):
+            best_label = None
+            best_dist = float("inf")
+            for obs in obstacles:
+                ox, oy = obs["pos"]
+                label = obs["label"]
+                dist = math.hypot(x - ox, y - oy)
+                if dist < best_dist:
+                    best_dist = dist
+                    best_label = label
+            return best_label
+
+        def is_colinear(p, a, b, tol=1e-6):
+            x0, y0 = p
+            x1, y1 = a
+            x2, y2 = b
+            area = abs((x1 * (y2 - y0) + x2 * (y0 - y1) + x0 * (y1 - y2)) / 2.0)
+            return area < tol
+
+        def segment_intersects_inside(x1, y1, x2, y2, aabb):
+            (ax, ay), w, h = aabb
+            ax2 = ax + w
+            ay2 = ay + h
+
+            if (x1 < ax and x2 < ax) or (x1 > ax2 and x2 > ax2) or \
+                    (y1 < ay and y2 < ay) or (y1 > ay2 and y2 > ay2):
+                return False
+
+            on_left = math.isclose(x1, ax) and math.isclose(x2, ax)
+            on_right = math.isclose(x1, ax2) and math.isclose(x2, ax2)
+            on_bottom = math.isclose(y1, ay) and math.isclose(y2, ay)
+            on_top = math.isclose(y1, ay2) and math.isclose(y2, ay2)
+
+            if (on_left or on_right) and (ay <= y1 <= ay2 and ay <= y2 <= ay2):
+                return False
+            if (on_bottom or on_top) and (ax <= x1 <= ax2 and ax <= x2 <= ax2):
+                return False
+
+            return True
+
+        # Mapeamento dos pontos por AABB
+        points_by_aabb = defaultdict(set)
+        final_segments = list(segments)
+        labeled_points = []
+
+        # Passo 1: Associar pontos dos segmentos aos AABBs
+        for x1, y1, x2, y2 in segments:
+            for i, aabb in enumerate(aabbs):
+                (ax, ay), w, h = aabb
+                ax2, ay2 = ax + w, ay + h
+                label = f"aabb_{i}"
+                for px, py in [(x1, y1), (x2, y2)]:
+                    on_left = math.isclose(px, ax) and ay <= py <= ay2
+                    on_right = math.isclose(px, ax2) and ay <= py <= ay2
+                    on_bottom = math.isclose(py, ay) and ax <= px <= ax2
+                    on_top = math.isclose(py, ay2) and ax <= px <= ax2
+                    if on_left or on_right or on_bottom or on_top:
+                        points_by_aabb[label].add((px, py))
+
+        # Passo 2: Gerar novos pontos no perímetro dos AABBs
+        for i, aabb in enumerate(aabbs):
+            (x1, y1), w, h = aabb
+            x2, y2 = x1 + w, y1 + h
+            label = f"aabb_{i}"
+            all_points = points_by_aabb[label]
+
+            sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
+                     ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
+
+            for (sx, sy), (ex, ey) in sides:
+                all_points.add((sx, sy))
+                all_points.add((ex, ey))
+                length = point_distance((sx, sy), (ex, ey))
+                steps = max(2, int(length / (threshold / 2)))
+                for j in range(steps + 1):
+                    px = sx + j * (ex - sx) / steps
+                    py = sy + j * (ey - sy) / steps
+                    if all(point_distance((px, py), p) >= threshold for p in all_points):
+                        all_points.add((px, py))
+
+        # Passo 3: Conectar pontos de cada AABB formando ciclo fechado
+        for i, aabb in enumerate(aabbs):
+            label = f"aabb_{i}"
+            points = list(points_by_aabb[label])
+            random.shuffle(points)
+
+            graph = defaultdict(set)
+            connection_count = defaultdict(int)
+
+            for p1 in points:
+                for p2 in points:
+                    if p1 == p2 or p2 in graph[p1]:
+                        continue
+                    if len(graph[p1]) >= 2 or len(graph[p2]) >= 2:
+                        continue
+                    if segment_intersects_inside(p1[0], p1[1], p2[0], p2[1], aabb):
+                        continue
+                    if any(
+                            is_colinear(p, p1, p2) and
+                            point_distance(p1, p, ) + point_distance(p, p2) <= point_distance(p1, p2) + 1e-6
+                            for p in points if p != p1 and p != p2
+                    ):
+                        continue
+                    graph[p1].add(p2)
+                    graph[p2].add(p1)
+                    final_segments.append((p1[0], p1[1], p2[0], p2[1]))
+
+            # Verificação de ciclo fechado
+            degrees = [len(neigh) for neigh in graph.values()]
+            if not all(deg == 2 for deg in degrees):
+                print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+
+            # Adicionar rótulos
+            for p in points:
+                label_obs = nearest_obstacle_label(p[0], p[1])
+                labeled_points.append((p[0], p[1], label_obs))
+
+        return final_segments, labeled_points
+
+    @staticmethod
+    def connect_adjacent_perimeter_points(aabbs, obstacles, points, threshold=5.0):
+        """
+        Conecta pontos de perímetro entre AABBs diretamente vizinhos
+        (esquerda, direita, acima, abaixo), se a distância for < threshold.
+
+        Retorna segmentos no formato:
+            {
+                "start": (x1, y1),
+                "end": (x2, y2),
+                "label": None,
+                "tipo": "ponte"
+            }
+        """
+        import math
+        from collections import defaultdict
+
+        # Mapeia cada AABB ao label do obstáculo mais próximo
+        aabb_map = {}
+        for ((x, y), w, h) in aabbs:
+            cx, cy = x + w / 2, y + h / 2
+            min_dist = float("inf")
+            best_label = None
+            for obs in obstacles:
+                ox, oy = obs["pos"]
+                label = obs.get("label", "unknown")
+                dist = math.hypot(cx - ox, cy - oy)
+                if dist < min_dist:
+                    min_dist = dist
+                    best_label = label
+            if best_label:
+                aabb_map[best_label] = {"x": x, "y": y, "w": w, "h": h}
+
+        # Organiza os pontos por label do obstáculo
+        label_to_points = defaultdict(list)
+        for x, y, label in points:
+            label_to_points[label].append((x, y))
+
+        new_segments = []
+
+        def is_neighbor(l1, l2, tolerance=12.0):  # Tolerância em metros
+            a = aabb_map.get(l1)
+            b = aabb_map.get(l2)
+            if not a or not b:
+                return False
+
+            ax1, ay1, aw1, ah1 = a["x"], a["y"], a["w"], a["h"]
+            bx1, by1, bw1, bh1 = b["x"], b["y"], b["w"], b["h"]
+
+            ax2 = ax1 + aw1
+            ay2 = ay1 + ah1
+            bx2 = bx1 + bw1
+            by2 = by1 + bh1
+
+            # Adjacência horizontal (esquerda-direita)
+            horizontal_adjacent = (
+                    (abs(ax2 - bx1) <= tolerance or abs(bx2 - ax1) <= tolerance) and
+                    not (ay2 < by1 or by2 < ay1)  # sobreposição vertical
+            )
+
+            # Adjacência vertical (cima-baixo)
+            vertical_adjacent = (
+                    (abs(ay2 - by1) <= tolerance or abs(by2 - ay1) <= tolerance) and
+                    not (ax2 < bx1 or bx2 < ax1)  # sobreposição horizontal
+            )
+
+            return horizontal_adjacent or vertical_adjacent
+
+        for label_a, pts_a in label_to_points.items():
+            for label_b, pts_b in label_to_points.items():
+                if is_neighbor(label_a, label_b):
+                    print(f"👉 AABBs vizinhos: {label_a} <--> {label_b}")
+                if label_a == label_b:
+                    continue
+                if not is_neighbor(label_a, label_b):
+                    continue
+
+                for (x1, y1) in pts_a:
+                    for (x2, y2) in pts_b:
+                        d = math.hypot(x2 - x1, y2 - y1)
+                        if d < threshold:
+                            new_segments.append({
+                                "start": (x1, y1),
+                                "end": (x2, y2),
+                                "label": None,
+                                "tipo": "ponte"
+                            })
+
+        return new_segments
+
+
+
+
+
 
     @staticmethod
     def save_graph_json(G, filename):
@@ -121,7 +387,7 @@ class SegmentUtils:
         """
         components = list(nx.connected_components(G))
         has_isolated = len(components) > 1
-        return has_isolated, components
+        return has_isolated
 
 
     @staticmethod

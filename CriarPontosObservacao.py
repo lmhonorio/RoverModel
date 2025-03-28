@@ -25,73 +25,30 @@ def main():
     obstacles = loader.get_obstacles()
 
     # AABBs
+
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
 
-    #PlotUtils.plot_obstacles_aabbs(obstacles,aabbs)
+    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 4.0)
 
-    # Determinar extents
-    x_min = min(o["pos"][0] for o in obstacles) - padding
-    x_max = max(o["pos"][0] for o in obstacles) + padding
-    y_min = min(o["pos"][1] for o in obstacles) - padding
-    y_max = max(o["pos"][1] for o in obstacles) + padding
+    PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 
+    print("🔹 criando o generate_perimeter_segments_and_labeled_points ...")
+    segments, points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
 
-    horizontal_paths, vertical_paths = SegmentUtils.get_paths(aabbs, x_min, x_max, y_min, y_max)
+    print("🔹 criando o plot_aabbs_obstacles_points ...")
+    PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,points)
 
-
-    valid_segments = SegmentUtils.split_and_filter_paths(horizontal_paths, vertical_paths, aabbs)
-
-
-
-    filtered_segments = SegmentUtils.filter_segments_by_distance(
-        valid_segments, aabbs,
-        endpoint_threshold=5.0,
-        center_threshold=20.0
-    )
-
-
-    prefinal_segments = SegmentUtils.filter_similar_segments(filtered_segments, aabbs,
-                                                             parallel_threshold=15.0)
-
-
-    final_segments = SegmentUtils.add_perimeter_segments(aabbs, prefinal_segments,
-                                                         threshold_ponto_por_distancia=4)
-    print(f"🔹 Total de segmentos finais (com perímetro): {len(final_segments)}")
-
-
-
-
-    print("🔹 Plotando segmentos e vértices...")
-    PlotUtils.plot_segments_with_vertices(final_segments, raio=0.5)
-
-
-
-
-    print("🔹 Criando grafo a partir dos segmentos...")
-    G = SegmentUtils.create_graph(final_segments, obstacles)
-
-
-
-
-    print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
-    G = SegmentUtils.fix_missing_connections_safe(G, aabbs)
-
-
-
-
-    print("🔹 Extraindo segmentos do grafo final...")
-    new_segments = SegmentUtils.graph_to_segments(G)
-
-
+    PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
 
     print("🔹 Quebrando segmentos com interseccao...")
-    broken_segments, added_points = SegmentUtils.resolve_segment_intersections(new_segments,2)
+    broken_segments, added_points = SegmentUtils.resolve_segment_intersections(segments,2)
+
+    print(added_points)
+
+    PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
 
 
-    print("🔹 Plotando segmentos com AABBs preenchidas...")
-    PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, raio=0.5)
-
-    print("🔹 recriando o grafo ...")
+    print("🔹 criando o grafo ...")
     G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, added_points, obstacles)
 
 
