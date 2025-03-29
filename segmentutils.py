@@ -22,6 +22,151 @@ import matplotlib.colors as mcolors
 class SegmentUtils:
 
     @staticmethod
+    def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
+                                       offset_lon_meters=0.0):
+        import os
+        import math
+        from xml.dom.minidom import Document
+        from ajusteplanilha import AjustePlanilha
+
+        def distance(p1, p2):
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+        if not os.path.exists(output_folder):
+            os.makedirs(output_folder)
+
+        # Converter pontos (x, y) para (lat, lon)
+        pontos_xy = [(px, py) for px, py, _ in perimeter_points]
+        pontos_xy_offset = [(px+offset_lon_meters, py+offset_lat_meters) for px, py, _ in perimeter_points]
+        gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_xy_offset, xlsx_path)
+        coord_map = dict(zip(pontos_xy, gps_coords))
+
+        for obs in obstacles:
+            ox, oy = obs["pos"]
+            label = obs["label"]
+            pontos_obs = []
+
+            for px, py, _ in perimeter_points:
+                if distance((ox, oy), (px, py)) <= threshold:
+                    lat, lon = coord_map[(px, py)]
+                    pontos_obs.append((lat, lon))
+
+            # Criar documento KML
+            doc = Document()
+            kml = doc.createElement("kml")
+            kml.setAttribute("xmlns", "http://www.opengis.net/kml/2.2")
+            doc.appendChild(kml)
+
+            document = doc.createElement("Document")
+            kml.appendChild(document)
+
+            for lat, lon in pontos_obs:
+                placemark = doc.createElement("Placemark")
+
+                point = doc.createElement("Point")
+                coordinates = doc.createElement("coordinates")
+                coordinates.appendChild(doc.createTextNode(f"{lon},{lat},0"))
+
+                point.appendChild(coordinates)
+                placemark.appendChild(point)
+                document.appendChild(placemark)
+
+            filename = os.path.join(output_folder, f"{label}.kml")
+            with open(filename, "w", encoding="utf-8") as f:
+                f.write(doc.toprettyxml(indent="  "))
+
+            print(f"✅ KML salvo com deslocamento: {filename}")
+
+    @staticmethod
+    def save_observation_points_to_json(obstacles, perimeter_points, threshold, json_path, xlsx_path):
+        import math
+        import json
+        from ajusteplanilha import AjustePlanilha
+
+        def distance(p1, p2):
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+        # Converte os pontos para GPS usando a planilha de parâmetros
+        try:
+            pontos_para_converter = [(px, py) for px, py, _ in perimeter_points]
+            gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_para_converter, xlsx_path)
+            coord_map = dict(zip(pontos_para_converter, gps_coords))
+        except Exception as e:
+            print(f"[ERRO] Falha ao converter pontos para GPS: {e}")
+            return
+
+        # Agrupa pontos por obstáculo
+        obs_points_map = {obs["label"]: [] for obs in obstacles}
+        for obs in obstacles:
+            ox, oy = obs["pos"]
+            label = obs["label"]
+            for px, py, _ in perimeter_points:
+                if distance((ox, oy), (px, py)) <= threshold:
+                    obs_points_map[label].append(coord_map[(px, py)])
+
+        # Salva em JSON
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(obs_points_map, f, indent=2)
+
+        print(f"✅ Pontos de observação em GPS salvos no arquivo: {json_path}")
+
+
+    @staticmethod
+    def save_observation_points_to_excel(obstacles, perimeter_points, threshold, xlsx_path):
+        import math
+        import openpyxl
+        from openpyxl import load_workbook
+        from ajusteplanilha import AjustePlanilha
+
+        def distance(p1, p2):
+            return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+        # Carrega os parâmetros de conversão via AjustePlanilha
+        try:
+            pontos_para_converter = [(px, py) for px, py, _ in perimeter_points]
+            gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_para_converter, xlsx_path)
+            coord_map = dict(zip(pontos_para_converter, gps_coords))
+        except Exception as e:
+            print(f"[ERRO] Falha ao converter pontos para GPS: {e}")
+            return
+
+        # Agrupar pontos próximos de cada obstáculo
+        obs_points_map = {obs["label"]: [] for obs in obstacles}
+        for obs in obstacles:
+            ox, oy = obs["pos"]
+            label = obs["label"]
+            for px, py, _ in perimeter_points:
+                if distance((ox, oy), (px, py)) <= threshold:
+                    obs_points_map[label].append(coord_map[(px, py)])
+
+        # Abrir planilha
+        try:
+            wb = load_workbook(xlsx_path)
+        except FileNotFoundError:
+            print(f"[ERRO] Arquivo '{xlsx_path}' não encontrado.")
+            return
+
+        # Apagar aba antiga se existir
+        if "Pontos de Observacao" in wb.sheetnames:
+            del wb["Pontos de Observacao"]
+
+        ws = wb.create_sheet("Pontos de Observacao")
+
+        row = 1
+        for label, points in obs_points_map.items():
+            ws.cell(row=row, column=1, value=f"Obstáculo: {label}")
+            row += 1
+            for lat, lon in points:
+                ws.cell(row=row, column=1, value=lat)
+                ws.cell(row=row, column=2, value=lon)
+                row += 1
+            row += 1
+
+        wb.save(xlsx_path)
+        print(f"✅ Pontos de observação em coordenadas GPS salvos no arquivo: {xlsx_path}")
+
+
+    @staticmethod
     def xml_to_graph(graphxml):
         # Criar um grafo não direcionado
         G = nx.Graph()

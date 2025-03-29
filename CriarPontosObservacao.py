@@ -17,6 +17,9 @@ def main():
     # Config
     file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
+    grafo_path = "./jsons/graph6.json"
+    observation_path ="./jsons/obp_6.json"
+    observation_folter = "./pontos_observacao"
     padding = 15
     margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
 
@@ -35,6 +38,12 @@ def main():
     print("🔹 criando o generate_perimeter_segments_and_labeled_points ...")
     segments, points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
 
+
+#salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis
+    SegmentUtils.save_observation_points_to_excel(obstacles, points, 6, file_path)
+    SegmentUtils.save_observation_points_to_json(obstacles, points, 6, observation_path, file_path)
+    SegmentUtils.save_observation_points_to_kml(obstacles, points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
+
     print("🔹 criando o plot_aabbs_obstacles_points ...")
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,points)
 
@@ -43,7 +52,6 @@ def main():
     print("🔹 Quebrando segmentos com interseccao...")
     broken_segments, added_points = SegmentUtils.resolve_segment_intersections(segments,2)
 
-    print(added_points)
 
     PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
 
@@ -51,16 +59,17 @@ def main():
     print("🔹 criando o grafo ...")
     G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, added_points, obstacles)
 
-
-    print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
-    G_corrigido = SegmentUtils.fix_missing_connections_safe(G_corrigido, aabbs)
-
+    print(f"verificando ilhas....")
     hasislands = SegmentUtils.has_islands(G_corrigido)
+    print(f"ilhas: {hasislands}")
 
-    print(f"verificando ilhas {hasislands}")
+    if hasislands:
+        print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
+        G_corrigido = SegmentUtils.fix_missing_connections_safe(G_corrigido, aabbs)
+
 
     print("🔹 plotando grafo...")
-    PlotUtils.plot_subgraphs(G_corrigido)
+    PlotUtils.plot_subgraphs(G_corrigido, scale_x=5.0)
 
 
     print("🔹 Extraindo segmentos do grafo final...")
@@ -71,9 +80,11 @@ def main():
 
 
 
-    file_path = "./jsons/graph6.json"
-    print(f"🔹 Salvando grafo em: {file_path}")
-    SegmentUtils.save_graph_json(G_corrigido, file_path)
+
+
+
+    print(f"🔹 Salvando grafo em: {grafo_path}")
+    SegmentUtils.save_graph_json(G_corrigido, grafo_path)
 
     print("✅ Fim do processo ---")
 

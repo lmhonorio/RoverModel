@@ -96,18 +96,26 @@ class PlotUtils:
     # Função para plotar subgrafos em cores diferentes
     ###############################################################################
     @staticmethod
-    def plot_subgraphs(G):
+    def plot_subgraphs(G, scale_x=1.0, scale_y=1.0):
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
         subgraphs = [G.subgraph(c).copy() for c in nx.connected_components(G)]
         colors = plt.cm.rainbow(range(len(subgraphs)))
-        if len(subgraphs)==1:
+        if len(subgraphs) == 1:
             colors = [plt.cm.rainbow(0.20)]
 
-        plt.figure(figsize=(15, 15))
+        plt.figure()
+
         for subgraph, color in zip(subgraphs, colors):
-            pos = {node: node for node in subgraph.nodes()}
-            labels = nx.get_node_attributes(subgraph, 'label')  # Obtendo os labels dos nós
+            # Aplica a escala aos nós
+            pos = {node: (node[0] * scale_x, node[1] * scale_y) for node in subgraph.nodes()}
+            labels = nx.get_node_attributes(subgraph, 'label')
+
             nx.draw(subgraph, pos, node_color=[color], edge_color=[color], with_labels=False)
-            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=4, font_color='black')
+            nx.draw_networkx_labels(subgraph, pos, labels=labels, font_size=6, font_color='black')
+
+        plt.axis("equal")
         plt.show()
 
 
