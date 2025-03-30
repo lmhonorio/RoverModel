@@ -33,31 +33,31 @@ def main():
 
     segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 4.0)
 
-    PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
+    #PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 
     print("🔹 criando o generate_perimeter_segments_and_labeled_points ...")
-    segments, points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
+    segments, observation_points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
 
 
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis
-    SegmentUtils.save_observation_points_to_excel(obstacles, points, 6, file_path)
-    SegmentUtils.save_observation_points_to_json(obstacles, points, 6, observation_path, file_path)
-    SegmentUtils.save_observation_points_to_kml(obstacles, points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
+  #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
+    SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
+   # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
-    PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,points)
+    #PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
-    PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
+    #PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
 
     print("🔹 Quebrando segmentos com interseccao...")
-    broken_segments, added_points = SegmentUtils.resolve_segment_intersections(segments,2)
+    broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments,2)
 
 
-    PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
+    #PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
 
 
     print("🔹 criando o grafo ...")
-    G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, added_points, obstacles)
+    G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, passage_points, observation_points, obstacles)
 
     print(f"verificando ilhas....")
     hasislands = SegmentUtils.has_islands(G_corrigido)
@@ -69,7 +69,7 @@ def main():
 
 
     print("🔹 plotando grafo...")
-    PlotUtils.plot_subgraphs(G_corrigido, scale_x=5.0)
+    PlotUtils.plot_subgraphs(G_corrigido, scale_x=15.0, scale_y= 10.0)
 
 
     print("🔹 Extraindo segmentos do grafo final...")

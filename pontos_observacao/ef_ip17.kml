@@ -3,17 +3,12 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76339296746198,-3.12360695684595,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76339296746198,-3.1235979620771457,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.7634415670621,-3.1236451287740348,0</coordinates>
+        <coordinates>-41.76339296746198,-3.12360695684595,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -23,12 +18,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.763409492950814,-3.1235979620771457,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.763409492950814,-3.123633042049514,0</coordinates>
+        <coordinates>-41.7634415670621,-3.1236451287740348,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -38,7 +28,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.7634415670621,-3.123577928740084,0</coordinates>
+        <coordinates>-41.76347755295718,-3.123633042049514,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -53,17 +43,27 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76347755295718,-3.123633042049514,0</coordinates>
+        <coordinates>-41.763409492950814,-3.123633042049514,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76340949301918,-3.1235619688438736,0</coordinates>
+        <coordinates>-41.763409492950814,-3.1235979620771457,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.7634415670621,-3.123577928740084,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
         <coordinates>-41.7634415670621,-3.1235648645166707,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76340949301918,-3.1235619688438736,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

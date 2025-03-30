@@ -22,6 +22,20 @@ import matplotlib.colors as mcolors
 class SegmentUtils:
 
     @staticmethod
+    def load_observation_points_from_json(json_path):
+        import json
+        import os
+
+        if not os.path.exists(json_path):
+            raise FileNotFoundError(f"Arquivo JSON não encontrado: {json_path}")
+
+        with open(json_path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        return data  # dict: {label: [[lat, lon], [lat, lon], ...]}
+
+
+    @staticmethod
     def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
                                        offset_lon_meters=0.0):
         import os
@@ -100,16 +114,19 @@ class SegmentUtils:
         for obs in obstacles:
             ox, oy = obs["pos"]
             label = obs["label"]
-            for px, py, _ in perimeter_points:
+            for px, py, ponto_label in perimeter_points:
                 if distance((ox, oy), (px, py)) <= threshold:
-                    obs_points_map[label].append(coord_map[(px, py)])
+                    lat, lon = coord_map[(px, py)]
+                    obs_points_map[label].append({
+                        "label": ponto_label,
+                        "coord": [lat, lon]
+                    })
 
         # Salva em JSON
         with open(json_path, "w", encoding="utf-8") as f:
             json.dump(obs_points_map, f, indent=2)
 
-        print(f"✅ Pontos de observação em GPS salvos no arquivo: {json_path}")
-
+        print(f"✅ Pontos de observação com rótulo salvos em GPS no arquivo: {json_path}")
 
     @staticmethod
     def save_observation_points_to_excel(obstacles, perimeter_points, threshold, xlsx_path):
@@ -305,6 +322,7 @@ class SegmentUtils:
         points_by_aabb = defaultdict(set)
         final_segments = list(segments)
         labeled_points = []
+        label_counter = 1
 
         # Passo 1: Associar pontos dos segmentos aos AABBs
         for x1, y1, x2, y2 in segments:
@@ -343,6 +361,7 @@ class SegmentUtils:
 
         # Passo 3: Conectar pontos de cada AABB formando ciclo fechado
         for i, aabb in enumerate(aabbs):
+            inner_label_counter = 1
             label = f"aabb_{i}"
             points = list(points_by_aabb[label])
             random.shuffle(points)
@@ -376,7 +395,9 @@ class SegmentUtils:
             # Adicionar rótulos
             for p in points:
                 label_obs = nearest_obstacle_label(p[0], p[1])
-                labeled_points.append((p[0], p[1], label_obs))
+                labeled_points.append((p[0], p[1], f"{label_obs}.{i}.{inner_label_counter}.{label_counter}"))
+                inner_label_counter += 1
+                label_counter += 1
 
         return final_segments, labeled_points
 
@@ -534,14 +555,23 @@ class SegmentUtils:
         has_isolated = len(components) > 1
         return has_isolated
 
-
     @staticmethod
-    def create_graph_with_passage_points(segments, passage_points, obstacles):
+    def create_graph_with_passage_points(segments, passage_points, points, obstacles):
+        import networkx as nx
         from collections import defaultdict
+        import math
+
         G = nx.Graph()
         obstacle_node_dict = defaultdict(list)
         node_labels = {}
         passage_label_map = {}
+        point_label_map = {}
+
+        # Conjunto de pontos rotulados manualmente (x, y) → label
+        for px, py, label in points:
+            point_label_map[(round(px, 4), round(py, 4))] = label
+
+        # Conjunto de pontos de interseção (x, y) sem rótulo
         passage_points_set = set((round(px, 4), round(py, 4)) for px, py in passage_points)
         label_counter = 1
 
@@ -553,7 +583,9 @@ class SegmentUtils:
             unique_nodes.add(p2)
 
         for node in sorted(unique_nodes):
-            if node in passage_points_set:
+            if node in point_label_map:
+                label = point_label_map[node]
+            elif node in passage_points_set:
                 label = f"pp_{label_counter}"
                 label_counter += 1
             else:

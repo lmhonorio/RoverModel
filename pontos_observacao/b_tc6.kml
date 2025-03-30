@@ -3,17 +3,7 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76435254086267,-3.1221681268003016,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76434121443897,-3.122225855668353,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76435254086267,-3.122194225979532,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -23,7 +13,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76428500427758,-3.1221681268003016,0</coordinates>
+        <coordinates>-41.76435254086267,-3.1221681268003016,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -38,12 +28,17 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.7643052285439,-3.1222356580851827,0</coordinates>
+        <coordinates>-41.76428500427758,-3.1221681268003016,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76435254085233,-3.1222356580851827,0</coordinates>
+        <coordinates>-41.76435254086267,-3.122194225979532,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.7643052285439,-3.1222356580851827,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -53,7 +48,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76435480901242,-3.122167018874391,0</coordinates>
+        <coordinates>-41.76435254085233,-3.1222356580851827,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76435480901242,-3.1222253637375816,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -63,7 +63,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76435480901242,-3.1222253637375816,0</coordinates>
+        <coordinates>-41.76435480901242,-3.122167018874391,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

@@ -3,11 +3,6 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76389794723238,-3.123489982377329,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76389794723238,-3.123453989144057,0</coordinates>
       </Point>
     </Placemark>
@@ -18,17 +13,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.763882511716645,-3.123489982377329,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76383741190792,-3.1234504505743907,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.763882511716645,-3.1234504505743907,0</coordinates>
+        <coordinates>-41.76389794723238,-3.123489982377329,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -38,12 +23,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.7638234848335,-3.1234504505743907,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.7638234848335,-3.123489982377329,0</coordinates>
+        <coordinates>-41.763882511716645,-3.1234504505743907,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -53,7 +33,27 @@
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76383741190792,-3.1234504505743907,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.763882511716645,-3.123489982377329,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.7638234848335,-3.1234504505743907,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.763882511716645,-3.123453989144057,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.7638234848335,-3.123489982377329,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

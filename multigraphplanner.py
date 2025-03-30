@@ -1,3 +1,4 @@
+
 import networkx as nx
 import heapq
 from itertools import permutations
@@ -5,6 +6,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from datetime import datetime, timedelta
 from matplotlib.patches import Patch
+import json
+from concurrent.futures import ThreadPoolExecutor
+
 
 
 class MultiGraphPlanner:
@@ -82,175 +86,134 @@ class MultiGraphPlanner:
         """Retorna a ordem correta de execução das missões considerando dependências."""
         return list(nx.topological_sort(self.G_m))
 
-    def find_minimum_mission_time_plan(self, robots_positions):
+    def find_minimum_mission_time_plan_par(self, robots_positions):
         """
-        Encontra a melhor alocação de missões, garantindo que cada missão
-        só inicie após a finalização total de suas predecessoras.
+        Versão paralelizada: permite deslocamentos em paralelo e avalia robôs concorrentes
+        para cada missão usando ThreadPoolExecutor.
         """
-
         best_plan = {robot: [] for robot in robots_positions.keys()}
         schedule = []
         robot_time = {robot: 0.0 for robot in robots_positions.keys()}
-        temp_robot_positions = robots_positions.copy()
+        robot_position = robots_positions.copy()
+        mission_finish_times = {}
+        mission_order = self.get_mission_execution_order()
 
-        # Armazena o tempo de término de cada missão
+        for mission in mission_order:
+            available_robots = self.mission_execution[mission]
+            predecessor_end = 0  # Dependências desconsideradas
+
+            def evaluate_robot(robot):
+                earliest_start = max(robot_time[robot], predecessor_end)
+                path, travel_time = self.a_star(robot_position[robot], self.mission_positions[mission][0])
+                if path is None:
+                    return None
+                mission_start_time = earliest_start + travel_time
+                return (mission_start_time, travel_time, path, robot)
+
+            # 🔄 Avaliar robôs concorrentes em paralelo
+            with ThreadPoolExecutor() as executor:
+                results = list(executor.map(evaluate_robot, available_robots))
+
+            # 🏆 Selecionar melhor robô
+            best_result = None
+            for res in results:
+                if res is None:
+                    continue
+                if best_result is None or res[0] < best_result[0]:
+                    best_result = res
+
+            if best_result:
+                mission_start_time, travel_time, path, best_robot = best_result
+                execution_time = self.mission_times[mission]
+                end_time = mission_start_time + execution_time
+
+                best_plan[best_robot].append({
+                    "mission": mission,
+                    "path": path,
+                    "travel_time": travel_time,
+                    "execution_time": execution_time,
+                    "start_time": mission_start_time - travel_time,
+                    "end_time": end_time
+                })
+
+                robot_position[best_robot] = self.mission_positions[mission][0]
+                robot_time[best_robot] = end_time
+                mission_finish_times[mission] = end_time
+
+        total_time = max(mission_finish_times.values()) if mission_finish_times else 0
+        return best_plan, total_time, schedule
+
+    def find_minimum_mission_time_plan(self, robots_positions):
+        """
+        Versão otimizada que permite deslocamentos em paralelo com outras vistorias,
+        mantendo apenas as restrições de precedência entre as próprias vistorias.
+        """
+        best_plan = {robot: [] for robot in robots_positions.keys()}
+        schedule = []
+        robot_time = {robot: 0.0 for robot in robots_positions.keys()}
+        robot_position = robots_positions.copy()
+
+        # Armazena o tempo de término de cada missão para controle de dependências
         mission_finish_times = {}
 
-        # Obter ordem topológica das missões
+        # Ordem topológica das missões (considerando apenas dependências entre vistorias)
         mission_order = self.get_mission_execution_order()
 
         for mission in mission_order:
             best_robot = None
             best_path = None
-            best_end_time = float("inf")
+            best_start_time = float("inf")
             best_travel_time = 0.0
 
             available_robots = self.mission_execution[mission]
-            available_robots = sorted(available_robots, key=lambda r: robot_time[r])
 
             for robot in available_robots:
-                start_position = temp_robot_positions[robot]
-                path, travel_time = self.a_star(start_position, self.mission_positions[mission])
+                # Verifica restrições de precedência (vistorias anteriores devem ter terminado)
+                # predecessors = list(self.G_m.predecessors(mission))
+                # predecessor_end = max([mission_finish_times[p] for p in predecessors], default=0)
+                predecessor_end = 0  # Ignora dependências
+
+                # Tempo mais cedo que o robô pode começar a se deslocar
+                earliest_start = max(robot_time[robot], predecessor_end)
+
+                # Calcula caminho e tempo de deslocamento
+                path, travel_time = self.a_star(robot_position[robot], self.mission_positions[mission][0])
 
                 if path is None:
                     continue
 
-                # 🛑 Espera pela missão predecessora antes de iniciar 🛑
-                predecessors = list(self.G_m.predecessors(mission))
-                max_predecessor_end = max(
-                    (mission_finish_times[p] for p in predecessors if p in mission_finish_times),
-                    default=0  # Se não houver predecessores, inicia no tempo 0
-                )
+                # Tempo de início da vistoria (após deslocamento)
+                mission_start_time = earliest_start + travel_time
 
-                # Ajusta o tempo de início da missão considerando o robô e suas dependências
-                start_time = max(robot_time[robot], max_predecessor_end)
-                execution_time = self.mission_times[mission]
-                end_time = start_time + travel_time + execution_time
-
-                if end_time < best_end_time:
+                if mission_start_time < best_start_time:
                     best_robot = robot
                     best_path = path
-                    best_end_time = end_time
+                    best_start_time = mission_start_time
                     best_travel_time = travel_time
 
             if best_robot:
-                # Registra o tempo de finalização da missão para futuras dependências
-                mission_finish_times[mission] = best_end_time
+                execution_time = self.mission_times[mission]
+                end_time = best_start_time + execution_time
 
-                # Atualiza plan e schedule
+                # Registra no plano
                 best_plan[best_robot].append({
                     "mission": mission,
                     "path": best_path,
                     "travel_time": best_travel_time,
                     "execution_time": execution_time,
-                    "start_time": start_time,
-                    "end_time": best_end_time
-                })
-                schedule.append({
-                    "robot": best_robot,
-                    "mission": mission,
-                    "start": start_time,
-                    "end": best_end_time,
-                    "travel_time": best_travel_time,
-                    "execution_time": execution_time
+                    "start_time": best_start_time - best_travel_time,  # início do deslocamento
+                    "end_time": end_time
                 })
 
-                # Atualiza posição do robô e tempo de disponibilidade
-                temp_robot_positions[best_robot] = self.mission_positions[mission]
-                robot_time[best_robot] = best_end_time
+                # Atualiza estado do robô
+                robot_position[best_robot] = self.mission_positions[mission][0]
+                mission_finish_times[mission] = end_time
 
-        total_time = max(robot_time.values())
+                # O robô pode começar novo deslocamento imediatamente após terminar a vistoria
+                robot_time[best_robot] = end_time
+
+        total_time = max(mission_finish_times.values()) if mission_finish_times else 0
         return best_plan, total_time, schedule
-
-    def find_minimum_mission_time_plan2(self, robots_positions):
-        planned_paths = {r: [] for r in robots_positions}
-        schedule = []
-        pos = dict(robots_positions)
-        time_robot = {r: 0.0 for r in robots_positions}
-        done_time = {}
-
-        # Para armazenar info de deslocamento:
-        travel_info = {}  # key: (robot, task) -> { "path": [...], "travel_time": X, "travel_start": T }
-
-        all_tasks = list(self.get_mission_execution_order())
-        pred_count = {}
-        for t in all_tasks:
-            preds = list(self.G_m.predecessors(t))
-            pred_count[t] = len(preds)
-
-        events = []
-
-        def add_event(t, etype, r, task):
-            heapq.heappush(events, (t, etype, r, task))
-
-        # Tarefas sem predecessor -> disparar travel_begin
-        available_tasks = [t for t in all_tasks if pred_count[t] == 0]
-        for task in available_tasks:
-            r = min(self.mission_execution[task], key=lambda x: time_robot[x])
-            add_event(time_robot[r], "travel_begin", r, task)
-
-        while events:
-            t_current, etype, r, task = heapq.heappop(events)
-            time_robot[r] = t_current
-
-            if etype == "travel_begin":
-                start_pos = pos[r]
-                path, travel_t = self.a_star(start_pos, self.mission_positions[task])
-                if path is None:
-                    continue
-                travel_info[(r, task)] = {
-                    "path": path,
-                    "travel_time": travel_t,
-                    "travel_start": t_current
-                }
-                arrival_time = t_current + travel_t
-                add_event(arrival_time, "travel_end", r, task)
-
-            elif etype == "travel_end":
-                pos[r] = self.mission_positions[task]
-                # Se ainda tiver predecessores pendentes, não inicia exec
-                if pred_count[task] > 0:
-                    # Fica aguardando. Qdo predecessor terminar, liberamos a exec
-                    pass
-                else:
-                    # Pode iniciar execução
-                    add_event(t_current, "exec_begin", r, task)
-
-            elif etype == "exec_begin":
-                # Inicia execução
-                e_time = self.mission_times[task]
-                exec_end = t_current + e_time
-                add_event(exec_end, "exec_end", r, task)
-
-            elif etype == "exec_end":
-                done_time[task] = t_current
-                # Armazena nos planned_paths
-                tinfo = travel_info.get((r, task), {})
-                # travel_time e path
-                t_travel = tinfo.get("travel_time", 0)
-                p_path = tinfo.get("path", [])
-
-                planned_paths[r].append({
-                    "mission": task,
-                    "path": p_path,
-                    "travel_time": t_travel,
-                    "execution_time": self.mission_times[task],
-                    "start_time": t_current - self.mission_times[task],  # approx
-                    "end_time": t_current
-                })
-
-                # Libera sucessoras
-                for suc in self.G_m.successors(task):
-                    pred_count[suc] -= 1
-                    if pred_count[suc] == 0:
-                        r_best = min(self.mission_execution[suc], key=lambda x: time_robot[x])
-                        add_event(time_robot[r_best], "travel_begin", r_best, suc)
-
-        total_time = max(done_time.values()) if done_time else 0
-        return planned_paths, total_time, schedule
-
-
-
 
     def execute_plan(self, planned_paths, total_time, schedule):
         """
@@ -264,8 +227,6 @@ class MultiGraphPlanner:
                 path = mission_data.get("path", [])
                 travel_t = mission_data.get("travel_time", 0)
                 exec_t = mission_data.get("execution_time", 0)
-                # Se quiser mostrar o nó final como "em <nó final do caminho>"
-                # Basta usar path[-1] (ou algo como self.mission_positions[mission_name], a seu critério)
                 final_node = path[-1] if path else "???"
 
                 print(
@@ -274,18 +235,10 @@ class MultiGraphPlanner:
                     f"seguindo o caminho: {path}"
                 )
 
-
-        # Se quiser exibir 'schedule' como log de eventos:
-        # for ev in schedule:
-        #     print(ev)
         self.plot_gantt(planned_paths)
 
 
-
     def plot_gantt(self, planned_paths):
-        import matplotlib.pyplot as plt
-        from matplotlib.patches import Patch
-
         travel_color = "#7FB3D5"  # Azul
         exec_color = "#82E0AA"  # Verde
         wait_color = "#F7DC6F"  # Amarelo (se tiver espera)
@@ -300,18 +253,18 @@ class MultiGraphPlanner:
             for task_data in planned_paths[robot]:
                 mission = task_data["mission"]
                 st = task_data.get("start_time", 0)
-                arr = task_data.get("arrival_time", st)
-                exec_start = task_data.get("execution_start", arr)
-                end = task_data.get("end_time", exec_start)
-                path = task_data.get("path", [])
+                travel_t = task_data.get("travel_time", 0)
+                exec_t = task_data.get("execution_time", 0)
+                arr = st + travel_t
+                end = arr + exec_t
 
-                # Desloc. => [st, arr]
-                ax.barh(y, arr - st, left=st, color=travel_color, edgecolor="black")
+                # Deslocamento => [st, arr]
+                ax.barh(y, travel_t, left=st, color=travel_color, edgecolor="black")
                 ax.text((st + arr) / 2, y, "Desloc.", ha="center", va="center", fontsize=8)
 
-                # Exec. => [exec_start, end]
-                ax.barh(y, end - exec_start, left=exec_start, color=exec_color, edgecolor="black")
-                ax.text((exec_start + end) / 2, y, mission, ha="center", va="center", fontsize=8)
+                # Execução => [arr, end]
+                ax.barh(y, exec_t, left=arr, color=exec_color, edgecolor="black")
+                ax.text((arr + end) / 2, y, mission, ha="center", va="center", fontsize=8)
 
         # Ajustar Y
         ax.set_yticks([y_map[r] for r in all_robots])
@@ -328,6 +281,65 @@ class MultiGraphPlanner:
         ax.set_ylabel("Robô")
         ax.set_title("Gantt - Deslocamento e Execução")
         plt.show()
+
+    @staticmethod
+    def gerar_mission_positions_from_json(observacao_por_obstaculo, obstaculos):
+        """
+        Gera um dicionário de posições de missões a partir dos dados JSON.
+        Retorna um dicionário onde cada chave é o nome da missão e o valor é uma lista de posições.
+        """
+        mission_positions = {}
+        for obs in obstaculos:
+            pontos = observacao_por_obstaculo.get(obs, [])
+            labels = [
+                ponto.get("label")
+                for ponto in pontos
+                if ponto.get("label", "").startswith(obs + ".")
+            ]
+            if labels:  # Só adiciona se houver pontos de observação
+                mission_positions[obs] = labels
+        return mission_positions
+
+    def convert_plan_to_dict(self, optimal_plan):
+        """
+        Converte o plano ótimo em um dicionário no formato:
+        {
+            "R1": [("ID1", "D"), ("ID2", "M"), ...],
+            ...
+        }
+        Apenas marca com 'D' os pontos que o robô passou e que não são missão.
+        Marca com 'M' os pontos de missão definidos em self.mission_positions.
+        """
+        result = {}
+        # Missões podem ser agrupadas como todos os pontos de missão possíveis
+        mission_points = set(self.mission_positions.keys())
+
+        for robot, tasks in optimal_plan.items():
+            result[robot] = []
+            for task in tasks:
+                path = task.get("path", [])
+                for node in path:
+                    if node in mission_points:
+                        result[robot].append((node, "M"))
+                    else:
+                        result[robot].append((node, "D"))
+        return result
+
+    @staticmethod
+    def save_plan_dict_to_json(plan_dict, file_path):
+        import json
+
+        """
+        Salva o dicionário gerado por convert_plan_to_dict em um arquivo JSON.
+
+        Parâmetros:
+            - plan_dict: dicionário no formato {"R1": [("P1", "D"), ("P2", "M")], ...}
+            - file_path: caminho do arquivo de saída (ex: "./jsons/robo_plan.json")
+        """
+        # Converter as tuplas para listas (JSON não suporta tuplas diretamente)
+        serializable = {robot: [[point, label] for point, label in steps] for robot, steps in plan_dict.items()}
+        with open(file_path, "w") as f:
+            json.dump(serializable, f, indent=4)
 
 
 
