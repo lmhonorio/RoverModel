@@ -507,6 +507,7 @@ class SegmentUtils:
 
     @staticmethod
     def load_graph_json(filename):
+        import numpy as np
         with open(filename, "r") as f:
             graph_data = json.load(f)
 
