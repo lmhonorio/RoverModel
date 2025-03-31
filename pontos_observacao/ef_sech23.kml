@@ -28,22 +28,22 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76351353885225,-3.123577928740084,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76351353885225,-3.123633042049514,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76351353885225,-3.1235648645166707,0</coordinates>
+        <coordinates>-41.76351353885225,-3.123577928740084,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
         <coordinates>-41.76347755295718,-3.1235648645166707,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76351353885225,-3.1235648645166707,0</coordinates>
       </Point>
     </Placemark>
   </Document>

@@ -17,7 +17,7 @@ def main():
     # Config
     file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph6.json"
+    grafo_path = "./jsons/graph7.json"
     observation_path ="./jsons/obp_6.json"
     observation_folter = "./pontos_observacao"
     padding = 15
@@ -33,19 +33,19 @@ def main():
 
     segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 4.0)
 
-    #PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
+    PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 
     print("🔹 criando o generate_perimeter_segments_and_labeled_points ...")
     segments, observation_points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
 
 
-#salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis
+#salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
     SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
    # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
-    #PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
+    PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
     #PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
 
@@ -53,7 +53,7 @@ def main():
     broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments,2)
 
 
-    #PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
+    PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
 
 
     print("🔹 criando o grafo ...")
@@ -72,10 +72,10 @@ def main():
     PlotUtils.plot_subgraphs(G_corrigido, scale_x=15.0, scale_y= 10.0)
 
 
-    print("🔹 Extraindo segmentos do grafo final...")
+    print("🔹 SANITY CHECK... voltando para o GRAFO - Extraindo segmentos do grafo final...")
     new_segments = SegmentUtils.graph_to_segments(G_corrigido)
 
-    print("🔹 Plotando novos segmentos finais segmentos com AABBs preenchidas...")
+    print("🔹 SANITY CHECK... Plotando novos segmentos finais segmentos com AABBs preenchidas...")
     PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
 
 

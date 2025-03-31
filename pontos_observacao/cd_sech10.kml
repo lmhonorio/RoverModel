@@ -18,17 +18,17 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76426924264882,-3.1228331487748213,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76423325675375,-3.1228908776427153,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
         <coordinates>-41.76423325675375,-3.1228331487748213,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76426924264882,-3.1228331487748213,0</coordinates>
       </Point>
     </Placemark>
   </Document>

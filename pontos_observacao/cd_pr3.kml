@@ -13,17 +13,17 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76523856515484,-3.1229603530834047,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76523856515484,-3.12290589268849,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
         <coordinates>-41.76523856515484,-3.122950083878247,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76523856515484,-3.1229603530834047,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

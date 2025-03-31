@@ -15,9 +15,14 @@ import time
 G_m = nx.DiGraph()
 G_r = {"R1": nx.Graph(), "R2": nx.Graph()}
 
-file_path = "./jsons/graph6.json"
+#leitura do grafo
+file_path = "./jsons/graph7.json"
+
+#pontos de observacao em relacao a distancia dos objetos
 json_path = "./jsons/obp_6.json"
+
 json_mission = "./jsons/missao_6.json"
+
 observacao_por_obstaculo  = SegmentUtils.load_observation_points_from_json(json_path)
 
 G_mapa = SegmentUtils.load_graph_json(file_path)
@@ -29,7 +34,7 @@ mission_positions  = MultiGraphPlanner.gerar_mission_positions_from_json(observa
 mission_execution = {"b_busip4": ["R1", "R2"], "ef_reator1": ["R1", "R2"], "ls_pr4": ["R1"]}
 robots_positions = {"R1": "cd_ip10.92.5.1398", "R2": "ef_buscsb14.58.2.845"}
 
-
+print(mission_positions)
 #transforma as missoes em pontos de observacao individuais
 
 point_mission_possitions = {ponto:[ponto] for pontos in mission_positions.values() for ponto in pontos}
@@ -51,8 +56,8 @@ optimal_plan, min_time, schedule = planner.find_minimum_mission_time_plan_par(ro
 end = time.time()
 print(f"⏱ Tempo de execução: {end - start:.4f} segundos")
 
-plano_missoes = planner.convert_plan_to_dict(optimal_plan)
 
-planner.save_plan_dict_to_json(plano_missoes,json_mission)
 
-# planner.execute_plan(optimal_plan, min_time, schedule)
+planner.save_optimal_plan_to_json(optimal_plan,json_mission)
+
+planner.execute_plan(optimal_plan, min_time, schedule)

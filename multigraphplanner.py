@@ -300,30 +300,97 @@ class MultiGraphPlanner:
                 mission_positions[obs] = labels
         return mission_positions
 
-    def convert_plan_to_dict(self, optimal_plan):
+    def save_optimal_plan_to_json(self, optimal_plan, file_path):
         """
-        Converte o plano ótimo em um dicionário no formato:
-        {
-            "R1": [("ID1", "D"), ("ID2", "M"), ...],
-            ...
-        }
-        Apenas marca com 'D' os pontos que o robô passou e que não são missão.
-        Marca com 'M' os pontos de missão definidos em self.mission_positions.
+        Salva o optimal_plan no formato:
+
+        "R1": [
+          {
+            "mission": "b_busip4",
+            "tasks": [
+              {
+                "point": "b_busip4.173.3.2478",
+                "path": [...],
+                "travel_time": ...,
+                "execution_time": ...,
+                "start_time": ...,
+                "end_time": ...
+              },
+              {
+                "point": "b_busip4.173.18.2493",
+                "path": [...],
+                ...
+              }
+            ]
+          },
+          {
+            "mission": "b_busip7",
+            "tasks": [
+              ...
+            ]
+          }
+          ...
+        ],
+        "R2": [...]
+
+        Observações:
+          - 'mission' = prefixo extraído antes do primeiro '.'.
+          - 'point'   = o nome completo da missão.
+          - 'path'    = lista de strings (nós percorridos).
+          - tempos e path são float e lista, tudo pronto pra JSON.
         """
-        result = {}
-        # Missões podem ser agrupadas como todos os pontos de missão possíveis
-        mission_points = set(self.mission_positions.keys())
+
+        # Dicionário de resultado final
+        final_data = {}
 
         for robot, tasks in optimal_plan.items():
-            result[robot] = []
+            # Agrupador interno: prefixo -> lista de sub-tarefas
+            prefix_groups = {}
+
             for task in tasks:
-                path = task.get("path", [])
-                for node in path:
-                    if node in mission_points:
-                        result[robot].append((node, "M"))
-                    else:
-                        result[robot].append((node, "D"))
-        return result
+                mission_full = task["mission"]  # ex: "b_busip4.173.3.2478"
+                # Extrai prefixo antes do primeiro ponto
+                if "." in mission_full:
+                    mission_prefix = mission_full.split(".", 1)[0]
+                else:
+                    # Se não houver ponto, assume tudo como prefixo
+                    mission_prefix = mission_full
+
+                # Monta objeto do sub-item
+                sub_item = {
+                    "point": mission_full,
+                    "path": task["path"],
+                    "travel_time": float(task["travel_time"]),
+                    "execution_time": float(task["execution_time"]),
+                    "start_time": float(task["start_time"]),
+                    "end_time": float(task["end_time"])
+                }
+
+                # Adiciona no grupo correspondente
+                if mission_prefix not in prefix_groups:
+                    prefix_groups[mission_prefix] = []
+                prefix_groups[mission_prefix].append(sub_item)
+
+            # Agora convertemos prefix_groups em uma lista:
+            # [
+            #   {
+            #     "mission": "b_busip4",
+            #     "tasks": [ { "point":..., "path":..., ... }, ... ]
+            #   },
+            #   ...
+            # ]
+            robot_missions = []
+            for prefix, sub_items in prefix_groups.items():
+                robot_missions.append({
+                    "mission": prefix,
+                    "tasks": sub_items
+                })
+
+            final_data[robot] = robot_missions
+
+        # Grava em JSON
+        with open(file_path, "w") as f:
+            json.dump(final_data, f, indent=4)
 
     @staticmethod
     def save_plan_dict_to_json(plan_dict, file_path):
