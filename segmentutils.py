@@ -507,19 +507,24 @@ class SegmentUtils:
 
     @staticmethod
     def load_graph_json(filename):
-        import numpy as np
+        import json
+        import networkx as nx
+
         with open(filename, "r") as f:
             graph_data = json.load(f)
 
         G = nx.Graph()
 
         # Restaurar nós com labels
-        for node, attr in graph_data["nodes"].items():
-            G.add_node(eval(node), **attr)  # Converte string para tupla novamente
+        for node_str, attr in graph_data["nodes"].items():
+            # 'node_str' é a chave do dicionário - ou seja, o "nome" do nó como string
+            # Basta usá-la diretamente como ID do nó
+            G.add_node(node_str, **attr)
 
         # Restaurar arestas com peso
-        for u, v, weight in graph_data["edges"]:
-            G.add_edge(eval(u), eval(v), weight=weight)
+        for u_str, v_str, weight in graph_data["edges"]:
+            # Também usamos as strings diretamente
+            G.add_edge(u_str, v_str, weight=weight)
 
         return G
 
@@ -555,6 +560,74 @@ class SegmentUtils:
         components = list(nx.connected_components(G))
         has_isolated = len(components) > 1
         return has_isolated
+
+    @staticmethod
+    def create_graph_with_passage_points_new(segments, passage_points, points, obstacles):
+        import networkx as nx
+        from collections import defaultdict
+        import math
+
+        G = nx.Graph()
+        obstacle_node_dict = defaultdict(list)
+        node_labels = {}
+        passage_label_map = {}
+        point_label_map = {}
+
+        # Conjunto de pontos rotulados manualmente (x, y) → label
+        for px, py, label in points:
+            # Usamos round para evitar floats muito extensos
+            point_label_map[(round(px, 4), round(py, 4))] = label
+
+        # Conjunto de pontos de interseção (x, y) sem rótulo
+        passage_points_set = set((round(px, 4), round(py, 4)) for px, py in passage_points)
+        label_counter = 1
+
+        # Coletar todos os nós (tuplas) que aparecem nos segmentos
+        unique_nodes = set()
+        for x1, y1, x2, y2 in segments:
+            p1 = (round(x1, 4), round(y1, 4))
+            p2 = (round(x2, 4), round(y2, 4))
+            unique_nodes.add(p1)
+            unique_nodes.add(p2)
+
+        # A) CRIAR LABEL PARA CADA (x,y)
+        #    E ADICIONAR NO GRAFO USANDO label COMO ID DO NÓ
+        for node_pos in sorted(unique_nodes):
+            if node_pos in point_label_map:
+                label = point_label_map[node_pos]
+            elif node_pos in passage_points_set:
+                label = f"pp_{label_counter}"
+                label_counter += 1
+            else:
+                nearest_label = SegmentUtils.get_nearest_obstacle_label(node_pos, obstacles)
+                index = len(obstacle_node_dict[nearest_label])
+                label = f"{nearest_label}_{index}"
+                obstacle_node_dict[nearest_label].append(node_pos)
+
+            # Guardar "label" associado a essa coord.
+            node_labels[node_pos] = label
+
+            # Adicionar nó ao grafo: nome = label
+            # Atributos:
+            #   - label: a string de identificação
+            #   - pos:   a tupla (x, y)
+            G.add_node(label, label=label, pos=node_pos)
+
+        # B) CRIAR AS ARESTAS USANDO OS LABELS DE p1 E p2
+        for x1, y1, x2, y2 in segments:
+            p1 = (round(x1, 4), round(y1, 4))
+            p2 = (round(x2, 4), round(y2, 4))
+            if p1 not in node_labels or p2 not in node_labels:
+                # Algum ponto não foi rotulado, ignora
+                continue
+
+            label1 = node_labels[p1]
+            label2 = node_labels[p2]
+            dist = math.dist(p1, p2)
+
+            G.add_edge(label1, label2, weight=dist)
+
+        return G
 
     @staticmethod
     def create_graph_with_passage_points(segments, passage_points, points, obstacles):
@@ -859,6 +932,75 @@ class SegmentUtils:
         return G_safe
 
     @staticmethod
+    def fix_missing_connections_safe_new(G, aabbs):
+        import math
+        from collections import defaultdict
+
+        # 1) G_safe é um grafo "seguro" para procurar caminhos
+        #    Presumimos que 'build_safe_graph' também cria um Graph
+        #    cujos nós são nomes (strings), e que cada nó
+        #    possua G_safe.nodes[node]["pos"] = (x, y).
+        G_safe = SegmentUtils.build_safe_graph(G, aabbs)
+
+        # 2) Agrupa nós pelo “base” do label (tudo antes do último "_")
+        groups = defaultdict(list)
+        for node in G.nodes():
+            label = G.nodes[node].get("label", "unknown")
+            base = label.rsplit("_", 1)[0]  # Divide a partir do último '_'
+            groups[base].append(node)
+
+        # 3) Para cada grupo, se o nó n estiver “isolado” (sem vizinhos do mesmo base),
+        #    procura nós mais próximos do mesmo grupo e cria caminhos.
+        for base, nodes in groups.items():
+            for n in nodes:
+                neighbors = list(G.neighbors(n))
+                cluster_neighbors = []
+                for nbr in neighbors:
+                    nbr_label = G.nodes[nbr].get("label", "")
+                    nbr_base = nbr_label.rsplit("_", 1)[0]
+                    if nbr_base == base:
+                        cluster_neighbors.append(nbr)
+
+                # Se não há nenhum vizinho do mesmo cluster, consideramos "isolado"
+                if not cluster_neighbors:
+                    # Vamos calcular a distância de n para os outros do mesmo base
+                    # Extraindo as posições (x, y)
+                    pxn, pyn = G.nodes[n]["pos"]  # n é string, mas pos é tupla
+
+                    distances = []
+                    for other in nodes:
+                        if other == n:
+                            continue
+                        pxo, pyo = G.nodes[other]["pos"]
+                        d = math.dist((pxn, pyn), (pxo, pyo))
+                        distances.append((other, d))
+
+                    # Pega os 2 nós mais próximos
+                    closest = sorted(distances, key=lambda x: x[1])[:2]
+
+                    # 4) Para cada “mais próximo”, tenta achar path no G_safe
+                    for target, _ in closest:
+                        if G_safe.has_node(n) and G_safe.has_node(target):
+                            try:
+                                path = nx.shortest_path(
+                                    G_safe, source=n, target=target, weight='weight'
+                                )
+                                # Adiciona arestas desse path no grafo original G
+                                for i in range(len(path) - 1):
+                                    u, v = path[i], path[i + 1]
+                                    if not G.has_edge(u, v):
+                                        # Distância entre pos(u) e pos(v)
+                                        pxu, pyu = G.nodes[u]["pos"]
+                                        pxv, pyv = G.nodes[v]["pos"]
+                                        dist_uv = math.dist((pxu, pyu), (pxv, pyv))
+                                        G.add_edge(u, v, weight=dist_uv)
+
+                            except nx.NetworkXNoPath:
+                                continue
+
+        return G
+
+    @staticmethod
     def fix_missing_connections_safe(G, aabbs):
         from collections import defaultdict
         G_safe = SegmentUtils.build_safe_graph(G, aabbs)
@@ -911,6 +1053,17 @@ class SegmentUtils:
     ###############################################################################
     @staticmethod
     def graph_to_segments(G):
+        segments = []
+        for u, v in G.edges():
+            # Verifica se ambos os nós têm atributo 'pos'
+            if "pos" in G.nodes[u] and "pos" in G.nodes[v]:
+                x1, y1 = G.nodes[u]["pos"]
+                x2, y2 = G.nodes[v]["pos"]
+                segments.append((x1, y1, x2, y2))
+        return segments
+
+
+    def graph_to_segments_old(G):
         segments = []
         for edge in G.edges():
             (x1, y1), (x2, y2) = edge

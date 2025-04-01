@@ -7,9 +7,9 @@ from ajusteplanilha import AjustePlanilha  # -> hipotético, para fazer a conver
 from missionmanager import MissionManager  # -> hipotético, para conectar e enviar missão
 
 # Arquivos de entrada
-file_path_graph = "./jsons/graph7.json"
-file_path_missao = "./jsons/missao_6.json"
-file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
+file_path_graph = "../jsons/graph7.json"
+file_path_missao = "../jsons/missao_6.json"
+file_path_parametros = "../planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
 
 # 1) Carrega o grafo como NetworkX
 graph_nx = SegmentUtils.load_graph_json(file_path_graph)

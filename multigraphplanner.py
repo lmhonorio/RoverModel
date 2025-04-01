@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from matplotlib.patches import Patch
 import json
 from concurrent.futures import ThreadPoolExecutor
+import math
+import re
 
 
 
@@ -43,6 +45,125 @@ class MultiGraphPlanner:
         self.mission_positions = mission_positions
         self.mission_times = mission_times
         self.mission_execution = mission_execution
+
+    @staticmethod
+    def dict_to_nx_graph(grafo_mapa):
+        """
+        Converte um dicionário 'grafo_mapa' (states + transitions)
+        em um grafo NetworkX não-direcionado, com os pesos em 'weight'.
+        """
+        G = nx.Graph()
+        for state in grafo_mapa["states"]:
+            G.add_node(state)
+        for (orig, dst), (dist, _) in grafo_mapa["transitions"].items():
+            G.add_edge(orig, dst, weight=dist)
+        return G
+
+    @staticmethod
+    def find_nearest_node(G_loaded, tx, ty):
+        import math
+        """
+        Encontra o nó mais próximo de (tx, ty) com base em G.nodes[n]['pos'] = (x, y).
+        Retorna (nó, distancia).
+        Se nenhum nó tiver 'pos', retornará (None, float('inf')).
+        """
+        # G_loaded pode ser (a) um dicionário { 'states', 'transitions'} ou (b) um nx.Graph
+        if isinstance(G_loaded, dict) and "states" in G_loaded and "transitions" in G_loaded:
+            # então converter para nx.Graph
+            G = MultiGraphPlanner.dict_to_nx_graph(G_loaded)
+        elif isinstance(G_loaded, nx.Graph):
+            # já é grafo Nx
+            G = G_loaded
+        else:
+            raise ValueError("Formato de graph7.json inesperado. Verifique seu pipeline.")
+
+        # 2) Para cada nó, parsear o label (que é o nome do nó)
+        #    Exemplo: se for "(-165.9766, -77.6645)" iremos extrair x=-165.9766, y=-77.6645
+        for node in G.nodes():
+            coords = MultiGraphPlanner.parse_label_to_xy(str(node))  # 'node' em string
+            if coords is not None:
+                G.nodes[node]["pos"] = coords
+
+        nearest = None
+        min_dist = float('inf')
+        for node in G.nodes:
+            if "pos" not in G.nodes[node]:
+                continue  # Ignora nós sem atributo pos
+
+            x_node, y_node = G.nodes[node]["pos"]
+            dist = math.hypot(x_node - tx, y_node - ty)
+            if dist < min_dist:
+                min_dist = dist
+                nearest = node
+
+        label = G.nodes[nearest].get("label", str(nearest))
+        return label, nearest, min_dist
+
+    @staticmethod
+    def parse_label_to_xy(label):
+        """
+        Tenta parsear o label do nó no formato:
+          "(-165.9766, -77.6645)"
+        e retornar (x, y) como floats. Retorna None se não conseguir.
+        """
+        pattern = r"\((-?\d+(?:\.\d+)?),\s*(-?\d+(?:\.\d+)?)\)"
+        match = re.match(pattern, label)
+        if match:
+            x_str = match.group(1)
+            y_str = match.group(2)
+            return float(x_str), float(y_str)
+        else:
+            return None
+
+    @staticmethod
+    def build_inspection_graph(start_point, inspection_points, grafo_mapa):
+        """
+        Cria um grafo NetworkX (G_robot) com nós = {start_point} U {inspection_points}.
+        Para cada par de nós (u, v), calcula o menor caminho no grafo_mapa.
+        Se esse caminho não tiver nenhum outro nó de {start_point} + inspection_points
+        no meio (ou seja, excluindo u e v), então cria aresta (u, v) em G_robot,
+        com peso igual à soma das distâncias do menor caminho.
+        """
+        # 1) Converter o grafo_mapa (dicionário) para um grafo NetworkX
+        G_env = grafo_mapa
+
+        # 2) Conjunto de todos os "estados" que nos interessam
+        states_of_interest = set(inspection_points)
+        states_of_interest.add(start_point)
+
+        # 3) Criar um grafo vazio para retornar
+        G_robot = nx.Graph()
+        # Adicionar nós
+        for st in states_of_interest:
+            G_robot.add_node(st)
+
+        # 4) Vamos testar pares (u, v) usando combinações
+        from itertools import combinations
+        for u, v in combinations(states_of_interest, 2):
+            # Tenta achar caminho mais curto no G_env
+            try:
+                path = nx.shortest_path(G_env, source=u, target=v, weight="weight")
+                dist = nx.shortest_path_length(G_env, source=u, target=v, weight="weight")
+            except nx.NetworkXNoPath:
+                # Não existe caminho
+                continue
+
+            # Verifica se existe algum outro estado de interesse no meio do caminho
+            # path[1:-1] = nós intermediários
+            intermediarios = set(path[1:-1])
+            if intermediarios.intersection(states_of_interest):
+                # Se tiver intersecção, significa que passaria por outro estado
+                # que também nos interessa --> não criamos essa aresta
+                continue
+
+            # Caso não tenha nenhum estado de interesse no meio,
+            # adicionamos a aresta com o peso (dist)
+            G_robot.add_edge(u, v, weight=dist)
+
+            # (Opcional) se quiser guardar o caminho completo no atributo:
+            # G_robot[u][v]['path'] = path
+
+        return G_robot
 
     def heuristic(self, a, b):
         """Calcula a heurística baseada no tempo mínimo necessário para ir de a -> b."""
@@ -214,6 +335,7 @@ class MultiGraphPlanner:
 
         total_time = max(mission_finish_times.values()) if mission_finish_times else 0
         return best_plan, total_time, schedule
+
 
     def execute_plan(self, planned_paths, total_time, schedule):
         """

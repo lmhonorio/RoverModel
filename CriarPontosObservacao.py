@@ -17,7 +17,7 @@ def main():
     # Config
     file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph7.json"
+    grafo_path = "./jsons/graph8_new.json"
     observation_path ="./jsons/obp_6.json"
     observation_folter = "./pontos_observacao"
     padding = 15
@@ -57,7 +57,7 @@ def main():
 
 
     print("🔹 criando o grafo ...")
-    G_corrigido = SegmentUtils.create_graph_with_passage_points(broken_segments, passage_points, observation_points, obstacles)
+    G_corrigido = SegmentUtils.create_graph_with_passage_points_new(broken_segments, passage_points, observation_points, obstacles)
 
     print(f"verificando ilhas....")
     hasislands = SegmentUtils.has_islands(G_corrigido)
@@ -65,7 +65,7 @@ def main():
 
     if hasislands:
         print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
-        G_corrigido = SegmentUtils.fix_missing_connections_safe(G_corrigido, aabbs)
+        G_corrigido = SegmentUtils.fix_missing_connections_safe_new(G_corrigido, aabbs)
 
 
     print("🔹 plotando grafo...")

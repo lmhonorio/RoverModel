@@ -210,29 +210,27 @@ class AABBUtils:
 
         return aabbs, points, segments
 
-
-
-
-
     @staticmethod
     def convert_graph_to_dict(G):
         """
-        Converte um grafo NetworkX em um dicionário no formato especificado.
+        Converte um grafo NetworkX em um dicionário no formato especificado,
+        mas pegando o nome do nó a partir de G.nodes[node]["label"] (se existir).
         """
         grafo_mapa = {"states": set(), "transitions": {}}
 
-        # Criar os estados com labels
-        for node, data in G.nodes(data=True):
-            label = data.get("label", str(node))  # Usa o label ou a posição se não houver label
-            grafo_mapa["states"].add(label)
+        # Para cada nó do grafo, obtemos label do atributo ou, se não houver, o próprio node
+        for node in G.nodes():
+            label_node = G.nodes[node].get("label", node)
+            grafo_mapa["states"].add(label_node)
 
-        # Criar as transições com pesos
+        # Para cada aresta, também obtemos 'label' do nó de origem e destino
         for u, v, data in G.edges(data=True):
-            label_u = G.nodes[u].get("label", str(u))
-            label_v = G.nodes[v].get("label", str(v))
-            weight = data.get("weight", 1.0)  # Se não houver peso, assume 1.0
-            grafo_mapa["transitions"][(label_u, label_v)] = (weight,1)
-            grafo_mapa["transitions"][(label_v, label_u)] = (weight,1)
+            label_u = G.nodes[u].get("label", u)
+            label_v = G.nodes[v].get("label", v)
+            weight = data.get("weight", 1.0)
+
+            grafo_mapa["transitions"][(label_u, label_v)] = (weight, 1)
+            grafo_mapa["transitions"][(label_v, label_u)] = (weight, 1)
 
         return grafo_mapa
 

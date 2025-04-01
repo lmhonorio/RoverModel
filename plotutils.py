@@ -9,6 +9,9 @@ import matplotlib.cm as cm
 from networkx.drawing.nx_agraph import to_agraph
 from pygraphviz import AGraph
 import networkx as nx
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
+
 
 class PlotUtils:
 
@@ -96,7 +99,125 @@ class PlotUtils:
     # Função para plotar subgrafos em cores diferentes
     ###############################################################################
     @staticmethod
+    def plot_grafo_distance(G, filename="temporario.jpg", figsize=(12, 12), titulo=None):
+        """
+        Gera um arquivo de imagem (filename) do grafo usando Graphviz
+        e exibe com matplotlib. Tenta refletir 'weight' como distância,
+        configurando o atributo 'len' em cada aresta antes de chamar layout='neato'.
+        """
+        A = to_agraph(G)
+
+        # Ajuste do 'len' para refletir peso nas arestas (opcional)
+        scale = 0.1  # fator de escala caso os pesos sejam grandes
+        for u, v in G.edges():
+            w = G[u][v].get("weight", 1.0)
+            edge = A.get_edge(u, v)
+            edge.attr["len"] = str(w * scale)
+
+        #####################################################################
+        # Reduzindo o tamanho da imagem final (em polegadas)
+        # Exemplo: "size" = "15,15" indica 15"x15" para o layout.
+        # "ratio" ajuda a manter a proporção / evitar distorção
+        A.graph_attr["size"] = "15,15"
+        A.graph_attr["ratio"] = "fill"
+        #####################################################################
+
+        # Em vez de 'dot', use 'neato' (tenta respeitar distâncias)
+        A.layout(prog="dot")
+        A.draw(filename)
+
+        # Carrega e exibe o PNG
+        plt.figure(figsize=figsize)
+        img = mpimg.imread(filename)
+        plt.imshow(img)
+        plt.axis("off")
+
+        if titulo:
+            plt.title(titulo, fontsize=20, fontweight="bold")
+
+        plt.show()
+
+    @staticmethod
+    def plot_robot_graph(G_robot):
+        """
+        Plota o grafo G_robot usando as posições (x,y) guardadas em G_robot.nodes[node]["pos"].
+        Aplica fatores de escala em x e y.
+        Se algum nó não tiver 'pos', posiciona em (0,0) apenas para não quebrar.
+        """
+
+        # 1) Tentar Kamada-Kawai layout (bom para tentar preservar distâncias)
+        pos = nx.kamada_kawai_layout(G_robot, weight='weight')
+
+        # Se preferir Spring layout, também pode fazer:
+        # pos = nx.spring_layout(G_robot, weight='weight', k=0.15, iterations=100)
+        # Ajuste 'k' (comprimento ideal das arestas) e 'iterations' conforme precisar.
+
+        # 2) Desenha o grafo
+        plt.figure()
+        nx.draw(
+            G_robot,
+            pos=pos,
+            with_labels=True,
+            node_color="yellow",
+            edge_color="blue"
+        )
+
+
+        plt.title("Grafo do Robô - Layout baseado em distâncias (Kamada-Kawai)")
+        plt.axis("equal")  # para evitar distorção dos eixos
+        plt.show()
+
+    @staticmethod
     def plot_subgraphs(G, scale_x=1.0, scale_y=1.0):
+        import matplotlib.pyplot as plt
+        import networkx as nx
+
+        # Para cada conjunto de nós que formam um componente conexo, criamos um subgrafo
+        subgraphs = [G.subgraph(c).copy() for c in nx.connected_components(G)]
+        colors = plt.cm.rainbow(range(len(subgraphs)))
+        if len(subgraphs) == 1:
+            colors = [plt.cm.rainbow(0.20)]
+
+        plt.figure()
+
+        for subgraph, color in zip(subgraphs, colors):
+            # Montamos o dicionário 'pos' a partir das coordenadas de cada nó
+            pos = {}
+            for node in subgraph.nodes():
+                # Se o nó tiver o atributo 'pos' (x,y)
+                if "pos" in subgraph.nodes[node]:
+                    x, y = subgraph.nodes[node]["pos"]
+                    pos[node] = (x * scale_x, y * scale_y)
+                else:
+                    # Se não tiver, podemos colocar (0,0) ou pular
+                    # Aqui, só vamos jogar (0,0) para não quebrar o draw.
+                    pos[node] = (0, 0)
+
+            # Se cada nó também tiver atributo 'label', podemos usar esse dicionário para desenhar
+            labels = nx.get_node_attributes(subgraph, 'label')
+
+            # Desenha o subgrafo com as posições calculadas
+            nx.draw(
+                subgraph,
+                pos,
+                node_color=[color],
+                edge_color=color,
+                with_labels=False
+            )
+
+            # Desenha o texto de cada nó (usando labels)
+            nx.draw_networkx_labels(
+                subgraph, pos,
+                labels=labels,
+                font_size=6,
+                font_color='black'
+            )
+
+        plt.axis("equal")
+        plt.show()
+
+    @staticmethod
+    def plot_subgraphs_old(G, scale_x=1.0, scale_y=1.0):
         import matplotlib.pyplot as plt
         import networkx as nx
 
