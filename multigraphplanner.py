@@ -46,6 +46,332 @@ class MultiGraphPlanner:
         self.mission_times = mission_times
         self.mission_execution = mission_execution
 
+
+
+    @staticmethod
+    def get_path_from_label(g: nx.Graph, path_labels: list[str]):
+        """
+        Dado um grafo NX cujo nome dos nós é diretamente o label desejado,
+        retorna as coordenadas (x,y) correspondentes a cada label da lista.
+
+        Parâmetros
+        ----------
+        g : nx.Graph
+            Grafo onde o nome do nó (node ID) é o próprio label.
+            Cada nó deve ter atributo 'pos' com (x,y).
+        path_labels : list[str]
+            Lista de labels para buscar no grafo.
+
+        Retorna
+        -------
+        coords : list[tuple]
+            Lista de coordenadas (x,y) associadas aos labels fornecidos.
+            Se um label não for encontrado ou não tiver 'pos', é emitido um aviso.
+        """
+        coords = []
+        for label in path_labels:
+            if label in g.nodes:
+                node_data = g.nodes[label]
+                pos = node_data.get("pos")
+                if pos:
+                    coords.append(pos)
+                else:
+                    print(f"⚠️ Nó encontrado, mas sem coordenadas (pos): {label}")
+            else:
+                print(f"⚠️ Label não encontrado no grafo: {label}")
+        return coords
+
+    @staticmethod
+    def AdicionaEdge(grafo, origem, destino, label):
+        grafo.add_edge(origem, destino, label=label)
+
+
+    @staticmethod
+    def parallel_composition(automaton_A, automaton_B, condition=lambda state_A, state_B: True):
+        """
+        Composição paralela de dois autômatos com uma condição personalizada.
+
+        Args:
+            automaton_A (nx.MultiDiGraph): Primeiro autômato.
+            automaton_B (nx.MultiDiGraph): Segundo autômato.
+            condition (callable): Função lambda que recebe dois estados (state_A, state_B)
+                                  e retorna True se os estados puderem ser combinados, False caso contrário.
+
+        Returns:
+            nx.MultiDiGraph: O autômato resultante da composição paralela.
+        """
+        parallel_automaton = nx.MultiDiGraph()
+
+        for state_A in automaton_A.nodes:
+            for state_B in automaton_B.nodes:
+                # Verificar se os estados podem ser combinados
+                if not condition(state_A, state_B):
+                    continue
+
+                parallel_state = f'{state_A},{state_B}'
+                parallel_automaton.add_node(parallel_state)
+
+                if state_A == automaton_A.graph['start'] and state_B == automaton_B.graph['start']:
+                    parallel_automaton.graph['start'] = parallel_state
+                    parallel_automaton.nodes[parallel_state]['color'] = 'lightgreen'
+                    parallel_automaton.nodes[parallel_state]['style'] = 'filled'
+
+                if automaton_B.nodes[state_B].get('accepting_state') and automaton_A.nodes[state_A].get(
+                        'accepting_state'):
+                    parallel_automaton.nodes[parallel_state]['shape'] = 'doublecircle'
+                    parallel_automaton.nodes[parallel_state]['color'] = 'orange'
+                    parallel_automaton.nodes[parallel_state]['accepting_state'] = 'true'
+
+        sigmaA = list(set([label for (_, _, label) in automaton_A.edges(data='label')] if automaton_A.edges else []))
+        sigmaB = list(set([label for (_, _, label) in automaton_B.edges(data='label')] if automaton_B.edges else []))
+
+        for (u_A, v_A, label_A) in automaton_A.edges(data='label'):
+            for (u_B, v_B, label_B) in automaton_B.edges(data='label'):
+                # Verificar se os estados podem ser combinados antes de processar transições
+                if not condition(u_A, u_B):
+                    continue
+
+                paralelo_original = f'{u_A},{u_B}'
+                parallel_uv = f'{u_A},{v_B}'
+                parallel_vu = f'{v_A},{u_B}'
+
+                if label_A == label_B:
+                    parallel_vv = f'{v_A},{v_B}'
+                    MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_vv, label_B)
+                else:
+                    if label_B not in sigmaA:
+                        MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_uv, label_B)
+                    if label_A not in sigmaB:
+                        MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_vu, label_A)
+
+        return parallel_automaton
+
+    @staticmethod
+    def xml_to_graph(graphxml):
+        # Criar um grafo direcionado (DiGraph)
+        G = nx.MultiDiGraph(format='png', engine='dot')
+
+        # Adicionar estados
+        G.add_nodes_from(graphxml['states'])
+
+        # Adicionar transições
+        for transition, target_state in graphxml['transitions'].items():
+            current_state, symbol = transition
+            target_state, weight = target_state
+            G.add_edge(current_state, target_state, key=symbol, label=symbol, weight=weight)
+
+
+        # Definir os estados finais
+        for state in graphxml['accepting_states']:
+            G.nodes[state]['accepting_state'] = True
+            G.nodes[state]['shape'] = 'doublecircle'
+            G.nodes[state]['color'] = 'orange'
+
+        # Aplicar propriedades aos estados diferenciados
+        if 'diferenciados' in graphxml:
+            estados_diferenciados, propriedades = graphxml['diferenciados']
+            for state in estados_diferenciados:
+                if state in graphxml['states']:  # Garantir que o estado existe
+                    for key, value in propriedades.items():
+                        G.nodes[state][key] = value
+
+        G.graph['start'] = graphxml['start']
+        G.nodes[G.graph['start']]['style'] = 'filled'
+        G.nodes[graphxml['start']]['color'] = 'lightgreen'
+
+        return G
+
+    @staticmethod
+    def imprimir_multidigraph(grafo):
+        """
+        Imprime os nós, arestas e atributos de um MultiDiGraph.
+
+        Args:
+            grafo (nx.MultiDiGraph): O grafo a ser impresso.
+        """
+        print("Nós do grafo:")
+        for no, atributos in grafo.nodes(data=True):
+            print(f"  {no}")
+
+        print("\nArestas do grafo:")
+        for origem, destino, atributos in grafo.edges(data=True):
+            print(f"  {origem} -> {destino} : {atributos['label']}")
+            print(f" path = {atributos['path']}")
+
+
+
+
+
+    @staticmethod
+    def parse_numeric_suffix(node_name):
+        """ Extrai a parte após o último '.' para usar como sufixo numérico. """
+        if '.' in node_name:
+            return node_name.rsplit('.', 1)[-1]
+        return node_name  # se não houver '.', devolve a string inteira
+
+    @staticmethod
+    def graph_to_dfa_bidirectional(G, robot_param="R1", start=None, accepting=None):
+        """
+        Transforma o grafo G em um dicionário no formato de DFA, com transições bidirecionais,
+        mas em vez de (from, label) -> to, cada transição fica (from, label) -> (to, peso).
+
+        Formato resultante do dfa:
+        {
+          'alphabet': set([...]),
+          'states': set([...]),
+          'start': <estado_inicial ou None>,
+          'accepting_states': set([...]),
+          'transitions': {
+              (from, label): (to, peso),
+              ...
+          }
+        }
+
+        Regras de criação de transição:
+          - Para cada aresta (u, v) em G, se o G[u][v] tiver 'weight', pegamos esse valor como peso.
+            Caso contrário, usamos 1.0.
+          - Criamos 2 transições:
+            (u, "su_sv") => (v, w)
+            (v, "robot_param_sv_su") => (u, w)
+            onde su é a parte numérica do 'u', sv a parte numérica do 'v'.
+
+        Parâmetros
+        ----------
+        G : networkx.Graph
+            Grafo cujos nós podem ser strings como "ls_ip4.345" etc.
+            Se G[u][v] tiver data["weight"], usaremos como peso.
+        robot_param : str
+            Prefixo para o label da transição "volta".
+            Ex: "R1_667_345".
+        start : opcional
+            Nome de estado inicial.
+        accepting : iterável opcional
+            Conjunto de estados finais.
+
+        Retorna
+        -------
+        dfa : dict
+            Dicionário com chaves: 'alphabet', 'states', 'start', 'accepting_states', 'transitions'.
+            Em 'transitions', a chave é (estado, label), e o valor é (destino, peso).
+        """
+
+        dfa = {
+            'alphabet': set(),
+            'states': set(G.nodes()),
+            'start': start,
+            'accepting_states': set(accepting) if accepting else set(),
+            'transitions': {}
+        }
+
+        # Percorre as arestas para criar transições
+        # Se G for Graph, edges(data=True) retorna (u, v, data)
+        for u, v, data in G.edges(data=True):
+            # Extrair sufixos numéricos
+            su = MultiGraphPlanner.parse_numeric_suffix(str(u))
+            sv = MultiGraphPlanner.parse_numeric_suffix(str(v))
+
+            # Construir labels
+            label_uv = f"{robot_param}_{su}_{sv}"  # ex: "345_667"
+            label_vu = f"{robot_param}_{sv}_{su}"  # ex: "R1_667_345"
+
+            # Acha peso da aresta
+            w = data.get("weight", 1.0)
+
+            # Transição de u -> v
+            dfa['transitions'][(u, label_uv)] = (v, w)
+            dfa['alphabet'].add(label_uv)
+
+            # Transição de v -> u
+            dfa['transitions'][(v, label_vu)] = (u, w)
+            dfa['alphabet'].add(label_vu)
+
+        return dfa
+
+    @staticmethod
+    def update_automaton_graph(G, start_state=None, final_states=None,
+                               transitions=None, diferenciados=None):
+        """
+        Recebe um grafo (G) já existente (ex: MultiDiGraph) e atualiza:
+          - Estado inicial (start_state),
+          - Estados finais (final_states),
+          - Transições (transitions), no estilo (orig, label, peso opcional) => destino,
+          - Estados diferenciados (diferenciados).
+
+        Parâmetros:
+        -----------
+        G : Graph ou DiGraph ou MultiDiGraph (já criado)
+        start_state : str (opcional)
+            Nome do estado inicial. Se fornecido, G.graph['start'] = start_state
+            e esse nó recebe alguns atributos (color, style, etc).
+        final_states : iterável de strings (opcional)
+            Lista ou conjunto de estados finais. Cada um receberá shape='doublecircle', color='orange', etc.
+        transitions : lista ou dict (opcional)
+            Se for lista, cada item é ((orig, symbol) ou (orig, symbol, weight), dest).
+            Se for dict, chaves são (orig, symbol) ou (orig, symbol, weight), valor é o estado destino.
+        diferenciados : tuple (opcional)
+            (lista_estados, dict_atributos). Aplica esse dict_atributos a cada estado em lista_estados.
+
+        Retorna:
+        --------
+        G : o próprio grafo, após as modificações.
+        """
+
+        # Se 'transitions' não for None, adiciona/atualiza arestas
+        if transitions is not None:
+            if isinstance(transitions, dict):
+                # converte dict => lista de ((orig, symbol, [weight]), destino)
+                transitions_items = list(transitions.items())
+            else:
+                # se já for lista, assumimos que seja [((orig, symbol, [weight]), dest), ...]
+                transitions_items = transitions
+
+            for key, target_state in transitions_items:
+                if len(key) == 2:
+                    (current_state, symbol) = key
+                    nweight = 1
+                elif len(key) == 3:
+                    (current_state, symbol, nweight) = key
+                else:
+                    raise ValueError(f"Transição inválida ou formato inesperado: {key}")
+
+                # Caso algum nó não exista, adicionamos silenciosamente
+                if current_state not in G:
+                    G.add_node(current_state)
+                if target_state not in G:
+                    G.add_node(target_state)
+
+                # Adiciona aresta no estilo MultiDiGraph: (orig, dest, key=symbol, label=symbol, weight=...)
+                # Se seu G for um Graph/DiGraph simples, esse 'key=symbol' não faz diferença.
+                G.add_edge(current_state, target_state, key=symbol, label=symbol, weight=nweight)
+
+        # Se final_states for fornecido, marcar tais estados
+        if final_states is not None:
+            for st in final_states:
+                if st in G.nodes():
+                    G.nodes[st]['accepting_state'] = True
+                    G.nodes[st]['shape'] = 'doublecircle'
+                    G.nodes[st]['color'] = 'orange'
+
+        # Se diferenciados for fornecido, aplicar atributos
+        if diferenciados is not None:
+            # Exemplo de diferenciados: (["q2"], {"shape":"box","color":"red"})
+            estados_dif, props = diferenciados
+            for st in estados_dif:
+                if st in G.nodes():
+                    for k, v in props.items():
+                        G.nodes[st][k] = v
+
+        # Se start_state for fornecido, marcar no G.graph['start'] e ajustar atributos
+        if start_state is not None:
+            G.graph['start'] = start_state
+            if start_state not in G:
+                G.add_node(start_state)  # garante que o nó exista
+            G.nodes[start_state]['style'] = 'filled'
+            G.nodes[start_state]['color'] = 'lightgreen'
+            G.nodes[start_state]['arrowhead'] = 'vee'
+
+        return G
+
     @staticmethod
     def dict_to_nx_graph(grafo_mapa):
         """
@@ -159,9 +485,12 @@ class MultiGraphPlanner:
             # Caso não tenha nenhum estado de interesse no meio,
             # adicionamos a aresta com o peso (dist)
             G_robot.add_edge(u, v, weight=dist)
+            su = MultiGraphPlanner.parse_numeric_suffix(str(u))
+            sv = MultiGraphPlanner.parse_numeric_suffix(str(v))
 
             # (Opcional) se quiser guardar o caminho completo no atributo:
-            # G_robot[u][v]['path'] = path
+            G_robot[u][v]['label'] = f"{su}_{sv}"
+            G_robot[u][v]['path'] = path
 
         return G_robot
 

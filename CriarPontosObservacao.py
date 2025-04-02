@@ -17,8 +17,8 @@ def main():
     # Config
     file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph8_new.json"
-    observation_path ="./jsons/obp_6.json"
+    grafo_path = "./jsons/graph9a_new.json"
+    observation_path ="./jsons/obpa_6.json"
     observation_folter = "./pontos_observacao"
     padding = 15
     margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto

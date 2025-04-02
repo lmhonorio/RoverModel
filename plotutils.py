@@ -11,6 +11,8 @@ from pygraphviz import AGraph
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+import os
+import subprocess
 
 
 class PlotUtils:
@@ -99,43 +101,63 @@ class PlotUtils:
     # Função para plotar subgrafos em cores diferentes
     ###############################################################################
     @staticmethod
-    def plot_grafo_distance(G, filename="temporario.jpg", figsize=(12, 12), titulo=None):
+    def plot_grafo_distance(G, filename=r"grafo2.png", figsize=(12, 12), titulo=None):
         """
         Gera um arquivo de imagem (filename) do grafo usando Graphviz
         e exibe com matplotlib. Tenta refletir 'weight' como distância,
         configurando o atributo 'len' em cada aresta antes de chamar layout='neato'.
+
         """
-        A = to_agraph(G)
 
-        # Ajuste do 'len' para refletir peso nas arestas (opcional)
-        scale = 0.1  # fator de escala caso os pesos sejam grandes
-        for u, v in G.edges():
-            w = G[u][v].get("weight", 1.0)
-            edge = A.get_edge(u, v)
-            edge.attr["len"] = str(w * scale)
+        temp_dot = "temp_graph.dot"
+        nx.drawing.nx_pydot.write_dot(G, temp_dot)
 
-        #####################################################################
-        # Reduzindo o tamanho da imagem final (em polegadas)
-        # Exemplo: "size" = "15,15" indica 15"x15" para o layout.
-        # "ratio" ajuda a manter a proporção / evitar distorção
-        A.graph_attr["size"] = "15,15"
-        A.graph_attr["ratio"] = "fill"
-        #####################################################################
+        graphviz_bin = r"C:\Program Files\Graphviz\bin"  # Ajuste o caminho aqui se precisar
+        cmd = f'"{os.path.join(graphviz_bin, "dot")}" -Tpng {temp_dot} -o {filename}'
 
-        # Em vez de 'dot', use 'neato' (tenta respeitar distâncias)
-        A.layout(prog="dot")
-        A.draw(filename)
+        subprocess.run(cmd, shell=True, check=True)
 
-        # Carrega e exibe o PNG
         plt.figure(figsize=figsize)
         img = mpimg.imread(filename)
         plt.imshow(img)
-        plt.axis("off")
+        plt.axis('off')
 
         if titulo:
-            plt.title(titulo, fontsize=20, fontweight="bold")
+            plt.title(titulo, fontsize=20, fontweight='bold')
 
         plt.show()
+
+        # A = to_agraph(G)
+        #
+        # # Ajuste do 'len' para refletir peso nas arestas (opcional)
+        # scale = 0.1  # fator de escala caso os pesos sejam grandes
+        # for u, v in G.edges():
+        #     w = G[u][v].get("weight", 1.0)
+        #     edge = A.get_edge(u, v)
+        #     edge.attr["len"] = str(w * scale)
+        #
+        # #####################################################################
+        # # Reduzindo o tamanho da imagem final (em polegadas)
+        # # Exemplo: "size" = "15,15" indica 15"x15" para o layout.
+        # # "ratio" ajuda a manter a proporção / evitar distorção
+        # A.graph_attr["size"] = "15,15"
+        # A.graph_attr["ratio"] = "fill"
+        # #####################################################################
+        #
+        # # Em vez de 'dot', use 'neato' (tenta respeitar distâncias)
+        # A.layout(prog="dot")
+        # A.draw(filename)
+        #
+        # # Carrega e exibe o PNG
+        # plt.figure(figsize=figsize)
+        # img = mpimg.imread(filename)
+        # plt.imshow(img)
+        # plt.axis("off")
+        #
+        # if titulo:
+        #     plt.title(titulo, fontsize=20, fontweight="bold")
+        #
+        # plt.show()
 
     @staticmethod
     def plot_robot_graph(G_robot):

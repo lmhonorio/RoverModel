@@ -17,7 +17,7 @@ G_m = nx.DiGraph()
 G_r = {"R1": nx.Graph(), "R2": nx.Graph()}
 
 #leitura do grafo
-file_path = "./jsons/graph8_new.json"
+file_path = "./jsons/graph9_new.json"
 
 #pontos de observacao em relacao a distancia dos objetos
 observation_points_json_path = "./jsons/obp_6.json"

@@ -395,7 +395,7 @@ class SegmentUtils:
             # Adicionar rótulos
             for p in points:
                 label_obs = nearest_obstacle_label(p[0], p[1])
-                labeled_points.append((p[0], p[1], f"{label_obs}.{i}.{inner_label_counter}.{label_counter}"))
+                labeled_points.append((p[0], p[1], f"{label_obs}.{label_counter}"))
                 inner_label_counter += 1
                 label_counter += 1
 
