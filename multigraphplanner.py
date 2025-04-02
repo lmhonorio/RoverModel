@@ -88,23 +88,13 @@ class MultiGraphPlanner:
 
     @staticmethod
     def parallel_composition(automaton_A, automaton_B, condition=lambda state_A, state_B: True):
-        """
-        Composição paralela de dois autômatos com uma condição personalizada.
+        import networkx as nx
 
-        Args:
-            automaton_A (nx.MultiDiGraph): Primeiro autômato.
-            automaton_B (nx.MultiDiGraph): Segundo autômato.
-            condition (callable): Função lambda que recebe dois estados (state_A, state_B)
-                                  e retorna True se os estados puderem ser combinados, False caso contrário.
-
-        Returns:
-            nx.MultiDiGraph: O autômato resultante da composição paralela.
-        """
         parallel_automaton = nx.MultiDiGraph()
 
+        # 1. Criação dos estados compostos
         for state_A in automaton_A.nodes:
             for state_B in automaton_B.nodes:
-                # Verificar se os estados podem ser combinados
                 if not condition(state_A, state_B):
                     continue
 
@@ -116,33 +106,57 @@ class MultiGraphPlanner:
                     parallel_automaton.nodes[parallel_state]['color'] = 'lightgreen'
                     parallel_automaton.nodes[parallel_state]['style'] = 'filled'
 
-                if automaton_B.nodes[state_B].get('accepting_state') and automaton_A.nodes[state_A].get(
+                if automaton_A.nodes[state_A].get('accepting_state') and automaton_B.nodes[state_B].get(
                         'accepting_state'):
                     parallel_automaton.nodes[parallel_state]['shape'] = 'doublecircle'
                     parallel_automaton.nodes[parallel_state]['color'] = 'orange'
-                    parallel_automaton.nodes[parallel_state]['accepting_state'] = 'true'
+                    parallel_automaton.nodes[parallel_state]['accepting_state'] = True
 
-        sigmaA = list(set([label for (_, _, label) in automaton_A.edges(data='label')] if automaton_A.edges else []))
-        sigmaB = list(set([label for (_, _, label) in automaton_B.edges(data='label')] if automaton_B.edges else []))
+        # 2. Geração dos alfabetos
+        sigmaA = set([data['label'] for _, _, data in automaton_A.edges(data=True)])
+        sigmaB = set([data['label'] for _, _, data in automaton_B.edges(data=True)])
+        all_labels = sigmaA.union(sigmaB)
 
-        for (u_A, v_A, label_A) in automaton_A.edges(data='label'):
-            for (u_B, v_B, label_B) in automaton_B.edges(data='label'):
-                # Verificar se os estados podem ser combinados antes de processar transições
-                if not condition(u_A, u_B):
+        # 3. Transições compostas
+        for state_A in automaton_A.nodes:
+            for state_B in automaton_B.nodes:
+                if not condition(state_A, state_B):
                     continue
 
-                paralelo_original = f'{u_A},{u_B}'
-                parallel_uv = f'{u_A},{v_B}'
-                parallel_vu = f'{v_A},{u_B}'
+                for label in all_labels:
+                    current_state = f'{state_A},{state_B}'
 
-                if label_A == label_B:
-                    parallel_vv = f'{v_A},{v_B}'
-                    MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_vv, label_B)
-                else:
-                    if label_B not in sigmaA:
-                        MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_uv, label_B)
-                    if label_A not in sigmaB:
-                        MultiGraphPlanner.AdicionaEdge(parallel_automaton, paralelo_original, parallel_vu, label_A)
+                    # Tentamos obter as transições em cada autômato individualmente
+                    successors_A = [
+                        (v, data) for u, v, data in automaton_A.edges(state_A, data=True)
+                        if data.get('label') == label
+                    ]
+                    successors_B = [
+                        (v, data) for u, v, data in automaton_B.edges(state_B, data=True)
+                        if data.get('label') == label
+                    ]
+
+                    # Casos possíveis:
+                    # 1. Ambos têm a transição → sincroniza
+                    if successors_A and successors_B:
+                        for (v_A, _) in successors_A:
+                            for (v_B, _) in successors_B:
+                                to_state = f'{v_A},{v_B}'
+                                parallel_automaton.add_edge(current_state, to_state, key=label, label=label)
+
+                    # 2. Só A tem a transição → B mantém o estado
+                    elif successors_A:
+                        for (v_A, _) in successors_A:
+                            to_state = f'{v_A},{state_B}'
+                            parallel_automaton.add_edge(current_state, to_state, key=label, label=label)
+
+                    # 3. Só B tem a transição → A mantém o estado
+                    elif successors_B:
+                        for (v_B, _) in successors_B:
+                            to_state = f'{state_A},{v_B}'
+                            parallel_automaton.add_edge(current_state, to_state, key=label, label=label)
+
+                    # 4. Nenhum tem a transição: nada a fazer
 
         return parallel_automaton
 
@@ -199,7 +213,56 @@ class MultiGraphPlanner:
             print(f" path = {atributos['path']}")
 
 
+    @staticmethod
+    def gerar_grafos_execucao(pontos_por_robo):
+        """
+        Para cada ponto cria um grafo com:
+            - Nó inicial: 'n-<num_ponto>'
+            - Nó final: 'Rx-n-<num_ponto>'
+            - Transições: 'R1-n-<num_ponto>' ou 'R2-n-<num_ponto>' dependendo do robô.
+            - Se um ponto estiver listado para mais de um robô, múltiplas transições saem do nó inicial.
 
+        Retorna:
+            Lista de grafos NX, um para cada ponto.
+        """
+
+
+        pontos_unicos = set()
+        for pontos in pontos_por_robo.values():
+            pontos_unicos.update(pontos)
+
+        lista_grafos = []
+
+        for ponto in pontos_unicos:
+            # Extrai a parte numérica final (ex.: b_busip4.2502 -> 2502)
+            num_ponto = ponto.rsplit('.', 1)[-1]
+
+            # Cria grafo direcionado (DiGraph)
+            G_ponto = nx.DiGraph()
+
+            # Cria os nós inicial e final
+            no_inicial = f"n-{num_ponto}"
+            no_final = f"V-{num_ponto}"
+
+            dfa = {
+                'alphabet': set(),
+                'states': {no_inicial, no_final},
+                'start': no_inicial,
+                'accepting_states': {no_final},
+                'transitions': {}
+            }
+
+            # Para cada robô que contém esse ponto, cria uma transição
+            for robo, pontos_robo in pontos_por_robo.items():
+                if ponto in pontos_robo:
+                    label_transicao = f"{robo}-{num_ponto}"
+                    # Adiciona aresta inicial → final com label da transição
+                    dfa['transitions'][(no_inicial, label_transicao)] = (no_final, 0)
+                    dfa['alphabet'].add(label_transicao)
+
+            lista_grafos.append(dfa)
+
+        return lista_grafos
 
 
     @staticmethod
@@ -210,7 +273,7 @@ class MultiGraphPlanner:
         return node_name  # se não houver '.', devolve a string inteira
 
     @staticmethod
-    def graph_to_dfa_bidirectional(G, robot_param="R1", start=None, accepting=None):
+    def graph_to_dfa_bidirectional(robot, dG, dstart=None, daccepting=None):
         """
         Transforma o grafo G em um dicionário no formato de DFA, com transições bidirecionais,
         mas em vez de (from, label) -> to, cada transição fica (from, label) -> (to, peso).
@@ -254,12 +317,15 @@ class MultiGraphPlanner:
             Dicionário com chaves: 'alphabet', 'states', 'start', 'accepting_states', 'transitions'.
             Em 'transitions', a chave é (estado, label), e o valor é (destino, peso).
         """
+        G = dG[robot]
+        start = dstart[robot]
+        accepting = daccepting[robot]
 
         dfa = {
             'alphabet': set(),
-            'states': set(G.nodes()),
-            'start': start,
-            'accepting_states': set(accepting) if accepting else set(),
+            'states': set([robot+":"+node for node in G.nodes()]),
+            'start': robot+":"+start,
+            'accepting_states': set([robot+":"+node for node in accepting]) if accepting else set(),
             'transitions': {}
         }
 
@@ -271,19 +337,26 @@ class MultiGraphPlanner:
             sv = MultiGraphPlanner.parse_numeric_suffix(str(v))
 
             # Construir labels
-            label_uv = f"{robot_param}_{su}_{sv}"  # ex: "345_667"
-            label_vu = f"{robot_param}_{sv}_{su}"  # ex: "R1_667_345"
+            label_uv = f"{robot}:{su}_{sv}"  # ex: "345_667"
+            label_vu = f"{robot}:{sv}_{su}"  # ex: "R1_667_345"
 
             # Acha peso da aresta
             w = data.get("weight", 1.0)
 
             # Transição de u -> v
-            dfa['transitions'][(u, label_uv)] = (v, w)
+            dfa['transitions'][(robot+":"+u, label_uv)] = (robot+":"+v, w)
             dfa['alphabet'].add(label_uv)
 
             # Transição de v -> u
-            dfa['transitions'][(v, label_vu)] = (u, w)
+            dfa['transitions'][(robot+":"+v, label_vu)] = (robot+":"+u, w)
             dfa['alphabet'].add(label_vu)
+
+        #adiciona a execucao das atividades da missao a custo zero
+        for state in accepting:
+            label_uv = f"{robot}:{state}"  # ex: "345_667"
+            dfa['transitions'][(robot+":"+state, label_uv)] = (robot+":"+state, 0)
+            dfa['alphabet'].add(label_uv)
+
 
         return dfa
 

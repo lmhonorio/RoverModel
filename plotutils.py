@@ -108,24 +108,72 @@ class PlotUtils:
         configurando o atributo 'len' em cada aresta antes de chamar layout='neato'.
 
         """
+        try:
+            # Try to find Graphviz in common paths
+            graphviz_paths = [
+                r"C:\Program Files\Graphviz\bin",
+                r"C:\Program Files (x86)\Graphviz\bin",
+            ]
 
-        temp_dot = "temp_graph.dot"
-        nx.drawing.nx_pydot.write_dot(G, temp_dot)
+            for path in graphviz_paths:
+                if os.path.exists(path):
+                    os.environ["PATH"] += os.pathsep + path
+                    break
+            else:
+                raise RuntimeError("Graphviz not found. Install it from https://graphviz.org/download/")
 
-        graphviz_bin = r"C:\Program Files\Graphviz\bin"  # Ajuste o caminho aqui se precisar
-        cmd = f'"{os.path.join(graphviz_bin, "dot")}" -Tpng {temp_dot} -o {filename}'
+            A = to_agraph(G)
 
-        subprocess.run(cmd, shell=True, check=True)
+            # Optional: Adjust edge lengths based on weights
+            scale = 0.1
+            for u, v in G.edges():
+                w = G[u][v].get("weight", 1.0)
+                edge = A.get_edge(u, v)
+                edge.attr["len"] = str(w * scale)
 
-        plt.figure(figsize=figsize)
-        img = mpimg.imread(filename)
-        plt.imshow(img)
-        plt.axis('off')
+            # Try different layout engines if "dot" fails
+            for prog in ["dot", "neato", "fdp", "sfdp"]:
+                try:
+                    A.layout(prog=prog)
+                    print(f"funcionou com {prog}")
+                    break
+                except:
+                    continue
+            else:
+                raise RuntimeError("Failed to layout graph with any engine.")
 
-        if titulo:
-            plt.title(titulo, fontsize=20, fontweight='bold')
+            A.draw(filename)  # Save the image
+            print(f"Graph saved to {filename}")
 
-        plt.show()
+            # Display using matplotlib
+            plt.figure(figsize=figsize)
+            img = mpimg.imread(filename)
+            plt.imshow(img)
+            plt.axis("off")
+            if titulo:
+                plt.title(titulo, fontsize=20, fontweight="bold")
+            plt.show()
+
+        except Exception as e:
+            print(f"Error plotting graph: {e}")
+            raise
+        # temp_dot = "temp_graph.dot"
+        # nx.drawing.nx_pydot.write_dot(G, temp_dot)
+        #
+        # graphviz_bin = r"C:\Program Files\Graphviz\bin"  # Ajuste o caminho aqui se precisar
+        # cmd = f'"{os.path.join(graphviz_bin, "dot")}" -Tpng {temp_dot} -o {filename}'
+        #
+        # subprocess.run(cmd, shell=True, check=True)
+        #
+        # plt.figure(figsize=figsize)
+        # img = mpimg.imread(filename)
+        # plt.imshow(img)
+        # plt.axis('off')
+        #
+        # if titulo:
+        #     plt.title(titulo, fontsize=20, fontweight='bold')
+        #
+        # plt.show()
 
         # A = to_agraph(G)
         #

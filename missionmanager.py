@@ -217,3 +217,17 @@ class MissionManager:
                 print("🔌 Conexão fechada")
             except:
                 pass
+
+    @staticmethod
+    def build_mission(coords):
+        """
+        coords: lista de (lat, lon)
+        retorna lista de dicts [{"id":0, "lat":..., "lon":...}, ...]
+        duplicando o primeiro ponto na segunda posição (conforme snippet original).
+        """
+        mission = []
+        for i, (lat, lon) in enumerate(coords):
+            mission.append({"id": i, "lat": lat, "lon": lon})
+        if len(mission) >= 1:
+            mission.insert(1, mission[0])  # duplicar o primeiro ponto
+        return mission

@@ -155,7 +155,9 @@ if __name__ == "__main__":
 
     missions = ['b_busip4','ef_reator1','ls_pr4']
     mission_positions  = MultiGraphPlanner.gerar_mission_positions_from_json(observacao_por_obstaculo,missions)
-    mission_execution = {"b_busip4": ["R1", "R2"], "ef_reator1": ["R1", "R2"], "ls_pr4": ["R2"]}
+    mission_execution = {"b_busip4": ["R1","R2"], "ef_reator1": ["R1","R2"], "ls_pr4": ["R2"]}
+
+    print(mission_positions)
 
     tx, ty = -165.9766, -77.6645
     tx2, ty2 = 87.9766, 30.6645
@@ -191,29 +193,62 @@ if __name__ == "__main__":
 
     print(execution_points_per_robot)
 
+
+
+
+
+
+    G_missoes = MultiGraphPlanner.gerar_grafos_execucao(execution_points_per_robot)
+
+
+    Gm1 = MultiGraphPlanner.xml_to_graph(G_missoes[0])
+    Gm2 = MultiGraphPlanner.xml_to_graph(G_missoes[1])
+    Gm3 = MultiGraphPlanner.xml_to_graph(G_missoes[2])
+    Gm4 = MultiGraphPlanner.xml_to_graph(G_missoes[3])
+    Gm5 = MultiGraphPlanner.xml_to_graph(G_missoes[4])
+
+    Gt = MultiGraphPlanner.parallel_composition(Gm1, Gm2)
+    Gt = MultiGraphPlanner.parallel_composition(Gt, Gm3)
+    Gt = MultiGraphPlanner.parallel_composition(Gt, Gm4)
+    Gt = MultiGraphPlanner.parallel_composition(Gt, Gm5)
+
+    PlotUtils.plot_grafo_distance(Gt)
+
+
+
+
+
+
+
+
     G_robot = {}
     G_robot["R1"] = MultiGraphPlanner.build_inspection_graph(robots_positions['R1'], execution_points_per_robot['R1'], G_mapa)
     G_robot["R2"] = MultiGraphPlanner.build_inspection_graph(robots_positions['R2'], execution_points_per_robot['R2'], G_mapa)
 
-    PlotUtils.plot_grafo_distance(G_robot["R1"])
-    PlotUtils.plot_grafo_distance(G_robot["R2"])
+    # PlotUtils.plot_grafo_distance(G_robot["R1"])
+    # PlotUtils.plot_grafo_distance(G_robot["R2"])
 
-    dfaR1 = MultiGraphPlanner.graph_to_dfa_bidirectional(G_robot["R1"],"R1",robots_positions['R1'], execution_points_per_robot['R1'])
-    dfaR2 = MultiGraphPlanner.graph_to_dfa_bidirectional(G_robot["R2"],"R2",robots_positions['R2'], execution_points_per_robot['R2'])
+    dfaR1 = MultiGraphPlanner.graph_to_dfa_bidirectional("R1",G_robot,robots_positions, execution_points_per_robot)
+    dfaR2 = MultiGraphPlanner.graph_to_dfa_bidirectional("R2",G_robot,robots_positions, execution_points_per_robot)
 
     # MultiGraphPlanner.imprimir_multidigraph(G_robot["R1"])
     #
     # print(dfaR1)
 
+
+
+
+
+
     R1 = MultiGraphPlanner.xml_to_graph(dfaR1)
     R2 = MultiGraphPlanner.xml_to_graph(dfaR2)
-    # PlotUtils.plot_grafo_distance(R1)
-    # PlotUtils.plot_grafo_distance(R2)
+    PlotUtils.plot_grafo_distance(R1)
+    PlotUtils.plot_grafo_distance(R2)
 
     G = MultiGraphPlanner.parallel_composition(R1, R2)
 
     print("grafo processado")
-    PlotUtils.plot_mission_graph(G)
+    # PlotUtils.plot_grafo_distance(G)
 
 
 

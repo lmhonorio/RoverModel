@@ -46,22 +46,10 @@ path_r2_coords = MultiGraphPlanner.get_path_from_label(graph_nx, path_r2_labels)
 mission_points_1 = AjustePlanilha.metros_para_geocoordenadas(path_r1_coords, file_path_parametros)
 mission_points_2 = AjustePlanilha.metros_para_geocoordenadas(path_r2_coords, file_path_parametros)
 
-# 5) Constrói as missões no formato exigido pelo MissionManager
-def build_mission(coords):
-    """
-    coords: lista de (lat, lon)
-    retorna lista de dicts [{"id":0, "lat":..., "lon":...}, ...]
-    duplicando o primeiro ponto na segunda posição (conforme snippet original).
-    """
-    mission = []
-    for i, (lat, lon) in enumerate(coords):
-        mission.append({"id": i, "lat": lat, "lon": lon})
-    if len(mission) >= 1:
-        mission.insert(1, mission[0])  # duplicar o primeiro ponto
-    return mission
 
-mission_dict_1 = build_mission(mission_points_1)
-mission_dict_2 = build_mission(mission_points_2)
+
+mission_dict_1 = MissionManager.build_mission(mission_points_1)
+mission_dict_2 = MissionManager.build_mission(mission_points_2)
 
 # 6) Configura e envia para os robôs
 robots = [
@@ -87,7 +75,7 @@ for robot in robots:
 
     print(f"❌ Falha ao configurar robô em {robot['channel']}")
 
-# (Opcional) Armar e iniciar a missão
+# (Opcional) Armar e iniciar a missão - tirei para comecar pelo qground control
 # for manager in managers:
 #     manager.arm_and_start()
 
