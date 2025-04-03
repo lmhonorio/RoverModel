@@ -123,7 +123,7 @@ class PlotUtils:
                 raise RuntimeError("Graphviz not found. Install it from https://graphviz.org/download/")
 
             A = to_agraph(G)
-
+            A.graph_attr.update(size="10,10", ratio="compress")
             # Optional: Adjust edge lengths based on weights
             scale = 0.1
             for u, v in G.edges():
@@ -131,20 +131,9 @@ class PlotUtils:
                 edge = A.get_edge(u, v)
                 edge.attr["len"] = str(w * scale)
 
-            # Try different layout engines if "dot" fails
-            for prog in ["dot", "neato", "fdp", "sfdp"]:
-                try:
-                    A.layout(prog=prog)
-                    print(f"funcionou com {prog}")
-                    break
-                except:
-                    continue
-            else:
-                raise RuntimeError("Failed to layout graph with any engine.")
 
+            A.layout(prog="dot")
             A.draw(filename)  # Save the image
-            print(f"Graph saved to {filename}")
-
             # Display using matplotlib
             plt.figure(figsize=figsize)
             img = mpimg.imread(filename)

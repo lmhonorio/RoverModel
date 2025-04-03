@@ -10,7 +10,8 @@ import json
 from concurrent.futures import ThreadPoolExecutor
 import math
 import re
-
+from itertools import product
+from multiprocessing import Pool
 
 
 class MultiGraphPlanner:
@@ -49,7 +50,7 @@ class MultiGraphPlanner:
 
 
     @staticmethod
-    def get_path_from_label(g: nx.Graph, path_labels: list[str]):
+    def get_path_from_label(g, path_labels):
         """
         Dado um grafo NX cujo nome dos nós é diretamente o label desejado,
         retorna as coordenadas (x,y) correspondentes a cada label da lista.
@@ -195,6 +196,122 @@ class MultiGraphPlanner:
 
         return G
 
+    # Função que será paralelizada para processar estados compostos
+    @staticmethod
+    def process_composite_state(args):
+        composite_state, automata, events = args
+        source_state_name = ",".join(composite_state)
+        transitions = []
+
+        for event in events:
+            next_state = list(composite_state)
+            valid_transition = True
+
+            for i, automaton in enumerate(automata):
+                # Verificar se o evento existe no autômato atual
+                possible_transitions = [v for u, v, label in automaton.edges(data="label") if
+                                        u == composite_state[i] and label == event]
+
+                if possible_transitions:
+                    next_state[i] = possible_transitions[0]
+                elif event in set(label for _, _, label in automaton.edges(data="label")):
+                    # Evento existe no autômato mas não é válido para o estado atual
+                    valid_transition = False
+                    break
+
+            if valid_transition:
+                next_state_name = ",".join(next_state)
+                transitions.append((source_state_name, next_state_name, event))
+
+        return transitions
+
+    # Função principal de composição paralela
+    @staticmethod
+    def parallel_composition_multiple_fast(automata, condition=lambda states: True):
+        """
+        Composição paralela de múltiplos autômatos com suporte a paralelismo.
+
+        Args:
+            automata (list of nx.MultiDiGraph): Lista de autômatos a serem compostos.
+            condition (callable): Função que recebe uma tupla de estados
+                                  e retorna True se os estados puderem ser combinados.
+
+        Returns:
+            nx.MultiDiGraph: O autômato resultante da composição paralela.
+        """
+        parallel_automaton = nx.MultiDiGraph()
+
+        # Obter todos os estados iniciais dos autômatos
+        start_states = [automaton.graph['start'] for automaton in automata]
+
+        # Criar estados compostos a partir do produto cartesiano dos estados de cada autômato
+        all_states = list(product(*[automaton.nodes for automaton in automata]))
+        events = set(label for automaton in automata for (_, _, label) in automaton.edges(data="label"))
+
+        for composite_state in all_states:
+            # Verificar se os estados compostos satisfazem a condição
+            if not condition(composite_state):
+                continue
+
+            # Criar o estado composto
+            composite_state_name = ",".join(composite_state)
+            parallel_automaton.add_node(composite_state_name)
+
+            # Definir o estado inicial
+            if composite_state == tuple(start_states):
+                parallel_automaton.graph['start'] = composite_state_name
+                parallel_automaton.nodes[composite_state_name]['color'] = 'lightgreen'
+                parallel_automaton.nodes[composite_state_name]['style'] = 'filled'
+
+            # Definir estados de aceitação
+            if all(automata[i].nodes[state].get('accepting_state', False) for i, state in enumerate(composite_state)):
+                parallel_automaton.nodes[composite_state_name]['shape'] = 'doublecircle'
+                parallel_automaton.nodes[composite_state_name]['color'] = 'orange'
+                parallel_automaton.nodes[composite_state_name]['accepting_state'] = True
+
+        # Preparar argumentos para processamento paralelo
+        args_list = [(composite_state, automata, events) for composite_state in all_states if
+                     condition(composite_state)]
+
+        # Processar transições em paralelo
+        with Pool() as pool:
+            results = pool.map(MultiGraphPlanner.process_composite_state, args_list)
+
+        # Adicionar as transições ao autômato
+        for transitions in results:
+            for u, v, label in transitions:
+                MultiGraphPlanner.AdicionaEdge(parallel_automaton, u, v, label)
+
+        return parallel_automaton
+
+
+
+
+    @staticmethod
+    def get_start_and_accepting_states(G):
+        """
+        Retorna o estado inicial e o conjunto de estados de aceite de um grafo G.
+
+        Parâmetros:
+            G : nx.Graph, nx.DiGraph ou nx.MultiDiGraph
+                O grafo que representa um autômato, com:
+                - G.graph['start']: estado inicial (opcional)
+                - Cada nó pode ter atributo 'accepting_state': True
+
+        Retorna:
+            (start_state, accepting_states)
+            start_state: str ou None
+            accepting_states: set de estados com 'accepting_state' = True
+        """
+        start_state = G.graph.get('start', None)
+
+        accepting_states = {
+            node for node, data in G.nodes(data=True)
+            if data.get('accepting_state') == True
+        }
+
+        return start_state, accepting_states
+
     @staticmethod
     def imprimir_multidigraph(grafo):
         """
@@ -210,7 +327,7 @@ class MultiGraphPlanner:
         print("\nArestas do grafo:")
         for origem, destino, atributos in grafo.edges(data=True):
             print(f"  {origem} -> {destino} : {atributos['label']}")
-            print(f" path = {atributos['path']}")
+            #print(f" path = {atributos['path']}")
 
 
     @staticmethod
