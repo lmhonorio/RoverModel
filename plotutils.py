@@ -97,6 +97,86 @@ class PlotUtils:
         nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=10, font_color='black')
 
         plt.show()
+
+    @staticmethod
+    def plot_rotas_grafo(G, rotas_por_robo):
+        pos = nx.get_node_attributes(G, 'pos')
+
+        plt.figure(figsize=(12, 10))
+
+        # Plotar o grafo base
+        nx.draw(G, pos, node_color='lightgray', edge_color='gray', node_size=50, with_labels=False)
+
+        # Plotar rotas por robô com cores diferentes
+        cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+        for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+            coords_rota = np.array([pos[node] for node in rota])
+            plt.plot(coords_rota[:, 0], coords_rota[:, 1], marker='o', linestyle='-', linewidth=2,
+                     color=cores[i % len(cores)], label=f'Rota {robo}')
+
+        plt.xlabel("X (metros)")
+        plt.ylabel("Y (metros)")
+        plt.title("Rotas Otimizadas por Robô (Grafo)")
+        plt.legend()
+        plt.grid(True)
+        plt.axis('equal')
+        plt.show()
+
+    @staticmethod
+    def plot_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria):
+        plt.figure(figsize=(12, 10))
+
+        cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+        for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+            caminho_completo = []
+
+            for j in range(len(rota) - 1):
+                u, v = rota[j], rota[j + 1]
+
+                subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+                if caminho_completo and subpath[0] == caminho_completo[-1]:
+                    caminho_completo.extend(subpath[1:])
+                else:
+                    caminho_completo.extend(subpath)
+
+            coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+
+            # Plota todo o caminho em linha
+            plt.plot(coords_caminho[:, 0], coords_caminho[:, 1],
+                     linestyle='-', linewidth=2,
+                     color=cores[i % len(cores)], label=f'Rota {robo}')
+
+            # Diferencia pontos de vistoria dos pontos intermediários
+            for ponto in caminho_completo:
+                x, y = G_robot.nodes[ponto]['pos']
+                if ponto in pontos_vistoria:
+                    plt.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
+                else:
+                    plt.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
+
+            # Marca posição inicial claramente
+            plt.plot(coords_caminho[0, 0], coords_caminho[0, 1], marker='s', color='black', markersize=12, zorder=6)
+
+            # Setas indicando o percurso
+            for k in range(len(coords_caminho) - 1):
+                plt.arrow(coords_caminho[k, 0], coords_caminho[k, 1],
+                          coords_caminho[k + 1, 0] - coords_caminho[k, 0],
+                          coords_caminho[k + 1, 1] - coords_caminho[k, 1],
+                          shape='full', lw=0, length_includes_head=True, head_width=1.0,
+                          color=cores[i % len(cores)], alpha=0.4, zorder=3)
+
+        plt.xlabel("X (metros)")
+        plt.ylabel("Y (metros)")
+        plt.title("Rotas Otimizadas (Vistoria vs Passagem)")
+        plt.legend()
+        plt.grid(True)
+        plt.axis('equal')
+        plt.show()
+
+
+
+
     ###############################################################################
     # Função para plotar subgrafos em cores diferentes
     ###############################################################################
@@ -123,7 +203,7 @@ class PlotUtils:
                 raise RuntimeError("Graphviz not found. Install it from https://graphviz.org/download/")
 
             A = to_agraph(G)
-            A.graph_attr.update(size="10,10", ratio="compress")
+            A.graph_attr.update(size="30,30", ratio="compress")
             # Optional: Adjust edge lengths based on weights
             scale = 0.1
             for u, v in G.edges():

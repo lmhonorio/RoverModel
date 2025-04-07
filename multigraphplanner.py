@@ -12,6 +12,7 @@ import math
 import re
 from itertools import product
 from multiprocessing import Pool
+from tqdm import tqdm
 
 
 class MultiGraphPlanner:
@@ -47,6 +48,220 @@ class MultiGraphPlanner:
         self.mission_times = mission_times
         self.mission_execution = mission_execution
 
+    @staticmethod
+    def process_label_for_astar(args):
+        label, current, automata = args
+        new_state = list(current)
+        total_weight = 0
+        valid = True
+
+        for i, aut in enumerate(automata):
+            succs = [
+                (v, data) for _, v, k, data in aut.out_edges(current[i], keys=True, data=True)
+                if data.get("label") == label
+            ]
+            if succs:
+                v, data = succs[0]
+                new_state[i] = v
+                total_weight += data.get("weight", 1)
+            else:
+                # Label existe no autômato, mas não está habilitado no estado atual
+                labels_aut = {data.get("label") for _, _, _, data in aut.edges(data=True, keys=True)}
+                if label in labels_aut:
+                    valid = False
+                    break
+
+        if not valid:
+            return None
+        return tuple(new_state), total_weight, label
+
+
+    @staticmethod
+    def find_optimal_route_through_all_states(G):
+        """
+        Retorna a rota de menor custo que passa por todos os estados do grafo (TSP exato).
+        Considera os pesos das transições.
+
+        Parâmetros:
+            G: nx.Graph ou nx.DiGraph com pesos nas arestas.
+
+        Retorna:
+            caminho_ideal: lista com a sequência de estados visitados.
+            custo_total: soma dos pesos do caminho.
+        """
+        if G.number_of_nodes() <= 1:
+            return list(G.nodes), 0
+
+        nodes = list(G.nodes)
+        best_path = None
+        min_cost = float('inf')
+
+        for perm in permutations(nodes):
+            custo = 0
+            valido = True
+            for i in range(len(perm) - 1):
+                try:
+                    peso = nx.dijkstra_path_length(G, source=perm[i], target=perm[i + 1], weight='weight')
+                    custo += peso
+                except nx.NetworkXNoPath:
+                    valido = False
+                    break
+            if valido and custo < min_cost:
+                best_path = perm
+                min_cost = custo
+
+        return list(best_path), min_cost
+
+    @staticmethod
+    def parallel_composition_multiple_astar(automata, condition=lambda states: True, heuristic=lambda s: 0):
+        G = nx.MultiDiGraph()
+
+        start_tuple = tuple(a.graph['start'] for a in automata)
+        start_name = ",".join(start_tuple)
+        G.add_node(start_name)
+        G.graph['start'] = start_name
+        G.nodes[start_name]['style'] = 'filled'
+        G.nodes[start_name]['color'] = 'lightgreen'
+
+        visited = set()
+        heap = []
+        heapq.heappush(heap, (0 + heuristic(start_tuple), 0, start_tuple))  # (f, g, state)
+
+        progress_bar = tqdm(total=0, desc="A* paralelizado (até aceitar)", unit="estado", dynamic_ncols=True)
+
+        while heap:
+            f, g, current = heapq.heappop(heap)
+            current_name = ",".join(current)
+
+            if current in visited:
+                continue
+            visited.add(current)
+            progress_bar.total = len(visited) + len(heap)
+            progress_bar.update(1)
+
+            if all(automata[i].nodes[current[i]].get('accepting_state', False) for i in range(len(automata))):
+                G.nodes[current_name]['shape'] = 'doublecircle'
+                G.nodes[current_name]['color'] = 'orange'
+                G.nodes[current_name]['accepting_state'] = True
+                progress_bar.set_postfix_str(f"\u2714 Aceito: {current_name}")
+                break
+
+            all_labels = set(
+                data.get("label")
+                for aut in automata
+                for _, _, _, data in aut.edges(data=True, keys=True)
+                if "label" in data
+            )
+
+            args_list = [(label, current, automata) for label in all_labels]
+
+            with Pool() as pool:
+                results = pool.map(process_label_for_astar, args_list)
+
+            for result in results:
+                if result is None:
+                    continue
+                new_state_tuple, total_weight, label = result
+
+                if not condition(new_state_tuple):
+                    continue
+
+                new_name = ",".join(new_state_tuple)
+
+                if new_name not in G:
+                    G.add_node(new_name)
+                    if all(automata[i].nodes[new_state_tuple[i]].get('accepting_state', False)
+                           for i in range(len(automata))):
+                        G.nodes[new_name]['shape'] = 'doublecircle'
+                        G.nodes[new_name]['color'] = 'orange'
+                        G.nodes[new_name]['accepting_state'] = True
+
+                G.add_edge(current_name, new_name, key=label, label=label, weight=total_weight)
+
+                if new_state_tuple not in visited:
+                    g_new = g + total_weight
+                    f_new = g_new + heuristic(new_state_tuple)
+                    heapq.heappush(heap, (f_new, g_new, new_state_tuple))
+
+        progress_bar.close()
+        return G
+
+
+    @staticmethod
+    def get_shortest_path_to_accepting(G):
+        """
+        Retorna o menor caminho do estado inicial até o primeiro estado de aceite,
+        incluindo os estados visitados e os rótulos (transições) disparados.
+
+        Parâmetros:
+        -----------
+        G : nx.MultiDiGraph
+            Grafo com:
+            - G.graph['start']: estado inicial
+            - Atributo 'accepting_state' nos nós
+            - Arestas com 'label' e 'weight'
+
+        Retorna:
+        --------
+        caminho_estados : list[str]
+            Sequência de estados visitados.
+        transicoes : list[str]
+            Sequência de transições (labels) disparadas.
+        custo_total : float
+            Custo total acumulado do caminho.
+        """
+        start = G.graph.get("start")
+        if start is None:
+            raise ValueError("Grafo não possui estado inicial definido (G.graph['start']).")
+
+        finais = [n for n, d in G.nodes(data=True) if d.get('accepting_state')]
+        if not finais:
+            raise ValueError("Nenhum estado de aceite encontrado no grafo.")
+
+        menor_caminho = None
+        menor_transicoes = None
+        menor_custo = float('inf')
+
+        for fim in finais:
+            try:
+                caminho = nx.shortest_path(G, source=start, target=fim, weight="weight")
+                custo = nx.path_weight(G, caminho, weight="weight")
+
+                transicoes = []
+                for i in range(len(caminho) - 1):
+                    u = caminho[i]
+                    v = caminho[i + 1]
+
+                    # Busca a aresta com menor peso entre u e v
+                    menor_label = None
+                    menor_peso = float('inf')
+                    for key, data in G[u][v].items():
+                        if data.get("weight", 1) < menor_peso:
+                            menor_peso = data["weight"]
+                            menor_label = data.get("label", "")
+
+                    transicoes.append(menor_label)
+
+                if custo < menor_custo:
+                    menor_caminho = caminho
+                    menor_transicoes = transicoes
+                    menor_custo = custo
+
+            except nx.NetworkXNoPath:
+                continue
+
+        if menor_caminho is None:
+            raise ValueError("Não existe caminho do estado inicial para nenhum estado de aceite.")
+
+        print("🧭 Menor caminho de execução:")
+        for i, estado in enumerate(menor_caminho):
+            print(f"  {estado}")
+            if i < len(menor_transicoes):
+                print(f"    └──[{menor_transicoes[i]}]→")
+
+        print(f"✔ Custo total: {menor_custo}")
+
+        return menor_caminho, menor_transicoes, menor_custo
 
 
     @staticmethod
@@ -86,6 +301,216 @@ class MultiGraphPlanner:
     def AdicionaEdge(grafo, origem, destino, label):
         grafo.add_edge(origem, destino, label=label)
 
+
+    @staticmethod
+    def parallel_composition_multiple_astar(automata, condition=lambda states: True, heuristic=lambda s: 0):
+        """
+        Composição paralela de múltiplos autômatos usando busca A*,
+        respeitando transições sincronizadas e parciais.
+
+        Parâmetros:
+        -----------
+        automata : list[nx.MultiDiGraph]
+            Lista de autômatos (com 'label' e 'weight' nas transições).
+        condition : function
+            Função opcional para restringir combinações de estados.
+        heuristic : function
+            Heurística A* baseada no estado composto atual.
+
+        Retorna:
+        --------
+        G : nx.MultiDiGraph
+            Autômato composto, interrompido na primeira aceitação.
+        """
+        G = nx.MultiDiGraph()
+
+        start_tuple = tuple(a.graph['start'] for a in automata)
+        start_name = ",".join(start_tuple)
+        G.add_node(start_name)
+        G.graph['start'] = start_name
+        G.nodes[start_name]['style'] = 'filled'
+        G.nodes[start_name]['color'] = 'lightgreen'
+
+        visited = set()
+        heap = []
+        heapq.heappush(heap, (0 + heuristic(start_tuple), 0, start_tuple))  # (f, g, state)
+
+        progress_bar = tqdm(total=0, desc="A* (até aceitar)", unit="estado", dynamic_ncols=True)
+
+        while heap:
+            f, g, current = heapq.heappop(heap)
+            current_name = ",".join(current)
+
+            if current in visited:
+                continue
+            visited.add(current)
+            progress_bar.total = len(visited) + len(heap)
+            progress_bar.update(1)
+
+            # Verifica se estado composto é de aceite
+            if all(automata[i].nodes[current[i]].get('accepting_state', False) for i in range(len(automata))):
+                G.nodes[current_name]['shape'] = 'doublecircle'
+                G.nodes[current_name]['color'] = 'orange'
+                G.nodes[current_name]['accepting_state'] = True
+                progress_bar.set_postfix_str(f"✔ Aceito: {current_name}")
+                break
+
+            # Extrai todos os labels possíveis
+            all_labels = set(
+                data.get("label")
+                for aut in automata
+                for _, _, _, data in aut.edges(data=True, keys=True)
+                if "label" in data
+            )
+
+            # Para cada label possível (ação)
+            for label in all_labels:
+                new_state = list(current)
+                total_weight = 0
+                transicao_valida = False
+
+                for i, aut in enumerate(automata):
+                    transicoes = [
+                        (v, data) for _, v, k, data in aut.out_edges(current[i], keys=True, data=True)
+                        if data.get("label") == label
+                    ]
+                    if transicoes:
+                        v, data = transicoes[0]  # pega a primeira transição válida
+                        new_state[i] = v
+                        total_weight += data.get("weight", 1)
+                        transicao_valida = True
+                    else:
+                        # Transição não disponível, mantém estado atual
+                        new_state[i] = current[i]
+
+                new_state_tuple = tuple(new_state)
+                if not transicao_valida or not condition(new_state_tuple):
+                    continue
+
+                new_name = ",".join(new_state_tuple)
+
+                if new_name not in G:
+                    G.add_node(new_name)
+                    if all(automata[i].nodes[new_state_tuple[i]].get('accepting_state', False)
+                           for i in range(len(automata))):
+                        G.nodes[new_name]['shape'] = 'doublecircle'
+                        G.nodes[new_name]['color'] = 'orange'
+                        G.nodes[new_name]['accepting_state'] = True
+
+                G.add_edge(current_name, new_name, key=label, label=label, weight=total_weight)
+
+                if new_state_tuple not in visited:
+                    g_new = g + total_weight
+                    f_new = g_new + heuristic(new_state_tuple)
+                    heapq.heappush(heap, (f_new, g_new, new_state_tuple))
+
+        progress_bar.close()
+        return G
+
+
+    @staticmethod
+    def parallel_composition_multiple_astar_old(automata, condition=lambda states: True, heuristic=lambda s: 0):
+        """
+        Composição paralela de múltiplos autômatos usando busca A*.
+
+        - Só expande os estados compostos de menor custo acumulado (g + h).
+        - Permite transições sincronizadas ou parciais.
+
+        Parâmetros:
+        -----------
+        automata : list of nx.MultiDiGraph
+            Lista de autômatos.
+        condition : function
+            Função de restrição que recebe uma tupla de estados e retorna True/False.
+        heuristic : function
+            Função heurística que recebe um estado composto (tuple) e retorna um valor estimado de custo.
+
+        Retorna:
+        --------
+        G : nx.MultiDiGraph
+            Autômato composto explorado via A*.
+        """
+        G = nx.MultiDiGraph()
+
+        # Estado inicial
+        start_tuple = tuple(a.graph['start'] for a in automata)
+        start_name = ",".join(start_tuple)
+        G.add_node(start_name)
+        G.graph['start'] = start_name
+        G.nodes[start_name]['style'] = 'filled'
+        G.nodes[start_name]['color'] = 'lightgreen'
+
+        if all(automata[i].nodes[state].get('accepting_state', False) for i, state in enumerate(start_tuple)):
+            G.nodes[start_name]['shape'] = 'doublecircle'
+            G.nodes[start_name]['color'] = 'orange'
+            G.nodes[start_name]['accepting_state'] = True
+
+        visited = set()
+        heap = []
+        heapq.heappush(heap, (0 + heuristic(start_tuple), 0, start_tuple))  # (f, g, state)
+
+        while heap:
+            f, g, current = heapq.heappop(heap)
+            current_name = ",".join(current)
+
+            if current in visited:
+                continue
+            visited.add(current)
+
+            # Expandir todas transições possíveis (eventos)
+            for i, aut in enumerate(automata):
+                for _, v, k, data in aut.out_edges(current[i], keys=True, data=True):
+                    label = data.get("label")
+                    weight = data.get("weight", 1)
+
+                    # Novo estado composto: só o autômato i avança
+                    new_state = list(current)
+                    new_state[i] = v
+                    new_state = tuple(new_state)
+                    new_name = ",".join(new_state)
+
+                    if not condition(new_state):
+                        continue
+
+                    # Criação do nó novo
+                    if new_name not in G:
+                        G.add_node(new_name)
+
+                        if all(automata[j].nodes[new_state[j]].get('accepting_state', False) for j in
+                               range(len(automata))):
+                            G.nodes[new_name]['shape'] = 'doublecircle'
+                            G.nodes[new_name]['color'] = 'orange'
+                            G.nodes[new_name]['accepting_state'] = True
+
+                    # Aresta parcial
+                    G.add_edge(current_name, new_name, key=label, label=label, weight=weight)
+
+                    if new_state not in visited:
+                        g_new = g + weight
+                        f_new = g_new + heuristic(new_state)
+                        heapq.heappush(heap, (f_new, g_new, new_state))
+
+        return G
+
+
+
+    @staticmethod
+    def info_automato(G):
+        """
+        Retorna o número de estados (nós) e transições (arestas) de um autômato.
+
+        Parâmetros:
+            G : nx.Graph, nx.DiGraph ou nx.MultiDiGraph
+
+        Retorna:
+            dict com:
+                - 'num_estados': número de nós
+                - 'num_transicoes': número de transições (arestas)
+        """
+        return {
+            'num_estados': G.number_of_nodes(),
+            'num_transicoes': G.number_of_edges()
+        }
 
     @staticmethod
     def parallel_composition(automaton_A, automaton_B, condition=lambda state_A, state_B: True):
@@ -470,7 +895,8 @@ class MultiGraphPlanner:
 
         #adiciona a execucao das atividades da missao a custo zero
         for state in accepting:
-            label_uv = f"{robot}:{state}"  # ex: "345_667"
+            num_ponto = state.rsplit('.', 1)[-1]
+            label_uv = f"{robot}-{num_ponto}"  # ex: "345_667"
             dfa['transitions'][(robot+":"+state, label_uv)] = (robot+":"+state, 0)
             dfa['alphabet'].add(label_uv)
 
@@ -645,13 +1071,27 @@ class MultiGraphPlanner:
 
         # 2) Conjunto de todos os "estados" que nos interessam
         states_of_interest = set(inspection_points)
-        states_of_interest.add(start_point)
+
+        if len(start_point)>0:
+            for sp in start_point:
+                states_of_interest.add(sp)
 
         # 3) Criar um grafo vazio para retornar
-        G_robot = nx.Graph()
+        G_robot = nx.DiGraph()
+
+        # Adiciona as posições das missões (pontos de observação)
+        for mission_point in states_of_interest:
+            if mission_point in grafo_mapa and 'pos' in grafo_mapa.nodes[mission_point]:
+                G_robot.add_node(mission_point, pos=grafo_mapa.nodes[mission_point]['pos'])
+            else:
+                print(f"[Aviso] Ponto de missão '{mission_point}' sem 'pos'. Definindo padrão (0,0).")
+                G_robot.add_node(mission_point, pos=(0.0, 0.0))
+
+
         # Adicionar nós
-        for st in states_of_interest:
-            G_robot.add_node(st)
+        # for st in states_of_interest:
+        #     G_robot.add_node(st)
+        #     G_robot[st]['pos']=grafo_mapa[st]['pos']
 
         # 4) Vamos testar pares (u, v) usando combinações
         from itertools import combinations
@@ -668,13 +1108,12 @@ class MultiGraphPlanner:
             # path[1:-1] = nós intermediários
             intermediarios = set(path[1:-1])
             if intermediarios.intersection(states_of_interest):
-                # Se tiver intersecção, significa que passaria por outro estado
-                # que também nos interessa --> não criamos essa aresta
                 continue
 
             # Caso não tenha nenhum estado de interesse no meio,
             # adicionamos a aresta com o peso (dist)
             G_robot.add_edge(u, v, weight=dist)
+            G_robot.add_edge(v, u, weight=dist)
             su = MultiGraphPlanner.parse_numeric_suffix(str(u))
             sv = MultiGraphPlanner.parse_numeric_suffix(str(v))
 
@@ -682,7 +1121,13 @@ class MultiGraphPlanner:
             G_robot[u][v]['label'] = f"{su}_{sv}"
             G_robot[u][v]['path'] = path
 
+            G_robot[v][u]['label'] = f"{sv}_{su}"
+            G_robot[v][u]['path'] = path
+
         return G_robot
+
+
+
 
     def heuristic(self, a, b):
         """Calcula a heurística baseada no tempo mínimo necessário para ir de a -> b."""
