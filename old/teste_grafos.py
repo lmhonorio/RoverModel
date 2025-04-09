@@ -4,8 +4,8 @@ from segmentutils import SegmentUtils
 from aabbutils import AABBUtils
 
 # Caminhos de entrada
-file_path = "./jsons/graph9_new.json"
-observation_points_json_path = "./jsons/obp_6.json"
+file_path = "../jsons/graph9_new.json"
+observation_points_json_path = "../jsons/obp_6.json"
 
 # Carrega grafo e pontos
 G_nx = SegmentUtils.load_graph_json(file_path)

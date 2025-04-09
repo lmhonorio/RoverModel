@@ -7,7 +7,7 @@ from roverclass import MotorModel, SkidSteerRoverModel, RoverController, Obstacl
 # Manipulação de grafo
 from segmentutils import SegmentUtils
 from aabbutils import AABBUtils
-from multigraphplanner import MultiGraphPlanner
+from old.multigraphplanner import MultiGraphPlanner
 
 ##################################################
 # 1) CARREGA O GRAFO

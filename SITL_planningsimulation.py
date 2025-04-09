@@ -1,6 +1,5 @@
 import json
-import networkx as nx
-from multigraphplanner import MultiGraphPlanner
+from old.multigraphplanner import MultiGraphPlanner
 
 # Se estiver em outro módulo, ajuste os imports conforme sua estrutura de pastas
 from segmentutils import SegmentUtils  # -> onde está load_graph_json

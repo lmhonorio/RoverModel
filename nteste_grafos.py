@@ -1,10 +1,6 @@
-from multigraphplanner import MultiGraphPlanner
+from old.multigraphplanner import MultiGraphPlanner
 from segmentutils import SegmentUtils
-import networkx as nx
-import matplotlib.pyplot as plt
-from aabbutils import AABBUtils
 from plotutils import PlotUtils
-import time
 from collections import defaultdict
 from tspOptimization import FixedTaskPlanner
 from aabbutils import AABBUtils

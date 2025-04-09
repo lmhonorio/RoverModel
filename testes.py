@@ -1,111 +1,129 @@
-import json
-import networkx as nx
+# Exemplo de uso:
+from geneticoptimizator import GeneticRoverParameterIdentifier
+import pandas as pd
+import matplotlib.pyplot as plt
+from pymavlog import MavLog
+import numpy as np
 
-# Se estiver em outro módulo, ajuste os imports conforme sua estrutura de pastas
-from segmentutils import SegmentUtils  # -> onde está load_graph_json
-from ajusteplanilha import AjustePlanilha  # -> hipotético, para fazer a conversão metros -> geocoord
-from missionmanager import MissionManager  # -> hipotético, para conectar e enviar missão
 
-# Arquivos de entrada
-file_path_graph = "./jsons/graph7.json"
-file_path_missao = "./jsons/missao_6.json"
-file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
+def filtrar_por_tempo(Time, *arrays, t_min=0.0, t_max=9999.0):
+    mask = (Time >= t_min) & (Time <= t_max)
+    return (Time[mask],) + tuple(arr[mask] for arr in arrays)
 
-# 1) Carrega o grafo como NetworkX
-graph_nx = SegmentUtils.load_graph_json(file_path_graph)
 
-# 2) Função auxiliar para converter labels -> coords no grafo
-def get_path_from_label(g: nx.Graph, path_labels: list[str]):
-    """
-    Dado um grafo NX cujos nós têm atributo "label",
-    encontra as coordenadas (x,y) que correspondem a cada label da lista.
-    """
-    coords = []
-    for label in path_labels:
-        # Percorre todos os nós do grafo procurando o que tenha data["label"] == label
-        found = False
-        for node, data in g.nodes(data=True):
-            if data.get("label") == label:
-                coords.append(node)  # node é a tupla (x, y)
-                found = True
-                break
-        if not found:
-            print(f"⚠️  Label não encontrado no grafo: {label}")
-    return coords
 
-# 3) Carrega o JSON de missão e extrai todos os "path"
-with open(file_path_missao, "r") as f:
-    mission_data = json.load(f)
 
-# Se a estrutura for "R1": [...], "R2": [...]
-# cada item contendo "mission": "...", "tasks": [ { "path": [...], ... }, ... ]
+if __name__ == "__main__":
+    file_bin = "./Arquivossuporte/sequencia1.bin"
+    mavlog = MavLog(file_bin)
+    mavlog.parse()
 
-path_r1_labels = []
-if "R1" in mission_data:
-    for mission_block in mission_data["R1"]:
-        for task in mission_block["tasks"]:
-            path_r1_labels.extend(task["path"])
+    xkf1 = mavlog.get("XKF1")
+    rcou = mavlog.get("RCOU")
 
-path_r2_labels = []
-if "R2" in mission_data:
-    for mission_block in mission_data["R2"]:
-        for task in mission_block["tasks"]:
-            path_r2_labels.extend(task["path"])
+    mask = ~np.isnan(xkf1["VN"]) & ~np.isnan(xkf1["VE"]) & ~np.isnan(xkf1["Yaw"])
+    VN = xkf1["VN"][mask]
+    VE = xkf1["VE"][mask]
+    Yaw = xkf1["Yaw"][mask]
+    GZ =  xkf1["GZ"][mask]
+    Time = xkf1["TimeUS"][mask] * 1e-6
 
-print(f"[DEBUG] R1 path (labels): {path_r1_labels}")
-print(f"[DEBUG] R2 path (labels): {path_r2_labels}")
 
-# Converte labels -> coordenadas (tuplas x,y)
-path_r1_coords = get_path_from_label(graph_nx, path_r1_labels)
-path_r2_coords = get_path_from_label(graph_nx, path_r2_labels)
 
-# 4) Converte coords (x,y) -> (lat, lon) usando arquivo de parâmetros
-mission_points_1 = AjustePlanilha.metros_para_geocoordenadas(path_r1_coords, file_path_parametros)
-mission_points_2 = AjustePlanilha.metros_para_geocoordenadas(path_r2_coords, file_path_parametros)
 
-# 5) Constrói as missões no formato exigido pelo MissionManager
-def build_mission(coords):
-    """
-    coords: lista de (lat, lon)
-    retorna lista de dicts [{"id":0, "lat":..., "lon":...}, ...]
-    duplicando o primeiro ponto na segunda posição (conforme snippet original).
-    """
-    mission = []
-    for i, (lat, lon) in enumerate(coords):
-        mission.append({"id": i, "lat": lat, "lon": lon})
-    if len(mission) >= 1:
-        mission.insert(1, mission[0])  # duplicar o primeiro ponto
-    return mission
 
-mission_dict_1 = build_mission(mission_points_1)
-mission_dict_2 = build_mission(mission_points_2)
 
-# 6) Configura e envia para os robôs
-robots = [
-    {"channel": "udp:0.0.0.0:14551", "mission": mission_dict_1, "source_system": 201},
-    {"channel": "udp:0.0.0.0:14552", "mission": mission_dict_2, "source_system": 202}
-]
+    Time, VN, VE, Yaw = filtrar_por_tempo(Time, VN, VE, Yaw, t_min=75.8, t_max=94.5)
+    Time = Time - Time[0]
 
-managers = []
+    Yaw_rad = np.unwrap(np.deg2rad(Yaw)) if np.max(Yaw) > 2 * np.pi else Yaw
 
-for robot in robots:
-    print(f"\n🛠 Conectando com robô em {robot['channel']}")
-    manager = MissionManager(
-        udp_channel=robot["channel"],
-        source_system=robot["source_system"],
-        timeout=15,
-        max_attempts=50
+    Yaw_rad = pd.Series(Yaw_rad).rolling(window=60, center=True, min_periods=30).mean().to_numpy()
+
+    # 1. Eliminar repetições para evitar erro
+    Time = np.linspace(Time.min(), Time.max(), len(Time))
+
+
+    plt.subplot(2, 1, 1)
+    plt.plot(Time, Yaw_rad, label=" (Yaw rad)", linewidth=2)
+    # plt.plot(Time, Yaw_unwrapped, label=" (Yaw unwrapped)", linewidth=2)
+    # plt.plot(Time, angular_velocity, label="GZ", linewidth=2)
+    plt.ylabel("Velocidade")
+    plt.title("Velocidades do Veículo (Frame Local)")
+    plt.grid(True)
+    plt.legend()
+    plt.show()
+
+    cos_yaw = np.cos(Yaw_rad)
+    sin_yaw = np.sin(Yaw_rad)
+    v_forward = cos_yaw * VN + sin_yaw * VE
+
+    v_forward = pd.Series(v_forward).rolling(window=10, center=True, min_periods=5).mean().to_numpy()
+
+    Time_pwm = rcou["TimeUS"] * 1e-6
+    pwm_scaled = {}
+    for i in range(1, 5):
+        raw = rcou[f"C{i}"]
+        scaled = (raw - 1500) * 100 / 400
+        pwm_scaled[i] = scaled
+
+    Time_pwm, pwm1, pwm2, pwm3, pwm4 = filtrar_por_tempo(
+        Time_pwm,
+        pwm_scaled[1], pwm_scaled[2], pwm_scaled[3], pwm_scaled[4],
+        t_min=75.8, t_max=94.5
     )
+    Time_pwm = Time_pwm - Time_pwm[0]
+    Time_pwm = np.linspace(Time_pwm.min(), Time_pwm.max(), len(Time_pwm))
 
-    if manager.connect():
-        if manager.upload_mission(robot["mission"]):
-            managers.append(manager)
-            continue
+    pwm1 = np.interp(Time, Time_pwm, pwm1)
+    pwm2 = np.interp(Time, Time_pwm, pwm2)
+    pwm3 = np.interp(Time, Time_pwm, pwm3)
+    pwm4 = np.interp(Time, Time_pwm, pwm4)
+    Time_pwm = Time.copy()
 
-    print(f"❌ Falha ao configurar robô em {robot['channel']}")
+    pwm_scaled = {
+        1: pwm1,
+        2: pwm2,
+        3: pwm3,
+        4: pwm4
+    }
 
-# (Opcional) Armar e iniciar a missão
-# for manager in managers:
-#     manager.arm_and_start()
 
-print("\n✅ Missões planejadas e enviadas com sucesso.")
+    angular_velocity = np.gradient(Yaw_rad, Time)
+    angular_velocity_smooth = pd.Series(angular_velocity).rolling(window=60, center=True, min_periods=30).mean().to_numpy()- 0.25
+
+    plt.subplot(2, 1, 1)
+    plt.plot(Time, v_forward, label="Velocidade Linear (Forward)", linewidth=2)
+    plt.plot(Time, angular_velocity, label="Velocidade Angular (Yaw)", linewidth=2)
+    plt.plot(Time, angular_velocity_smooth, label="Yaw Suavizado", linewidth=2)
+    plt.ylabel("Velocidade")
+    plt.title("Velocidades do Veículo (Frame Local)")
+    plt.grid(True)
+    plt.legend()
+
+    plt.subplot(2, 1, 2)
+    for i in range(1, 5):
+        plt.plot(Time_pwm, pwm_scaled[i], label=f'Motor {i}')
+    plt.xlabel("Tempo [s]")
+    plt.ylabel("PWM Escalonado [-100, 100]")
+    plt.title("PWM dos Motores")
+    plt.grid(True)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.show()
+
+    df_sim = pd.DataFrame({
+        "timestamp(ms)": (Time_pwm * 1000).astype(int),
+        "RCOU.C1": ((pwm1 * 400 / 100) + 1500).astype(int),
+        "RCOU.C2": ((pwm2 * 400 / 100) + 1500).astype(int),
+        "RCOU.C3": ((pwm3 * 400 / 100) + 1500).astype(int),
+        "RCOU.C4": ((pwm4 * 400 / 100) + 1500).astype(int),
+        "GPS[0].Spd": v_forward,
+        "IMU[0].GyrZ": angular_velocity_smooth
+    })
+
+    xlsx_path = "./planilhas/sequenciaa1.xlsx"
+    df_sim.to_excel(xlsx_path, index=False)
+
+
