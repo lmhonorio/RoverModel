@@ -34,8 +34,9 @@ class GeneticRoverParameterIdentifier:
         (0.1, 0.4),    # time_constant_linear
         (0.1, 0.4),    # time_constant_angular
         (0.5,1.5),     # right wheel resistance
-        (0.5, 1.5)     # left  wheel resistance
-    ]
+        (0.5, 1.5) ,    # left  wheel resistance
+        (0.01, 0.3)  # turning_gain
+        ]
 
         # # Rover physical parameters (essential ones)
         # m = 15.0  # Mass [kg] - directly used in dynamics calculations
@@ -48,7 +49,7 @@ class GeneticRoverParameterIdentifier:
 
         self.constants = constants or {
             "mass" : 15, # mass
-            "L" : 0.5, # Wheelbase [m] - critical for turn calculations
+            "L" : 0.3, # Wheelbase [m] - critical for turn calculations
             "r" : 0.1,  # Wheel radius [m] - converts angular to linear velocity
             "pwm_min": -100,  # Minimum PWM value (full reverse)
             "pwm_max": 100  # Maximum PWM value (full forward)
@@ -61,27 +62,53 @@ class GeneticRoverParameterIdentifier:
 
     def evaluate(self, individual):
         try:
-            I, kt, ktarget_velocity, time_constant, torque_scale, time_constant_linear, time_constant_angular, rwheel, lwheel = individual
 
+            # # Create motor instances with only used parameters
+            # motor_FR = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity, pwm_min=pwm_min, pwm_max=pwm_max,
+            #                       time_constant=time_constant, torque_scale=torque_scale, orientation=-1,
+            #                       wheel_radius=r)
+            #
+            # # Initialize rover model with all active parameters
+            # rover_model = SkidSteerRoverModel(
+            #     m=m,  # Mass
+            #     I=I,  # Moment of inertia
+            #     L=L,  # Wheelbase
+            #     r=r,  # Wheel radius
+            #     motor_FL=motor_FL,  # Front left motor
+            #     motor_FR=motor_FR,  # Front right motor
+            #     motor_RL=motor_RL,  # Rear left motor
+            #     motor_RR=motor_RR,  # Rear right motor
+            #     rleft=rwheel,
+            #     rright=lwheel,
+            #     C_r=cr,
+            #     C_omega=comega,
+            #     linear_force_scale=time_constant_linear,
+            #     angular_force_scale=time_constant_angular
+            # )
+            I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
 
-            motor_FR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1)
-            motor_FL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1)
-            motor_RL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1)
-            motor_RR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1)
+            R = 0.2
+
+            motor_FR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rFR)
+            motor_FL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rFL)
+            motor_RL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rRL)
+            motor_RR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rRR)
 
             rover = SkidSteerRoverModel(
-                m=self.constants["mass"],
+                m=m,
                 I=I,
-                L=self.constants["L"],
-                r=self.constants["r"],
+                L=L,
+                r=r,
                 motor_FL=motor_FL,
                 motor_FR=motor_FR,
                 motor_RL=motor_RL,
                 motor_RR=motor_RR,
                 rright= rwheel,
                 rleft= lwheel,
-                time_constant_linear=time_constant_linear,
-                time_constant_angular=time_constant_angular
+                C_r=C_r,
+                C_omega=C_omega,
+                linear_force_scale=linear_force_scale,
+                angular_force_scale=angular_force_scale
             )
 
             state = np.array([0, 0, 0, 0, 0])
@@ -108,7 +135,7 @@ class GeneticRoverParameterIdentifier:
                 if np.isnan(linear_sim) or np.isnan(angular_sim):
                     return (1e6,)
 
-                error = math.sqrt(abs(linear_real - linear_sim)**2 + abs(angular_real - angular_sim)**2)
+                error = abs(linear_real - linear_sim) + abs(angular_real - angular_sim)
                 error_total += error
 
                 sim_data.append({
@@ -155,6 +182,12 @@ class GeneticRoverParameterIdentifier:
         plt.tight_layout()
         plt.show()
 
+    @staticmethod
+    def clip_individual(individual, bounds):
+        for i, (min_val, max_val) in enumerate(bounds):
+            individual[i] = np.clip(individual[i], min_val, max_val)
+        return individual
+
     def run_genetic_algorithm(self):
         creator.create("FitnessMin", base.Fitness, weights=(-1.0,))
         creator.create("Individual", list, fitness=creator.FitnessMin)
@@ -164,13 +197,17 @@ class GeneticRoverParameterIdentifier:
             toolbox.register(f"attr_float_{i}", np.random.uniform, bounds[0], bounds[1])
 
         toolbox.register("individual", tools.initCycle, creator.Individual,
-                         tuple(getattr(toolbox, f"attr_float_{i}") for i in range(len(self.param_bounds))), 1)
+                         tuple(getattr(toolbox, f"attr_float_{i}") for i in range(len(self.param_bounds))), n=1)
 
         toolbox.register("population", tools.initRepeat, list, toolbox.individual)
         toolbox.register("evaluate", self.evaluate)
         toolbox.register("mate", tools.cxUniform, indpb=0.5)
-        toolbox.register("mutate", tools.mutGaussian, mu=[b[0] for b in self.param_bounds],
-                         sigma=[(b[1] - b[0]) / 10 for b in self.param_bounds], indpb=0.2)
+        toolbox.register("mutate", tools.mutGaussian,
+                         mu=[(a + b) / 2 for a, b in self.param_bounds],
+                         sigma=[(b - a) / 5 for a, b in self.param_bounds],
+                         indpb=0.2)
+
+
         toolbox.register("select", tools.selTournament, tournsize=3)
 
         # pool = multiprocessing.Pool()
@@ -180,6 +217,9 @@ class GeneticRoverParameterIdentifier:
 
         for gen in range(self.generations):
             offspring = algorithms.varAnd(population, toolbox, cxpb=0.8, mutpb=0.1)
+
+            for i, ind in enumerate(offspring):
+                offspring[i] = GeneticRoverParameterIdentifier.clip_individual(ind, self.param_bounds)
             # fits = toolbox.map(toolbox.evaluate, offspring)
             fits = list(map(toolbox.evaluate, offspring))
             for ind, fit in zip(offspring, fits):
