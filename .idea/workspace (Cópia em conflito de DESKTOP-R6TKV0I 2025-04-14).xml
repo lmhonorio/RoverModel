@@ -1,0 +1,671 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="3a9e25cc-01b9-43c2-bd30-0e98e11550d3" name="Default Changelist" comment="planejamento multiagente heterogenio funcionando. implementado na funcao nteste_grafos.py.&#10;&#10;calcula a distribuição de tarefas pelo kmeans considerando as distrancias e posicionamento de cada robo.&#10;calcula a rota de cada conjunto de pontos pelo nearest-point algorithm. (o mais rápido e, para a nossa topologia, ficaram bem bons os resultados)">
+      <change afterPath="$PROJECT_DIR$/old/robotgraphbuilder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/PlanejadorHeterogeneo.py" beforeDir="false" afterPath="$PROJECT_DIR$/PlanejadorHeterogeneo.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SITL_planningsimulation.py" beforeDir="false" afterPath="$PROJECT_DIR$/SITL_planningsimulation.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/grafo2.png" beforeDir="false" afterPath="$PROJECT_DIR$/grafo2.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/multigraphplanner.py" beforeDir="false" afterPath="$PROJECT_DIR$/old/multigraphplanner.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/n2D_rover.py" beforeDir="false" afterPath="$PROJECT_DIR$/n2D_rover.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/nteste_grafos.py" beforeDir="false" afterPath="$PROJECT_DIR$/nteste_grafos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/robotgraphbuilder.py" beforeDir="false" afterPath="$PROJECT_DIR$/geneticoptimizator.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/roverclass.py" beforeDir="false" afterPath="$PROJECT_DIR$/roverclass.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/simulateDynamicModel.py" beforeDir="false" afterPath="$PROJECT_DIR$/simulateDynamicModel.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/teste_grafos.py" beforeDir="false" afterPath="$PROJECT_DIR$/old/teste_grafos.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/testes.py" beforeDir="false" afterPath="$PROJECT_DIR$/testes.py" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;lmhonorio&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/lmhonorio/RoverModel.git&quot;,
+    &quot;accountId&quot;: &quot;da5f70a6-3597-4a50-abb1-87b8f654398b&quot;
+  }
+}</component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="2u28eK4e1DhmQQ6NDcPsSofKO7M" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.CriarPontosObservacao.executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlanejadorHeterogeneo (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.PlanejadorHeterogeneo.executor&quot;: &quot;Run&quot;,
+    &quot;Python.SITL_planningsimulation.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.bridgetoAP.executor&quot;: &quot;Run&quot;,
+    &quot;Python.bridgetoAP2.executor&quot;: &quot;Run&quot;,
+    &quot;Python.geneticoptimizator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.n2D_rover.executor&quot;: &quot;Run&quot;,
+    &quot;Python.nRoverSimulator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.nteste_grafos.executor&quot;: &quot;Run&quot;,
+    &quot;Python.planning.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.roverclass.executor&quot;: &quot;Run&quot;,
+    &quot;Python.rovermodel (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.roversimulator.executor&quot;: &quot;Run&quot;,
+    &quot;Python.simulateDynamicModel (1).executor&quot;: &quot;Run&quot;,
+    &quot;Python.simulateDynamicModel_simplificado.executor&quot;: &quot;Debug&quot;,
+    &quot;Python.testeSAE.executor&quot;: &quot;Run&quot;,
+    &quot;Python.teste_grafos.executor&quot;: &quot;Run&quot;,
+    &quot;Python.teste_robots_stil.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testes.executor&quot;: &quot;Run&quot;,
+    &quot;Python.testesdiversos.executor&quot;: &quot;Run&quot;,
+    &quot;Python.tratasubestacao.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/grin/Dropbox/Projetos/ARGO robo autonomo/sistemas/RoverModel&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel\old" />
+      <recent name="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel" />
+      <recent name="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel\Documentacao" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.simulateDynamicModel (1)">
+    <configuration name="PlanejadorHeterogeneo" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/PlanejadorHeterogeneo.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="geneticoptimizator" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/geneticoptimizator.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="rovermodel" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel\rovermodel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="simulateDynamicModel (1)" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/simulateDynamicModel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="simulateDynamicModel" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel\simulateDynamicModel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="simulateDynamicModel" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="C:\Users\lmhon\Dropbox\Projetos\ARGO robo autonomo\sistemas\RoverModel\simulateDynamicModel.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="simulateDynamicModel_simplificado" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/simulateDynamicModel_simplificado.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="testes" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="RoverModel" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testes.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.simulateDynamicModel (1)" />
+        <item itemvalue="Python.testes" />
+        <item itemvalue="Python.simulateDynamicModel_simplificado" />
+        <item itemvalue="Python.geneticoptimizator" />
+        <item itemvalue="Python.PlanejadorHeterogeneo" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-python-sdk-1b1018131e27-aa17d162503b-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-243.22562.180" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="3a9e25cc-01b9-43c2-bd30-0e98e11550d3" name="Default Changelist" comment="" />
+      <created>1741435402850</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1741435402850</updated>
+    </task>
+    <task id="LOCAL-00001" summary="versao inicial - CriarpontosObservacao.py operacional salvando o automato">
+      <option name="closed" value="true" />
+      <created>1741631585727</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1741631585727</updated>
+    </task>
+    <task id="LOCAL-00002" summary="mudança na criacao do grafo - o label do elemento agora é a composicao entre o nome do objeto_vistoria com o indice relacionado numero do ponto de inspeção na lista entre todos os pontos que analisam este.">
+      <option name="closed" value="true" />
+      <created>1741880768307</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1741880768307</updated>
+    </task>
+    <task id="LOCAL-00003" summary="melhoria na funcao de coneccao do grafo. agora todos os pontos de dentro do aabb estao se conectando a seus vizinhos. desenvolvimento das rotinas de planning utilizando streap. --- falta acertar, estava funcionando no exemplo criado mas neste novo grafo nao. falta debug">
+      <option name="closed" value="true" />
+      <created>1741971232557</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1741971232557</updated>
+    </task>
+    <task id="LOCAL-00004" summary="PLANNING FUNCIONANDO">
+      <option name="closed" value="true" />
+      <created>1741975680086</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1741975680086</updated>
+    </task>
+    <task id="LOCAL-00005" summary="PLANNING FUNCIONANDO e aprimorado para desempenho">
+      <option name="closed" value="true" />
+      <created>1741982505170</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1741982505170</updated>
+    </task>
+    <task id="LOCAL-00006" summary="PLANNING FUNCIONANDO e aprimorado para desempenho">
+      <option name="closed" value="true" />
+      <created>1742140693174</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1742140693174</updated>
+    </task>
+    <task id="LOCAL-00007" summary="classe multigraphplanner.py funcionando&#10;exemplo para dois robos funcionando no arquivo PlanejadorHeterogeneo.py&#10;readme postado em html">
+      <option name="closed" value="true" />
+      <created>1742149802373</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1742149802373</updated>
+    </task>
+    <task id="LOCAL-00008" summary="planejador funcionado, simulador funcionando com 2 robos. o que falta é melhorar um pouco o planejamento para nao deixar dois robos se cruzarem durante a execução das tarefas">
+      <option name="closed" value="true" />
+      <created>1742325377490</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1742325377490</updated>
+    </task>
+    <task id="LOCAL-00009" summary="2">
+      <option name="closed" value="true" />
+      <created>1742327299072</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1742327299072</updated>
+    </task>
+    <task id="LOCAL-00010" summary="2">
+      <option name="closed" value="true" />
+      <created>1742327754339</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1742327754339</updated>
+    </task>
+    <task id="LOCAL-00011" summary="2 com erros">
+      <option name="closed" value="true" />
+      <created>1742412280699</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1742412280699</updated>
+    </task>
+    <task id="LOCAL-00012" summary="2 com erros">
+      <option name="closed" value="true" />
+      <created>1742413362343</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1742413362343</updated>
+    </task>
+    <task id="LOCAL-00013" summary="2 com erros">
+      <option name="closed" value="true" />
+      <created>1742923277780</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1742923277780</updated>
+    </task>
+    <task id="LOCAL-00014" summary="com comunicacao e codigo para simulacao em dois stil">
+      <option name="closed" value="true" />
+      <created>1742923325432</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1742923325432</updated>
+    </task>
+    <task id="LOCAL-00015" summary="na subestacao">
+      <option name="closed" value="true" />
+      <created>1742928213535</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1742928213535</updated>
+    </task>
+    <task id="LOCAL-00016" summary="na subestacao - ainda com problemas de envio da missao.">
+      <option name="closed" value="true" />
+      <created>1742932772225</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1742932772225</updated>
+    </task>
+    <task id="LOCAL-00017" summary="ENVIO DE MISSAO PRONTO. BRIDGE PRONTO. TOPOLOGIA DE COMUNICAO PRONTA. DOCUMENTACAO ATUALIZADA">
+      <option name="closed" value="true" />
+      <created>1743013699269</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1743013699269</updated>
+    </task>
+    <task id="LOCAL-00018" summary="posicoes em X e Y acertadas&#10;delta x e y acertados&#10;ids unicos considerando posicao_equipamento acertado">
+      <option name="closed" value="true" />
+      <created>1743091990026</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1743091990026</updated>
+    </task>
+    <task id="LOCAL-00019" summary="posicoes em X e Y acertadas&#10;delta x e y acertados&#10;ids unicos considerando posicao_equipamento acertado">
+      <option name="closed" value="true" />
+      <created>1743092009136</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1743092009136</updated>
+    </task>
+    <task id="LOCAL-00020" summary="posicoes em X e Y acertadas&#10;delta x e y acertados&#10;ids unicos considerando posicao_equipamento acertado">
+      <option name="closed" value="true" />
+      <created>1743092899622</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1743092899622</updated>
+    </task>
+    <task id="LOCAL-00021" summary="atual problema.. .criando conexoes de grafos separados em locais que passam por dentro dos aabbs">
+      <option name="closed" value="true" />
+      <created>1743094429193</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1743094429193</updated>
+    </task>
+    <task id="LOCAL-00022" summary="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.">
+      <option name="closed" value="true" />
+      <created>1743101655912</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1743101655912</updated>
+    </task>
+    <task id="LOCAL-00023" summary="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation.py">
+      <option name="closed" value="true" />
+      <created>1743105652317</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1743105652317</updated>
+    </task>
+    <task id="LOCAL-00024" summary="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation">
+      <option name="closed" value="true" />
+      <created>1743105686726</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1743105686726</updated>
+    </task>
+    <task id="LOCAL-00025" summary="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation">
+      <option name="closed" value="true" />
+      <created>1743105847150</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1743105847150</updated>
+    </task>
+    <task id="LOCAL-00026" summary="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation">
+      <option name="closed" value="true" />
+      <created>1743106072055</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1743106072055</updated>
+    </task>
+    <task id="LOCAL-00027" summary="grafo final melhorado para os pontos de observacao.">
+      <option name="closed" value="true" />
+      <created>1743189775866</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1743189775866</updated>
+    </task>
+    <task id="LOCAL-00028" summary="geracao dos pontos de observacao em arquivo indexados pelo objeto de interesse.&#10;geracao dos pontos em kml com displacement para casar com as imagens do servidor de tile. &#10;geracao de arquivo json para ser utilizado com o planejador&#10;pontos kml gerados para a SE parnaiba III">
+      <option name="closed" value="true" />
+      <created>1743262350716</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1743262350716</updated>
+    </task>
+    <task id="LOCAL-00029" summary="planejador heterogeneo adequado para multiplas missoes que podem ser divididas entre os robos.">
+      <option name="closed" value="true" />
+      <created>1743369591111</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1743369591111</updated>
+    </task>
+    <task id="LOCAL-00030" summary="planejador heterogeneo adequado para multiplas missoes que podem ser divididas entre os robos.">
+      <option name="closed" value="true" />
+      <created>1743441792242</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1743441792242</updated>
+    </task>
+    <task id="LOCAL-00031" summary="bug leitura de grafo json arrumado">
+      <option name="closed" value="true" />
+      <created>1743441822249</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1743441822249</updated>
+    </task>
+    <task id="LOCAL-00032" summary="bug leitura de grafo json arrumado">
+      <option name="closed" value="true" />
+      <created>1743441829307</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1743441829307</updated>
+    </task>
+    <task id="LOCAL-00033" summary="alteracao no formato do json do mapa&#10;inicio do desenvolvimento da nova metodologia de otimizacao">
+      <option name="closed" value="true" />
+      <created>1743538973946</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1743538973946</updated>
+    </task>
+    <task id="LOCAL-00034" summary="ate STIL_PLANNINGSIMULATION funcionando">
+      <option name="closed" value="true" />
+      <created>1743617320895</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1743617320895</updated>
+    </task>
+    <task id="LOCAL-00035" summary="ate STIL_PLANNINGSIMULATION funcionando">
+      <option name="closed" value="true" />
+      <created>1743625443080</created>
+      <option name="number" value="00035" />
+      <option name="presentableId" value="LOCAL-00035" />
+      <option name="project" value="LOCAL" />
+      <updated>1743625443080</updated>
+    </task>
+    <task id="LOCAL-00036" summary="ate STIL_PLANNINGSIMULATION funcionando">
+      <option name="closed" value="true" />
+      <created>1743702073891</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1743702073891</updated>
+    </task>
+    <task id="LOCAL-00037" summary="planejamento multiagente heterogenio funcionando. implementado na funcao nteste_grafos.py.&#10;&#10;calcula a distribuição de tarefas pelo kmeans considerando as distrancias e posicionamento de cada robo.&#10;calcula a rota de cada conjunto de pontos pelo nearest-point algorithm. (o mais rápido e, para a nossa topologia, ficaram bem bons os resultados)">
+      <option name="closed" value="true" />
+      <created>1744050219762</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1744050219762</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="master" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="versao inicial - CriarpontosObservacao.py operacional salvando o automato" />
+    <MESSAGE value="mudança na criacao do grafo - o label do elemento agora é a composicao entre o nome do objeto_vistoria com o indice relacionado numero do ponto de inspeção na lista entre todos os pontos que analisam este." />
+    <MESSAGE value="melhoria na funcao de coneccao do grafo. agora todos os pontos de dentro do aabb estao se conectando a seus vizinhos. desenvolvimento das rotinas de planning utilizando streap. --- falta acertar, estava funcionando no exemplo criado mas neste novo grafo nao. falta debug" />
+    <MESSAGE value="PLANNING FUNCIONANDO" />
+    <MESSAGE value="PLANNING FUNCIONANDO e aprimorado para desempenho" />
+    <MESSAGE value="classe multigraphplanner.py funcionando&#10;exemplo para dois robos funcionando no arquivo PlanejadorHeterogeneo.py&#10;readme postado em html" />
+    <MESSAGE value="planejador funcionado, simulador funcionando com 2 robos. o que falta é melhorar um pouco o planejamento para nao deixar dois robos se cruzarem durante a execução das tarefas" />
+    <MESSAGE value="2" />
+    <MESSAGE value="2 com erros" />
+    <MESSAGE value="com comunicacao e codigo para simulacao em dois stil" />
+    <MESSAGE value="na subestacao" />
+    <MESSAGE value="na subestacao - ainda com problemas de envio da missao." />
+    <MESSAGE value="ENVIO DE MISSAO PRONTO. BRIDGE PRONTO. TOPOLOGIA DE COMUNICAO PRONTA. DOCUMENTACAO ATUALIZADA" />
+    <MESSAGE value="posicoes em X e Y acertadas&#10;delta x e y acertados&#10;ids unicos considerando posicao_equipamento acertado" />
+    <MESSAGE value="atual problema.. .criando conexoes de grafos separados em locais que passam por dentro dos aabbs" />
+    <MESSAGE value="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation.py" />
+    <MESSAGE value="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais." />
+    <MESSAGE value="novo processo de geracao de caminhos pronto.&#10;gerando caminhos mais abertos com os parametros atuais.&#10;simulando tudo com STIL no SITL_planningsimulation" />
+    <MESSAGE value="grafo final melhorado para os pontos de observacao." />
+    <MESSAGE value="geracao dos pontos de observacao em arquivo indexados pelo objeto de interesse.&#10;geracao dos pontos em kml com displacement para casar com as imagens do servidor de tile. &#10;geracao de arquivo json para ser utilizado com o planejador&#10;pontos kml gerados para a SE parnaiba III" />
+    <MESSAGE value="planejador heterogeneo adequado para multiplas missoes que podem ser divididas entre os robos." />
+    <MESSAGE value="bug leitura de grafo json arrumado" />
+    <MESSAGE value="alteracao no formato do json do mapa&#10;inicio do desenvolvimento da nova metodologia de otimizacao" />
+    <MESSAGE value="ate STIL_PLANNINGSIMULATION funcionando" />
+    <MESSAGE value="planejamento multiagente heterogenio funcionando. implementado na funcao nteste_grafos.py.&#10;&#10;calcula a distribuição de tarefas pelo kmeans considerando as distrancias e posicionamento de cada robo.&#10;calcula a rota de cada conjunto de pontos pelo nearest-point algorithm. (o mais rápido e, para a nossa topologia, ficaram bem bons os resultados)" />
+    <option name="LAST_COMMIT_MESSAGE" value="planejamento multiagente heterogenio funcionando. implementado na funcao nteste_grafos.py.&#10;&#10;calcula a distribuição de tarefas pelo kmeans considerando as distrancias e posicionamento de cada robo.&#10;calcula a rota de cada conjunto de pontos pelo nearest-point algorithm. (o mais rápido e, para a nossa topologia, ficaram bem bons os resultados)" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/old/planning.py</url>
+          <line>111</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/tspOptimization.py</url>
+          <line>110</line>
+          <option name="timeStamp" value="45" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/nteste_grafos.py</url>
+          <line>147</line>
+          <option name="timeStamp" value="46" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+</project>
