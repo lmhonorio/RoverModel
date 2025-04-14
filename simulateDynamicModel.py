@@ -24,22 +24,29 @@ torque_scale = .05    # Empirical scaling factor for torque output
 
 # Rover dynamics parameters
 time_constant_linear = 3   # Linear velocity response time [s]
-time_constant_angular = 2.01  # Angular velocity response time [s]
+time_constant_angular = 1.01  # Angular velocity response time [s]
 
-rwheel = 1.1
-lwheel = 0.9
+rwheel = 1.0
+lwheel = 1.0
 
 
 
 cr = 10
-comega = 10
+comega = 1.90
 
 # I, kt, ktarget_velocity, time_constant, torque_scale, time_constant_linear, time_constant_angular, rwheel, lwheel = [11.362369375359686, 0.07370867052404233, 0.03077704492650191, 2.3980967708841745, 3.377603602633413, 2.673203620155811, 0.507326963775808, 0.957779291276004, 1.0367148165604743]
 
 rFR = 0.2
-rFL = 0.21
+rFL = 0.2
 rRL = 0.2
-rRR = 0.19
+rRR = 0.2
+
+# individual = [7.755988242159815, 36.54332723498386, 0.1960132675789864, 0.28762870914277927, 1.0291899747122495,
+#               0.03215144323168917, 3.541950513828812, 0.4846157118012735, 6.0, 0.37670415436957455, 1.3656705950706196,
+#               1.2736602351503212, 7.874448702118817, 6.944908597346093, 0.21060876231648473, 0.23112138256489415, 0.25,
+#               0.25]
+#
+# I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
 
 # Create motor instances with only used parameters
 motor_FR = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity,  pwm_min=pwm_min, pwm_max=pwm_max, time_constant=time_constant, torque_scale=torque_scale,  orientation= -1, wheel_radius=rFR)
@@ -78,7 +85,8 @@ pwm_sequences = [
     (np.array([-80, 80, 80, -80]), 1.8),  # Curva suave para a direita
     (np.array([60, -40, -40, 60]), 1.7),  # Ré com curva leve
     (np.array([-90, 90, 90, -90]), 2.0),  # Movimento reto rápido
-    (np.array([30, 40, 40, 30]), 1.6),  # Movimento misto
+    (np.array([100, 100, 100, 100]), 3),  # Movimento misto
+    (np.array([-100, -100, -100, -100]), 3),  # Movimento misto
     (np.array([0, 0, 0, 0]), 1.9),  # Movimento reto devagar
     (np.array([100, -80, -80, 100]), 2.0),  # Ré rápida curva para esquerda
     (np.array([-70, 70, 70, -70]), 1.7),  # Movimento reto médio
@@ -89,7 +97,7 @@ pwm_sequences = [
 
 #mask = np.array([-1, 1, 1, -1])  # Máscara para inverter sinais se necessário
 
-dt = 0.1  # Passo de tempo [s]
+dt = 0.006  # Passo de tempo [s]
 trajectory = []
 velocities = []
 time_global = []

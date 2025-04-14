@@ -1,4 +1,42 @@
+import math
+
 import numpy as np
+
+class SecondOrderSystem:
+    def __init__(self, K, tau, zeta, dt):
+        self.K = K
+        self.tau = tau
+        self.zeta = zeta
+        self.dt = dt
+        self.reset()
+        self.compute_discrete_coefficients()
+
+    def reset(self):
+        self.u = [0, 0, 0]
+        self.y = [0, 0]
+
+    def compute_discrete_coefficients(self):
+        # Bilinear transform (Tustin's method)
+        T = self.dt
+        wn = 1.0 / self.tau
+        a0 = T**2 * wn**2 + 2 * self.zeta * wn * T + 1
+        self.b0 = self.K * T**2 * wn**2 / a0
+        self.b1 = 2 * self.b0
+        self.b2 = self.b0
+        self.a1 = (2 * (T**2 * wn**2 - 1)) / a0
+        self.a2 = (T**2 * wn**2 - 2 * self.zeta * wn * T + 1) / a0
+
+    def update(self, u_current):
+        self.u = [u_current] + self.u[:2]  # Shift inputs
+        y_new = (
+            self.b0 * self.u[0] +
+            self.b1 * self.u[1] +
+            self.b2 * self.u[2] -
+            self.a1 * self.y[0] -
+            self.a2 * self.y[1]
+        )
+        self.y = [y_new] + self.y[:1]  # Shift outputs
+        return y_new
 
 class MotorModel:
     def __init__(self, kt, ktarget_velocity, pwm_min, pwm_max,
@@ -65,12 +103,15 @@ class SkidSteerRoverModel:
         f_right = self.rright * (f_FR + f_RR)
 
         # Resistências
-        F_resist = -self.C_r * v
-        Tau_resist = -self.C_omega * omega
+        F_resist = self.C_r * v
+        Tau_resist = self.C_omega * omega
+
+
 
         # Dinâmica translacional e rotacional com resistência
-        a_linear = self.linear_force_scale * ((f_left + f_right) + F_resist) / self.m
-        alpha = self.angular_force_scale * (((f_left - f_right) * self.r) + Tau_resist) / self.I
+        a_linear = self.linear_force_scale * ((f_left + f_right) - F_resist) / self.m
+        # alpha = self.angular_force_scale * (((f_right - f_left) * self.r) - self.C_omega * Tau_resist) / self.I
+        alpha = self.angular_force_scale * ((-f_right + f_left) * self.r - Tau_resist) / self.I
 
         # # Dinâmica translacional e rotacional
         # a_linear = (f_left + f_right) / self.m

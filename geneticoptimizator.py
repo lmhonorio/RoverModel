@@ -57,8 +57,10 @@ class GeneticRoverParameterIdentifier:
 
         self.last_sim_data = []
 
+    # def scale_pwm(self, pwm, motor_id):
+    #     return  (pwm - 1500) * (100 / 400)
     def scale_pwm(self, pwm, motor_id):
-        return  (pwm - 1500) * (100 / 400)
+        return  pwm
 
     def evaluate(self, individual):
         try:
@@ -85,6 +87,8 @@ class GeneticRoverParameterIdentifier:
             #     linear_force_scale=time_constant_linear,
             #     angular_force_scale=time_constant_angular
             # )
+
+
             I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
 
             R = 0.2
@@ -117,7 +121,13 @@ class GeneticRoverParameterIdentifier:
             error_total = 0
             sim_data = []
 
-            for _, row in self.data_real.iterrows():
+            timestamps = self.data_real['timestamp(ms)'].to_numpy() / 1000.0  # em segundos
+            previous_time = timestamps[0]
+
+            for idx, row in self.data_real.iterrows():
+                current_time = timestamps[idx]
+                dt = current_time - previous_time if idx > 0 else 0.1  # usa 0.1 no primeiro passo
+
                 pwm_inputs = np.array([
                     self.scale_pwm(row['RCOU.C1'], 1),
                     self.scale_pwm(row['RCOU.C2'], 2),
@@ -143,7 +153,11 @@ class GeneticRoverParameterIdentifier:
                     "linear_real": linear_real,
                     "linear_sim": linear_sim,
                     "angular_real": angular_real,
-                    "angular_sim": angular_sim
+                    "angular_sim": angular_sim,
+                    "pwm1": pwm_inputs[0],
+                    "pwm2": pwm_inputs[1],
+                    "pwm3": pwm_inputs[2],
+                    "pwm4": pwm_inputs[3]
                 })
 
             self.last_sim_data = sim_data
@@ -163,19 +177,39 @@ class GeneticRoverParameterIdentifier:
         angular_real = [d['angular_real'] for d in self.last_sim_data]
         angular_sim = [d['angular_sim'] for d in self.last_sim_data]
 
-        plt.figure(figsize=(10, 5))
-        plt.subplot(2, 1, 1)
+        pwm1 = [d.get('pwm1', 0) for d in self.last_sim_data]
+        pwm2 = [d.get('pwm2', 0) for d in self.last_sim_data]
+        pwm3 = [d.get('pwm3', 0) for d in self.last_sim_data]
+        pwm4 = [d.get('pwm4', 0) for d in self.last_sim_data]
+
+        plt.figure(figsize=(12, 8))
+
+        # Velocidade linear
+        plt.subplot(3, 1, 1)
         plt.plot(time, linear_real, label='Vel. Linear Real')
         plt.plot(time, linear_sim, label='Vel. Linear Simulada')
         plt.ylabel("Velocidade Linear [m/s]")
         plt.legend()
         plt.grid(True)
 
-        plt.subplot(2, 1, 2)
+        # Velocidade angular
+        plt.subplot(3, 1, 2)
         plt.plot(time, angular_real, label='Vel. Angular Real')
         plt.plot(time, angular_sim, label='Vel. Angular Simulada')
         plt.ylabel("Velocidade Angular [rad/s]")
         plt.xlabel("Tempo [s]")
+        plt.legend()
+        plt.grid(True)
+
+        # PWM
+        plt.subplot(3, 1, 3)
+        plt.plot(time, pwm1, label="PWM FL")
+        plt.plot(time, pwm2, label="PWM FR")
+        plt.plot(time, pwm3, label="PWM RL")
+        plt.plot(time, pwm4, label="PWM RR")
+        plt.ylabel("PWM [-100, 100]")
+        plt.xlabel("Tempo [s]")
+        plt.title("Sinais PWM por Motor")
         plt.legend()
         plt.grid(True)
 
@@ -208,10 +242,10 @@ class GeneticRoverParameterIdentifier:
                          indpb=0.2)
 
 
-        toolbox.register("select", tools.selTournament, tournsize=3)
+        toolbox.register("select", tools.selTournament, tournsize=1)
 
-        # pool = multiprocessing.Pool()
-        # toolbox.register("map", pool.map)
+        pool = multiprocessing.Pool()
+        toolbox.register("map", pool.map)
 
         population = toolbox.population(n=self.population_size)
 
@@ -220,18 +254,26 @@ class GeneticRoverParameterIdentifier:
 
             for i, ind in enumerate(offspring):
                 offspring[i] = GeneticRoverParameterIdentifier.clip_individual(ind, self.param_bounds)
-            # fits = toolbox.map(toolbox.evaluate, offspring)
-            fits = list(map(toolbox.evaluate, offspring))
+            fits = toolbox.map(toolbox.evaluate, offspring)
+            # fits = list(map(toolbox.evaluate, offspring))
             for ind, fit in zip(offspring, fits):
                 ind.fitness.values = fit
 
-            population = toolbox.select(offspring, k=len(population))
-            top = tools.selBest([ind for ind in population if not np.isnan(ind.fitness.values[0])], 1)[0]
+            elite_size = 1
+            elite = tools.selBest(population, elite_size)  # os melhores da geração atual
+            population = toolbox.select(offspring, k=len(population) - elite_size)
+            population.extend(elite)
+
+            valid = [ind for ind in population if ind.fitness.valid and not np.isnan(ind.fitness.values[0])]
+            if valid:
+                top = tools.selBest(valid, 1)[0]
+                print(f"Geração {gen + 1}: Erro do melhor indivíduo = {top.fitness.values[0]:.4f}")
+            else:
+                print(f"Geração {gen + 1}: Nenhum indivíduo válido.")
             print(f"Geração {gen+1}: Erro do melhor indivíduo = {top.fitness.values[0]:.4f}")
 
         best_individual = tools.selBest([ind for ind in population if not np.isnan(ind.fitness.values[0])], 1)[0]
         print("Melhores parâmetros encontrados:", best_individual)
 
         self.evaluate(best_individual)
-        self.plot_results()
         return best_individual
