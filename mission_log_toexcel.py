@@ -17,16 +17,16 @@ if __name__ == "__main__":
     # file_bin = "./Arquivossuporte/sequencia1.bin"
 
     #sequencia1 -
-    file_bin = "./Arquivossuporte/sequencia14s.bin"
-    tmin = 25.0
-    tmax = 70.0
-    xlsx_path = "./planilhas/sequencia_14s.xlsx"
+    # file_bin = "./Arquivossuporte/sequencia14s.bin"
+    # tmin = 25.0
+    # tmax = 70.0
+    # xlsx_path = "./planilhas/sequencia_14s.xlsx"
 
     #sequencia1 -
-    # file_bin = "./Arquivossuporte/sequencia1.bin"
-    # tmin = 47.5
-    # tmax = 67.5
-    # xlsx_path = "./planilhas/sequencia_1_1.xlsx"
+    file_bin = "./Arquivossuporte/sequencia1.bin"
+    tmin = 47.5
+    tmax = 67.5
+    xlsx_path = "./planilhas/sequencia_1_1.xlsx"
 
     #sequencia4 -
     # file_bin = "./Arquivossuporte/sequencia4.bin"
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     # tmax = 70
     # xlsx_path = "./planilhas/sequencia_4_1.xlsx"
 
-    #sequencia2 -
+    # #sequencia2 -
     # file_bin = "./Arquivossuporte/sequencia2.bin"
     # tmin = 52.5
     # tmax = 71.0
@@ -74,8 +74,9 @@ if __name__ == "__main__":
 
     mask = ~np.isnan(imu["GyrZ"])
     GZ =  imu["GyrZ"][mask]
+    Gz = np.unwrap(GZ)
     TimeGz = imu["TimeUS"][mask] * 1e-6
-    GZ = pd.Series(GZ).rolling(window=60, center=True, min_periods=5).mean().to_numpy()
+    GZ = pd.Series(GZ).rolling(window=100, center=True, min_periods=100).mean().to_numpy()
 
     TimeGz = TimeGz - TimeGz[0]
     Time = Time - Time[0]
@@ -133,6 +134,20 @@ if __name__ == "__main__":
     }
 
 
+
+    df_sim = pd.DataFrame({
+        "timestamp(ms)": (Time_pwm * 1000).astype(int),
+        "RCOU.C1": (pwm1).astype(int),
+        "RCOU.C2": (pwm2).astype(int),
+        "RCOU.C3": (pwm3).astype(int),
+        "RCOU.C4": (pwm4).astype(int),
+        "GPS[0].Spd": v_forward,
+        "IMU[0].GyrZ": GZ
+    })
+
+
+    df_sim.to_excel(xlsx_path, index=False)
+
     # angular_velocity = np.gradient(Yaw_rad, Time)
     # angular_velocity_smooth = pd.Series(angular_velocity).rolling(window=80, center=True, min_periods=30).mean().to_numpy()
 
@@ -168,17 +183,6 @@ if __name__ == "__main__":
     #     "IMU[0].GyrZ": GZ
     # })
 
-    df_sim = pd.DataFrame({
-        "timestamp(ms)": (Time_pwm * 1000).astype(int),
-        "RCOU.C1": (pwm1).astype(int),
-        "RCOU.C2": (pwm2).astype(int),
-        "RCOU.C3": (pwm3).astype(int),
-        "RCOU.C4": (pwm3).astype(int),
-        "GPS[0].Spd": v_forward,
-        "IMU[0].GyrZ": GZ
-    })
 
-
-    df_sim.to_excel(xlsx_path, index=False)
 
 

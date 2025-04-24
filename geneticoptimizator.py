@@ -38,14 +38,7 @@ class GeneticRoverParameterIdentifier:
         (0.01, 0.3)  # turning_gain
         ]
 
-        # # Rover physical parameters (essential ones)
-        # m = 15.0  # Mass [kg] - directly used in dynamics calculations
-        # L = 0.5  # Wheelbase [m] - critical for turn calculations
-        # r = 0.1  # Wheel radius [m] - converts angular to linear velocity
-        #
-        # # Motor control parameters (actually used in simplified model)
-        # pwm_min = -100  # Minimum PWM value (full reverse)
-        # pwm_max = 100  # Maximum PWM value (full forward)
+
 
         self.constants = constants or {
             "mass" : 15, # mass
@@ -65,38 +58,16 @@ class GeneticRoverParameterIdentifier:
     def evaluate(self, individual):
         try:
 
-            # # Create motor instances with only used parameters
-            # motor_FR = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity, pwm_min=pwm_min, pwm_max=pwm_max,
-            #                       time_constant=time_constant, torque_scale=torque_scale, orientation=-1,
-            #                       wheel_radius=r)
-            #
-            # # Initialize rover model with all active parameters
-            # rover_model = SkidSteerRoverModel(
-            #     m=m,  # Mass
-            #     I=I,  # Moment of inertia
-            #     L=L,  # Wheelbase
-            #     r=r,  # Wheel radius
-            #     motor_FL=motor_FL,  # Front left motor
-            #     motor_FR=motor_FR,  # Front right motor
-            #     motor_RL=motor_RL,  # Rear left motor
-            #     motor_RR=motor_RR,  # Rear right motor
-            #     rleft=rwheel,
-            #     rright=lwheel,
-            #     C_r=cr,
-            #     C_omega=comega,
-            #     linear_force_scale=time_constant_linear,
-            #     angular_force_scale=time_constant_angular
-            # )
 
 
             I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
 
             R = 0.2
 
-            motor_FR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rFR)
-            motor_FL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rFL)
-            motor_RL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rRL)
-            motor_RR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=self.constants["pwm_min"], pwm_max=self.constants["pwm_max"], time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rRR)
+            motor_FR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rFR)
+            motor_FL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rFL)
+            motor_RL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rRL)
+            motor_RR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rRR)
 
             rover = SkidSteerRoverModel(
                 m=m,
@@ -126,7 +97,7 @@ class GeneticRoverParameterIdentifier:
 
             for idx, row in self.data_real.iterrows():
                 current_time = timestamps[idx]
-                dt = current_time - previous_time if idx > 0 else 0.1  # usa 0.1 no primeiro passo
+                dt = 0.02
 
                 pwm_inputs = np.array([
                     self.scale_pwm(row['RCOU.C1'], 1),
@@ -267,9 +238,7 @@ class GeneticRoverParameterIdentifier:
             valid = [ind for ind in population if ind.fitness.valid and not np.isnan(ind.fitness.values[0])]
             if valid:
                 top = tools.selBest(valid, 1)[0]
-                print(f"Geração {gen + 1}: Erro do melhor indivíduo = {top.fitness.values[0]:.4f}")
-            else:
-                print(f"Geração {gen + 1}: Nenhum indivíduo válido.")
+
             print(f"Geração {gen+1}: Erro do melhor indivíduo = {top.fitness.values[0]:.4f}")
 
         best_individual = tools.selBest([ind for ind in population if not np.isnan(ind.fitness.values[0])], 1)[0]

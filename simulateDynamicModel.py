@@ -1,139 +1,39 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from roverclass import MotorModel, SkidSteerRoverModel
-
-
-#I, kt, ktarget_velocity, time_constant, torque_scale, time_constant_linear, time_constant_angular, rwheel, lwheel = individual = [11.362369375359686, 0.07370867052404233, 0.03077704492650191, 2.3980967708841745, 3.377603602633413, 2.673203620155811, 0.507326963775808, 0.957779291276004, 1.0367148165604743]
-# Rover parameters - parametros conhecidos
-# Rover physical parameters (essential ones)
-m = 10.0    # Mass [kg] - directly used in dynamics calculations
-L = 0.3     # Wheelbase [m] - critical for turn calculations
-r = 0.2     # Wheel radius [m] - converts angular to linear velocity
-
-# Motor control parameters (actually used in simplified model)
-pwm_min = -100   # Minimum PWM value (full reverse)
-pwm_max = 100    # Maximum PWM value (full forward)
-
-# Rover parameters - parametros para serem otimizados
-I = 2.0     # Moment of inertia [kg*m²] - used in angular dynamics
-kt = 9.8       # Torque constant [Nm/A] - scales PWM to torque
-ktarget_velocity = 0.1535
-time_constant = 0.1   # Motor response time [s] - first-order dynamics
-torque_scale = .05    # Empirical scaling factor for torque output
-
-
-# Rover dynamics parameters
-time_constant_linear = 3   # Linear velocity response time [s]
-time_constant_angular = 1.01  # Angular velocity response time [s]
-
-rwheel = 1.0
-lwheel = 1.0
+from roverclass import MotorModel, SkidSteerRoverModel, EvaluateRoverParameters
 
 
 
-cr = 10
-comega = 1.90
-
-# I, kt, ktarget_velocity, time_constant, torque_scale, time_constant_linear, time_constant_angular, rwheel, lwheel = [11.362369375359686, 0.07370867052404233, 0.03077704492650191, 2.3980967708841745, 3.377603602633413, 2.673203620155811, 0.507326963775808, 0.957779291276004, 1.0367148165604743]
-
-rFR = 0.2
-rFL = 0.2
-rRL = 0.2
-rRR = 0.2
-
-# individual = [7.755988242159815, 36.54332723498386, 0.1960132675789864, 0.28762870914277927, 1.0291899747122495,
-#               0.03215144323168917, 3.541950513828812, 0.4846157118012735, 6.0, 0.37670415436957455, 1.3656705950706196,
-#               1.2736602351503212, 7.874448702118817, 6.944908597346093, 0.21060876231648473, 0.23112138256489415, 0.25,
-#               0.25]
-#
-# I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
-
-# Create motor instances with only used parameters
-motor_FR = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity,  pwm_min=pwm_min, pwm_max=pwm_max, time_constant=time_constant, torque_scale=torque_scale,  orientation= -1, wheel_radius=rFR)
-motor_FL = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity,  pwm_min=pwm_min, pwm_max=pwm_max, time_constant=time_constant, torque_scale=torque_scale,  orientation= 1, wheel_radius=rFL)
-motor_RL = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity,  pwm_min=pwm_min, pwm_max=pwm_max, time_constant=time_constant, torque_scale=torque_scale,  orientation= 1, wheel_radius=rRL)
-motor_RR = MotorModel(kt=kt, ktarget_velocity=ktarget_velocity,  pwm_min=pwm_min, pwm_max=pwm_max, time_constant=time_constant, torque_scale=torque_scale,  orientation= -1, wheel_radius=rRR)
-
-# Initialize rover model with all active parameters
-rover_model = SkidSteerRoverModel(
-    m=m,                  # Mass
-    I=I,                  # Moment of inertia
-    L=L,                  # Wheelbase
-    r=r,                  # Wheel radius
-    motor_FL=motor_FL,    # Front left motor
-    motor_FR=motor_FR,    # Front right motor
-    motor_RL=motor_RL,    # Rear left motor
-    motor_RR=motor_RR,    # Rear right motor
-    rleft= rwheel,
-    rright= lwheel,
-    C_r= cr,
-    C_omega=comega,
-    linear_force_scale = time_constant_linear,
-    angular_force_scale= time_constant_angular
-)
-
-# Estado inicial do rover
-state = np.array([0, 0, 0, 0, 0])  # [x, y, theta, v, omega]
-
-# Configuração da bateria
-battery_voltage = 48  # Tensão da bateria [V]
-
-# Sequência de comandos PWM
-#np.array([pwm_FR, pwm_FL, pwm_RL, pwm_RR], tempo)
-#orientacao = np.array([-1, 1, 1, -1])
-pwm_sequences = [
-    (np.array([-80, 80, 80, -80]), 1.8),  # Curva suave para a direita
-    (np.array([60, -40, -40, 60]), 1.7),  # Ré com curva leve
-    (np.array([-90, 90, 90, -90]), 2.0),  # Movimento reto rápido
-    (np.array([100, 100, 100, 100]), 3),  # Movimento misto
-    (np.array([-100, -100, -100, -100]), 3),  # Movimento misto
-    (np.array([0, 0, 0, 0]), 1.9),  # Movimento reto devagar
-    (np.array([100, -80, -80, 100]), 2.0),  # Ré rápida curva para esquerda
-    (np.array([-70, 70, 70, -70]), 1.7),  # Movimento reto médio
-    (np.array([90, -90, -90, 90]), 1.5),  # Ré em alta velocidade
-    (np.array([-60, 80, 80, -60]), 1.8),  # Curva controlada para a direita
-    (np.array([50, -50, -50, 50]), 1.6)  # Ré lenta
+param_names = [
+    "I - momento de inércia", "m - massa", "r - raio da roda", "L - entre-eixos",
+    "kt", "ktarget_velocity", "time_constant", "torque_scale",
+    "linear_force_scale", "angular_force_scale", "rwheel", "lwheel",
+    "C_r", "C_omega", "r_FR", "r_FL", "r_RL", "r_RR"
 ]
 
-#mask = np.array([-1, 1, 1, -1])  # Máscara para inverter sinais se necessário
+individual = [3.646465528646285, 9.65814489363485, 0.5, 0.8224688903921193, 0.8940170780417092, 0.2012976170620885, 0.04590521246354088, 0.028442619242259888, 2.0, 2.928117243253443, 2.5166122073282535, 3.05, 3.937398180335976, 3.5484531665805896, 0.24452204198298327, 0.3997932866438163, 0.3093710438492553, 0.40742299063002274]
+individual = [7.38843438, 6.23076006, 0.49926106, 0.61531902, 1.48013604, 0.66269152, 0.0760918,  0.01031666, 1.56940289, 2.97840951, 2.83477282, 1.98279523, 6.81041878, 6.03190296, 0.42540815, 0.21179836, 0.21279214, 0.31565927]
+individual = [6.61532699, 5.01771887, 0.56332537, 0.9938069,  1.6791308,  0.6985648,  0.20019771, 0.01197814, 1.58822935, 2.96753579, 2.21756364, 2.80395149,  7.99779026, 4.36294693, 0.49528919, 0.22287651, 0.46269301, 0.21101814]
 
-dt = 0.006  # Passo de tempo [s]
-trajectory = []
-velocities = []
-time_global = []
+s = "[5.93989374 5.05153555 0.32709552 0.90555982 1.0232813 0.68036464 0.352118 0.01000042 1.28572813 1.16333492 2.97910925 3.04047996 7.98131271 1.01999508 0.24093472 0.25974187 0.24125928 0.25962003]"
 
-# Estado inicial
-trajectory.append(state[:3])
-velocities.append(state[3:])
-time_global.append(0)
+#
+# # Converte direto:
+res = np.fromstring(s.strip("[]"), sep=' ')
+print(res.tolist())
 
-t = 0  # Tempo inicial
+individual = res
 
-for original_pwm_inputs, duration in pwm_sequences:
-    pwm_inputs = original_pwm_inputs
-    num_steps = int(duration / dt)
+excel_file = "./planilhas/sequencia_1_1.xlsx"
+sheet_name = "Sheet1"
 
-    for _ in range(num_steps):
-        state = rover_model.dynamics(state, pwm_inputs, dt, battery_voltage)
-        linear_sim = state[3]
-        angular_sim = state[4]
-        trajectory.append(state[:3])
-        velocities.append(state[3:])
-        time_global.append(t)
-        t += dt
+rover = EvaluateRoverParameters(excel_file, sheet_name)
 
-# Convertendo para arrays numpy
-trajectory = np.array(trajectory)
-velocities = np.array(velocities)
-time_global = np.array(time_global)
+erro_total = rover.evaluate(individual)
 
-# Gráfico das velocidades
-plt.figure(figsize=(8, 6))
-plt.plot(time_global, velocities[:, 0], 'r-', label="Velocidade Linear (v)")
-plt.plot(time_global, velocities[:, 1], 'g-', label="Velocidade Angular (ω)")
-plt.xlabel("Tempo [s]")
-plt.ylabel("Velocidade")
-plt.title("Evolução das Velocidades do Rover (Modelo Simplificado)")
-plt.legend()
-plt.grid(True)
-plt.show()
+print(erro_total)
+rover.imprimir_resultado(individual,param_names)
+
+rover.plot_results()
+
+

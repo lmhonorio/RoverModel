@@ -1,42 +1,34 @@
 import math
-
+import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
 
-class SecondOrderSystem:
-    def __init__(self, K, tau, zeta, dt):
-        self.K = K
-        self.tau = tau
-        self.zeta = zeta
-        self.dt = dt
-        self.reset()
-        self.compute_discrete_coefficients()
 
-    def reset(self):
-        self.u = [0, 0, 0]
-        self.y = [0, 0]
+# Classe para carregar obstáculos a partir da planilha
+class ObstacleLoader:
+    def __init__(self, file_path, sheet_name):
+        self.file_path = file_path
+        self.sheet_name = sheet_name
+        self.obstacles = []
+        self.load_obstacles()
 
-    def compute_discrete_coefficients(self):
-        # Bilinear transform (Tustin's method)
-        T = self.dt
-        wn = 1.0 / self.tau
-        a0 = T**2 * wn**2 + 2 * self.zeta * wn * T + 1
-        self.b0 = self.K * T**2 * wn**2 / a0
-        self.b1 = 2 * self.b0
-        self.b2 = self.b0
-        self.a1 = (2 * (T**2 * wn**2 - 1)) / a0
-        self.a2 = (T**2 * wn**2 - 2 * self.zeta * wn * T + 1) / a0
+    def load_obstacles(self):
+        df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
 
-    def update(self, u_current):
-        self.u = [u_current] + self.u[:2]  # Shift inputs
-        y_new = (
-            self.b0 * self.u[0] +
-            self.b1 * self.u[1] +
-            self.b2 * self.u[2] -
-            self.a1 * self.y[0] -
-            self.a2 * self.y[1]
-        )
-        self.y = [y_new] + self.y[:1]  # Shift outputs
-        return y_new
+
+        self.obstacles = [
+            {
+                "pos": (row["Px"], row["Py"]),
+                "size": (row["Vx_largura"], row["Vy_altura"]),
+                "color": (255, 0, 0),
+                "label": row["ID"]
+            }
+            for _, row in df.iterrows()
+        ]
+
+    def get_obstacles(self):
+        return self.obstacles
+
 
 class MotorModel:
     def __init__(self, kt, ktarget_velocity, pwm_min, pwm_max,
@@ -65,6 +57,174 @@ class MotorModel:
 
         return self.orientation * force, self.orientation * torque, self.orientation * self.angular_velocity
 
+
+
+class EvaluateRoverParameters:
+    def __init__(self, excel_file, sheet_name):
+
+        self.data_real = pd.read_excel(excel_file, sheet_name=sheet_name)
+        self.last_sim_data = []
+
+        return
+
+
+    def imprimir_resultado(self, resultado, nomes):
+        print("Valores dos parâmetros encontrados:\n")
+        for valor, nome in zip(resultado, nomes):
+            print(f"{nome:<25}: {valor:.4f} ")
+
+    def plot_results(self):
+
+        last_sim_data = self.last_sim_data
+
+        if not last_sim_data:
+            print("Nenhum dado para plotar.")
+            return
+
+        time = [d['time'] for d in last_sim_data]
+        linear_real = [d['linear_real'] for d in last_sim_data]
+        linear_sim = [d['linear_sim'] for d in last_sim_data]
+        angular_real = [d['angular_real'] for d in last_sim_data]
+        angular_sim = [d['angular_sim'] for d in last_sim_data]
+
+        pwm1 = [d.get('pwm1', 0) for d in last_sim_data]
+        pwm2 = [d.get('pwm2', 0) for d in last_sim_data]
+        pwm3 = [d.get('pwm3', 0) for d in last_sim_data]
+        pwm4 = [d.get('pwm4', 0) for d in last_sim_data]
+
+        torque = [d['torque'] for d in last_sim_data]
+        forca = [d['forca'] for d in last_sim_data]
+
+        plt.figure(figsize=(12, 8))
+
+        # Velocidade linear
+        plt.subplot(4, 1, 1)
+        plt.plot(time, linear_real, label='Vel. Linear Real')
+        plt.plot(time, linear_sim, label='Vel. Linear Simulada')
+        plt.ylabel("Velocidade Linear [m/s]")
+        plt.legend()
+        plt.grid(True)
+
+        # Velocidade angular
+        plt.subplot(4, 1, 2)
+        plt.plot(time, angular_real, label='Vel. Angular Real')
+        plt.plot(time, angular_sim, label='Vel. Angular Simulada')
+        plt.ylabel("Velocidade Angular [rad/s]")
+        plt.xlabel("Tempo [s]")
+        plt.legend()
+        plt.grid(True)
+
+        # PWM
+        plt.subplot(4, 1, 3)
+        plt.plot(time, pwm1, label="PWM FR", linewidth=12)
+        plt.plot(time, pwm2, label="PWM FL", linewidth=8)
+        plt.plot(time, pwm3, label="PWM RL", linewidth=5)
+        plt.plot(time, pwm4, label="PWM RR", linewidth=2)
+        plt.ylabel("PWM [-100, 100]")
+        plt.xlabel("Tempo [s]")
+        plt.title("Sinais PWM por Motor")
+        plt.legend()
+        plt.grid(True)
+
+        # PWM
+        plt.subplot(4, 1, 4)
+        plt.plot(time, forca, label='forca')
+        plt.plot(time, torque, label='torque')
+        plt.ylabel("forca e torque")
+        plt.xlabel("Tempo [s]")
+        plt.title("forcas atuantes")
+        plt.legend()
+        plt.grid(True)
+
+        plt.tight_layout()
+        plt.show()
+
+    def evaluate(self, individual):
+        try:
+
+            I, m, r, L, kt, ktarget_velocity, time_constant, torque_scale, linear_force_scale, angular_force_scale, rwheel, lwheel, C_r, C_omega, rFR, rFL, rRL, rRR = individual
+
+            motor_FR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rFR)
+            motor_FL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rFL)
+            motor_RL = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=1, wheel_radius = rRL)
+            motor_RR = MotorModel(kt=kt, ktarget_velocity= ktarget_velocity,  pwm_min=-100, pwm_max=100, time_constant=time_constant, torque_scale=torque_scale, orientation=-1, wheel_radius = rRR)
+
+            rover = SkidSteerRoverModel(
+                m=m,
+                I=I,
+                L=L,
+                r=r,
+                motor_FL=motor_FL,
+                motor_FR=motor_FR,
+                motor_RL=motor_RL,
+                motor_RR=motor_RR,
+                rright=rwheel,
+                rleft=lwheel,
+                C_r=C_r,
+                C_omega=C_omega,
+                linear_force_scale=linear_force_scale,
+                angular_force_scale=angular_force_scale
+            )
+
+            state = np.array([0, 0, 0, 0, 0])
+
+            battery_voltage = 48
+            error_total = 0
+            sim_data = []
+
+
+            for idx, row in self.data_real.iterrows():
+
+                dt = 0.02
+
+                pwm_inputs = np.array([
+                    row['RCOU.C1'],
+                    row['RCOU.C2'],
+                    row['RCOU.C3'],
+                    row['RCOU.C4']
+                ])
+
+                pwm_FR, pwm_FL, pwm_RL, pwm_RR = pwm_inputs
+
+                # Entradas médias de cada lado
+                input_L = (pwm_FL + pwm_RL) / 2
+                input_R = (pwm_FR + pwm_RR) / 2
+
+                torque = input_L - input_R
+                forca = input_L + input_R
+
+                state = rover.dynamics(state, pwm_inputs, dt, battery_voltage)
+
+                linear_real = row['GPS[0].Spd']
+                angular_real = row['IMU[0].GyrZ']
+                linear_sim = state[3]
+                angular_sim = state[4]
+
+                if np.isnan(linear_sim) or np.isnan(angular_sim):
+                    return (1e6,)
+
+                error = abs(linear_real - linear_sim) + abs(angular_real - angular_sim)
+                error_total += error
+
+                sim_data.append({
+                    "time": row['timestamp(ms)'] / 1000.0,
+                    "linear_real": linear_real,
+                    "linear_sim": linear_sim,
+                    "angular_real": angular_real,
+                    "angular_sim": angular_sim,
+                    "pwm1": pwm_inputs[0],
+                    "pwm2": pwm_inputs[1],
+                    "pwm3": pwm_inputs[2],
+                    "pwm4": pwm_inputs[3],
+                    "forca": forca,
+                    "torque": torque
+                })
+
+            self.last_sim_data = sim_data
+            return error_total
+
+        except Exception:
+            return (1e6,)
 
 
 class SkidSteerRoverModel:

@@ -53,31 +53,19 @@ class GeneticRoverParameterIdentifier:
     def evaluate(self, individual):
         try:
 
-            scale, gain, tau, zeta = individual
+            vscale, vgain, vtau, vzeta, ascale, again, atau, azeta = individual
 
+            rover = SkidSteerRoverModel(
+                v_scale=vscale,
+                vgain_L=vgain,
+                vtau_L=vtau,
+                vzeta_L=vzeta,
+                angular_force_scale=ascale,
+                again_L=again,
+                atau_L=atau,
+                azeta_L=azeta
+            )
 
-            if self.isLinear:
-                rover = SkidSteerRoverModel(
-                    v_scale=scale,
-                    vgain_L = gain,
-                    vtau_L = tau,
-                    vzeta_L = zeta,
-                    angular_force_scale=scale,
-                    again_L=gain,
-                    atau_L=tau,
-                    azeta_L=zeta
-                )
-            else:
-                rover = SkidSteerRoverModel(
-                    v_scale=scale,
-                    vgain_L=gain,
-                    vtau_L=tau,
-                    vzeta_L=zeta,
-                    angular_force_scale=scale,
-                    again_L=gain,
-                    atau_L=tau,
-                    azeta_L=zeta
-                )
 
 
             state = np.array([0, 0, 0, 0, 0])
@@ -109,7 +97,7 @@ class GeneticRoverParameterIdentifier:
                     return (1e6,)
 
                 if self.isLinear:
-                    error = abs(linear_real - linear_sim)
+                    error = abs(linear_real - linear_sim) + abs(angular_real - angular_sim)
                 else:
                     error = abs(angular_real - angular_sim)
 

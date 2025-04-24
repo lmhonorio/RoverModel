@@ -19,6 +19,8 @@ import itertools
 import matplotlib.colors as mcolors
 
 
+
+
 class SegmentUtils:
 
     @staticmethod
@@ -490,8 +492,6 @@ class SegmentUtils:
                             })
 
         return new_segments
-
-
 
 
 
