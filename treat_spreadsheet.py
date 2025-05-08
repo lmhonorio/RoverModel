@@ -59,14 +59,14 @@ class TreatData:
 
         # Convert the canaletas and taludes coordinates from cartesian to geodesic
         for name, canaleta in self.dimension_canaletas_taludes.items():
-            novo_lat, novo_lon = self.CartesianToGeodesic(canaleta[2], canaleta[3], lat0, lon0)
+            novo_lat, novo_lon = self.CartesianToGeodesic(-canaleta[2], canaleta[3], lat0, lon0) # Tem algum problema no sinal do x no gazebo, não mudar isso
             self.dimension_canaletas_taludes[name] = (canaleta[0], canaleta[1], novo_lat, novo_lon)
 
         # Other objects
         self.dimensions = [dimension_REATOR, dimension_PR, dimension_TPC, dimension_IP, dimension_SECH, dimension_TC, dimension_SECV, dimension_DISJUNTOR, dimension_BUSCSB, dimension_BUSIP, dimension_ESTRUTURA2, dimension_ESTRUTURA3, dimension_canaletas_horizontal] 
         self.equipment_name = ["REATOR", "PR", "TPC", "IP", "SECH", "TC", "SECV", "DISJUNTOR", "BUSCSB", "BUSIP", "ESTRUTURA2", "ESTRUTURA3", "canaletas"]
 
-    def LoadFileToDataframe(self, file_path = "models.xlsx"):
+    def LoadFileToDataframe(self, file_path = "planilhas/models.xlsx"):
         """
         Load file to pandas dataframe.
 
@@ -101,6 +101,29 @@ class TreatData:
         vetores_y = [(ponto_medio[1], ponto_medio[0]), (ponto_medio[1],lat)]
             
         return vetores_x, vetores_y
+    
+    def PlotEquipamentCoordinates(self, vetores_x, vetores_y):
+        """
+        Plot equipament coordinates and collect points to the mission.
+
+        Args:
+
+            vetores_x (list): List of x coordinates
+            vetores_y (list): List of y coordinates
+            equipment_lat (list): List of equipment latitudes
+            equipment_lon (list): List of equipment longitudes
+
+        Returns:
+            None
+        """
+
+        fig, ax = plt.subplots()
+        ax.scatter(self.equipment_lon, self.equipment_lat, picker=True, label='Equipment')
+        ax.scatter(vetores_x[1][0], vetores_x[1][1], picker=True, color='red', label='Robot Position')
+        ax.scatter(vetores_y[1][0], vetores_y[1][1], picker=True, color='red', label='Robot Position')
+        ax.set_xlabel("Longitude")
+        ax.set_ylabel("Latitude")
+        plt.show()
 
     def PlotEquipamentDimensions(self, dx, dy, lat_lon_central):
         """
@@ -193,7 +216,7 @@ class TreatData:
         geod = Geodesic.WGS84
 
         # Calculate the azimuth and distance from the Cartesian displacements
-        azimuth = math.atan2(y, -x) * 180 / math.pi  # Convert to degrees
+        azimuth = math.atan2(y, x) * 180 / math.pi  # Convert to degrees
         distance = math.sqrt(x**2 + y**2)  # Distance in meters
 
         # Use the Direct method to calculate the new latitude and longitude
@@ -204,6 +227,35 @@ class TreatData:
         lon = result['lon2']
 
         return lat, lon
+    
+    def  new_line(self, name, lat, lon, alt, vx, vy, dx, dy):
+        """
+        Create a new line with the given parameters.
+        Args:
+            name (str): Name of the line
+            lat (float): Latitude of the line
+            lon (float): Longitude of the line
+            alt (float): Altitude of the line
+            vx (list): Vx coordinates
+            vy (list): Vy coordinates
+            dx (float): Width of the line in meters
+            dy (float): Height of the line in meters
+        Returns:
+            dict: New line with the given parameters
+        """
+
+        nova_linha = {
+            'Model Name': name,
+            'Latitude': lat,
+            'Longitude': lon,
+            'Altitude': alt,
+            'LatLonCentral': json.dumps([lon, lat]),
+            'Vx': json.dumps(vx),
+            'Vy': json.dumps(vy),
+            'LarguraMetros': dx,
+            'ComprimentoMetros': dy
+        }
+        return nova_linha
 
     def process_canaleta_talude(self, i):
         """
@@ -218,13 +270,9 @@ class TreatData:
             lat, lon = self.CartesianToGeodesic(dx, dy, data[0], data[1]) # transformation
             vetores_x, vetores_y = self.calcular_vetores(lat, lon, ponto_medio)
 
-            i = i + 1
-            self.df.loc[i, 'Model Name'] = f'ARGO_PARNAIBAIII_V2_LD::BASE::{name}'
-            self.df.loc[i, 'LatLonCentral'] = json.dumps([ponto_medio[1], ponto_medio[0]])
-            self.df.loc[i, 'Vx'] = json.dumps(vetores_x)
-            self.df.loc[i, 'Vy'] = json.dumps(vetores_y)
-            self.df.loc[i, 'LarguraMetros'] = dx 
-            self.df.loc[i, 'ComprimentoMetros'] = dy
+            # Add new line
+            nova_linha = self.new_line(f'ARGO_PARNAIBAIII_V2_LD::BASE::{name}', ponto_medio[0], ponto_medio[1], 77, vetores_x, vetores_y, dx, dy)
+            self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
 
     def process_other_equipment(self, i, dimension):
         """
@@ -245,7 +293,10 @@ class TreatData:
         self.df.loc[i, 'LarguraMetros'] = dx * 2
         self.df.loc[i, 'ComprimentoMetros'] = dy * 2
 
-    def process_estrutura(self, i, vertice):
+        # Test vectors position
+        # self.PlotEquipamentCoordinates(vetores_x, vetores_y)
+
+    def process_estrutura(self, i, dimension):
         """
         Process the structure dimensions and coordinates.
         Args:
@@ -253,87 +304,83 @@ class TreatData:
             vertice (tuple): Equipment dimensions (width, height)
         """
 
-        vx, vy, ponto_medio_total = [], [], []
-
         if "ESTRUTURA2" in self.model_name[i]:
             coord = [14.2, 0, -14.2, 0]
         else:
             coord = [28.2, 0, -28.2, 0]
             ponto_medio = (self.equipment_lat[i], self.equipment_lon[i])
 
+            #------------ Parte central da estrutura --------------
             # Parâmetros iniciais
             lat0 = ponto_medio[0] # Latitude inicial (ponto médio)
             lon0 = ponto_medio[1]  # Longitude inicial (ponto médio)
 
             # Deslocamentos em metros (valores de exemplo)
-            x = vertice[0]  # deslocamento no eixo X (longitude)
-            y = vertice[1]   # deslocamento no eixo Y (latitude)
+            dx = dimension[0]  # deslocamento no eixo X (longitude)
+            dy = dimension[1]   # deslocamento no eixo Y (latitude)
 
-            lat, lon = self.CartesianToGeodesic(x, y, lat0, lon0)
+            lat, lon = self.CartesianToGeodesic(dx, dy, lat0, lon0)
 
             # Calcular os vetores
-            vetores_x, vetores_y = self.calcular_vetores(lat, lon, ponto_medio)
+            vx, vy = self.calcular_vetores(lat, lon, ponto_medio)
 
-            ponto_medio_total.append([ponto_medio[1], ponto_medio[0]])
+            # Add new line
+            nova_linha = self.new_line(f'{self.model_name[i]}middle', ponto_medio[0], ponto_medio[1], self.df['Altitude'][i], vx, vy, dimension[0], dimension[1])
+            self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
 
-            vx.append(vetores_x)
-            vy.append(vetores_y)
-
-        #------------ Ponto médio para a estrutura como um todo--------------
+        #--------------------------------------------------------------------
+        # Ponto médio para a estrutura como um todo
         ponto_medio_ambos = (self.equipment_lat[i], self.equipment_lon[i])
 
         # Parâmetros iniciais
         lat0 = ponto_medio_ambos[0] # Latitude inicial (ponto médio)
         lon0 = ponto_medio_ambos[1]  # Longitude inicial (ponto médio)
 
+        #---------------------- Topo da estrutura ---------------------------
         # Deslocamentos em metros (valores de exemplo)
         x = coord[0]  # deslocamento no eixo X (longitude)
         y = coord[1]   # deslocamento no eixo Y (latitude)
         
         # Novo ponto médio para cima
         lat1, lon1 = self.CartesianToGeodesic(x, y, lat0, lon0)
-        ponto_medio_total.append([lon1, lat1])
 
+        # Ponto médio em cima
+        ponto_medio1 = (lat1, lon1)
+
+        # Deslocamentos em metros 
+        dx = dimension[0]  # deslocamento no eixo X (longitude)
+        dy = dimension[1]   # deslocamento no eixo Y (latitude)
+        
+        lat1, lon1 = self.CartesianToGeodesic(dx, dy, lat1, lon1)
+        
+        # Calcular os vetores
+        vx1, vy1 = self.calcular_vetores(lat1, lon1, ponto_medio1)
+
+        # Add new line
+        nova_linha = self.new_line(f'{self.model_name[i]}top', ponto_medio1[0], ponto_medio1[1], self.df['Altitude'][i], vx1, vy1, dimension[0], dimension[1])
+        self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
+
+        #------------------- Parte inferior da estrutura --------------------
         x = coord[2]   # deslocamento no eixo X (longitude)
         y = coord[3] # deslocamento no eixo Y (latitude)
         
         # Novo ponto médio para baixo
         lat2, lon2 = self.CartesianToGeodesic(x, y, lat0, lon0)
-        ponto_medio_total.append([lon2, lat2])
-        #--------------------------------------------------------------------
 
-        # Ponto médio em cima
-        ponto_medio1 = (lat1, lon1)
         # Ponto médio em baixo
         ponto_medio2 = (lat2, lon2)
-
-        # Deslocamentos em metros (valores de exemplo)
-        x = vertice[0]  # deslocamento no eixo X (longitude)
-        y = vertice[1]   # deslocamento no eixo Y (latitude)
-
-        lat1, lon1 = self.CartesianToGeodesic(x, y, lat1, lon1)
-
-        x = vertice[2]  # deslocamento no eixo X (longitude)
-        y = vertice[3]   # deslocamento no eixo Y (latitude)
-        lat2, lon2 = self.CartesianToGeodesic(x, y, lat2, lon2)
+        
+        # Deslocamentos em metros 
+        dx = dimension[2]  # deslocamento no eixo X (longitude)
+        dy = dimension[3]   # deslocamento no eixo Y (latitude)
+        
+        lat2, lon2 = self.CartesianToGeodesic(dx, dy, lat2, lon2)
 
         # Calcular os vetores
-        vetores_x, vetores_y = self.calcular_vetores(lat1, lon1, ponto_medio1)
+        vx2, vy2 = self.calcular_vetores(lat2, lon2, ponto_medio2)
 
-        vx.append(vetores_x)
-        vy.append(vetores_y)
-
-        vetores_x, vetores_y = self.calcular_vetores(lat2, lon2, ponto_medio2)
-
-        vx.append(vetores_x)
-        vy.append(vetores_y)
-
-        # Adicionar os vetores ao dataframe
-        self.df.loc[i, 'LatLonCentral'] = json.dumps(ponto_medio_total)
-        self.df.loc[i, 'Vx'] = json.dumps(vx)
-        self.df.loc[i, 'Vy'] = json.dumps(vy)
-        self.df.loc[i, 'LarguraMetros'] = vertice[0]*2
-        self.df.loc[i, 'ComprimentoMetros'] = vertice[1]*2
+        nova_linha = self.new_line(f'{self.model_name[i]}bottom', ponto_medio2[0], ponto_medio2[1], self.df['Altitude'][i], vx2, vy2, dimension[0], dimension[1])
+        self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
     
     def main(self):
         """
@@ -349,14 +396,14 @@ class TreatData:
 
                     if "ESTRUTURA2" in self.model_name[i] or "ESTRUTURA3" in self.model_name[i]:
                         self.process_estrutura(i, dimension)
-                        self.df.to_excel("models_updated.xlsx", index=False)
+                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)
 
                     elif "canaletas" in self.model_name[i]:
                         self.process_canaleta_talude(i)
-                        self.df.to_excel("models_updated.xlsx", index=False)
+                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)
                     else:
                         self.process_other_equipment(i, dimension)
-                        self.df.to_excel("models_updated.xlsx", index=False)       
+                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)       
 
         self.df['LarguraMetros'] = self.df['LarguraMetros'].apply(self.safe_json_load)
         self.df['ComprimentoMetros'] = self.df['ComprimentoMetros'].apply(self.safe_json_load)
