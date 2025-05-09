@@ -252,8 +252,8 @@ class TreatData:
             'LatLonCentral': json.dumps([lon, lat]),
             'Vx': json.dumps(vx),
             'Vy': json.dumps(vy),
-            'LarguraMetros': dx,
-            'ComprimentoMetros': dy
+            'Vx_largura': dx,
+            'Vy_altura': dy
         }
         return nova_linha
 
@@ -290,8 +290,8 @@ class TreatData:
         self.df.loc[i, 'LatLonCentral'] = json.dumps([ponto_medio[1], ponto_medio[0]])
         self.df.loc[i, 'Vx'] = json.dumps(vetores_x)
         self.df.loc[i, 'Vy'] = json.dumps(vetores_y)
-        self.df.loc[i, 'LarguraMetros'] = dx * 2
-        self.df.loc[i, 'ComprimentoMetros'] = dy * 2
+        self.df.loc[i, 'Vx_largura'] = dx * 2
+        self.df.loc[i, 'Vy_altura'] = dy * 2
 
         # Test vectors position
         # self.PlotEquipamentCoordinates(vetores_x, vetores_y)
@@ -405,10 +405,10 @@ class TreatData:
                         self.process_other_equipment(i, dimension)
                         self.df.to_excel("planilhas/models_updated.xlsx", index=False)       
 
-        self.df['LarguraMetros'] = self.df['LarguraMetros'].apply(self.safe_json_load)
-        self.df['ComprimentoMetros'] = self.df['ComprimentoMetros'].apply(self.safe_json_load)
-        dx = self.df['LarguraMetros']
-        dy = self.df['ComprimentoMetros']
+        self.df['Vx_largura'] = self.df['Vx_largura'].apply(self.safe_json_load)
+        self.df['Vy_altura'] = self.df['Vy_altura'].apply(self.safe_json_load)
+        dx = self.df['Vx_largura']
+        dy = self.df['Vy_altura']
 
         self.df['Vx'] = self.df['Vx'].apply(self.safe_json_load)
         self.df['Vy'] = self.df['Vy'].apply(self.safe_json_load)

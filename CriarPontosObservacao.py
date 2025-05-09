@@ -15,10 +15,13 @@ import json
 ###############################################################################
 def main():
     # Config
-    file_path = "./planilhas/obstaculos_processado6.xlsx"
+    # file_path = "./planilhas/obstaculos_processado6.xlsx"
+    file_path = "./planilhas/equipment_processado.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph9c_new.json"
-    observation_path ="./jsons/obpc_6.json"
+    # grafo_path = "./jsons/graph9c_new.json"
+    grafo_path = "./jsons/graph_equipment.json"
+    # observation_path ="./jsons/obpc_6.json"
+    observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
     margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto

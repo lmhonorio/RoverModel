@@ -2,6 +2,7 @@ import pandas as pd
 import ast
 import math
 import re
+import json
 
 class AjustePlanilha:
     def __init__(self, sheet_name="Parnaiba3"):
@@ -15,7 +16,8 @@ class AjustePlanilha:
 
     def inverter_coordenadas(self, lista):
         if isinstance(lista, str):
-            lista = ast.literal_eval(lista)
+            # lista = ast.literal_eval(lista)
+            lista = json.loads(lista)
         return [(y, x) for x, y in lista]
 
     def posicao_em_metros_lat(self, lat, lat_ref):
@@ -56,8 +58,8 @@ class AjustePlanilha:
 
         df["Py"] = df["Latitude"].apply(lambda x: self.posicao_em_metros_lat(x, self.med_lat))
         df["Px"] = df["Longitude"].apply(lambda x: self.posicao_em_metros_lon(x, self.med_lon, self.med_lat))
-        df["Vx_largura"] = df["Vx"].apply(self.separar_largura)
-        df["Vy_altura"] = df["Vy"].apply(self.separar_altura)
+        # df["Vx_largura"] = df["Vx"].apply(self.separar_largura)
+        # df["Vy_altura"] = df["Vy"].apply(self.separar_altura)
 
         def gerar_id_simplificado(full_name):
             if not isinstance(full_name, str) or "::" not in full_name:

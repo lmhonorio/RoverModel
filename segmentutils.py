@@ -241,6 +241,12 @@ class SegmentUtils:
         ys = np.arange(y_min, y_max + step, step)
         xs = np.arange(x_min, x_max + step, step)
 
+        def is_inside_any_aabb(x1, y1, x2, y2):
+            for (ax, ay), w, h in aabbs:
+                if x1 >= ax and x2 <= ax + w and y1 >= ay and y2 <= ay + h:
+                    return True
+            return False
+
         # Horizontais: varrendo de y_min a y_max
         for y in ys:
             cut_ranges = []
@@ -252,7 +258,7 @@ class SegmentUtils:
             for i in range(len(cut_ranges) - 1):
                 x1 = cut_ranges[i][1]
                 x2 = cut_ranges[i + 1][0]
-                if x2 > x1:
+                if x2 > x1 and not is_inside_any_aabb(x1, y, x2, y):
                     segments.append((x1, y, x2, y))
 
         # Verticais: varrendo de x_min a x_max
@@ -266,7 +272,7 @@ class SegmentUtils:
             for i in range(len(cut_ranges) - 1):
                 y1 = cut_ranges[i][1]
                 y2 = cut_ranges[i + 1][0]
-                if y2 > y1:
+                if y2 > y1 and not is_inside_any_aabb(x, y1, x, y2):
                     segments.append((x, y1, x, y2))
 
         return segments
