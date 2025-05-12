@@ -48,10 +48,12 @@ class TreatData:
             "canaleta6": (101, 2, -87.351506, -19.399625),
             "canaleta7": (2, 123, -24.635673, -21),
             "canaleta8": (202, 2, 38.059014, 27),
+            "canaleta9": (103, 2, -28, -21),
             "talude1": (2, 50, -95, -74.099800),
             "talude2": (180, 2, -72, 15), 
             "talude3": (250, 2, 22.256600, 10),
-            "talude4": (2, 100, -35, 110)
+            "talude4": (2, 100, -35, 120),
+            "talude5": (2, 75, 59.464300, -67.093500)
             }
 
         # Base for the transformation, cartesian to geodesic
@@ -396,14 +398,14 @@ class TreatData:
 
                     if "ESTRUTURA2" in self.model_name[i] or "ESTRUTURA3" in self.model_name[i]:
                         self.process_estrutura(i, dimension)
-                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)
+                        self.df.to_excel("planilhas/equipment.xlsx", index=False)
 
                     elif "canaletas" in self.model_name[i]:
                         self.process_canaleta_talude(i)
-                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)
+                        self.df.to_excel("planilhas/equipment.xlsx", index=False)
                     else:
                         self.process_other_equipment(i, dimension)
-                        self.df.to_excel("planilhas/models_updated.xlsx", index=False)       
+                        self.df.to_excel("planilhas/equipment.xlsx", index=False)       
 
         self.df['Vx_largura'] = self.df['Vx_largura'].apply(self.safe_json_load)
         self.df['Vy_altura'] = self.df['Vy_altura'].apply(self.safe_json_load)

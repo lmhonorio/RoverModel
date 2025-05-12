@@ -45,7 +45,7 @@ def get_path_from_label(nx_graph, path_labels):
         for node, data in nx_graph.nodes(data=True):
             if data.get("label", "") == label:
                 path_coord.append(node)
-    return path_coord;
+    return path_coord
 
 
 

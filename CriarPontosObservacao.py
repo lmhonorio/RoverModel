@@ -53,7 +53,7 @@ def main():
     #PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
 
     print("🔹 Quebrando segmentos com interseccao...")
-    broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments,2)
+    broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments, aabbs, 2)
 
 
     PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
