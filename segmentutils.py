@@ -380,26 +380,82 @@ class SegmentUtils:
 
             sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
                     ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
-            
+
             # Adiciona os 4 cantos do AABB, se não estiverem dentro de outro AABB
             corners = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
             for cx, cy in corners:
                 if any(is_inside_aabb(cx, cy, other) for k, other in enumerate(aabbs) if k != i):
-                    continue  # ignora o canto se estiver dentro de outro AABB
+                    continue
                 else:
                     all_points.add((cx, cy))
 
+            # Amostragem dos lados
             for (sx, sy), (ex, ey) in sides:
-                for j in range(max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2))) + 1):
-                    px = sx + j * (ex - sx) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
-                    py = sy + j * (ey - sy) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
+                steps = max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
+                for j in range(steps + 1):
+                    px = sx + j * (ex - sx) / steps
+                    py = sy + j * (ey - sy) / steps
 
-                    # Verifica se o ponto está dentro de algum outro AABB (não o atual)
                     if any(is_inside_aabb(px, py, other) for k, other in enumerate(aabbs) if k != i):
-                        continue  # ignora o ponto
-
+                        continue
                     if all(point_distance((px, py), p) >= threshold for p in all_points):
                         all_points.add((px, py))
+
+            # Adiciona os cantos das interseções com outros AABBs
+            for j, other_aabb in enumerate(aabbs):
+                if j <= i:
+                    continue  # Evita repetir pares ou comparar consigo mesmo
+
+                (ox1, oy1), ow, oh = other_aabb
+                ox2, oy2 = ox1 + ow, oy1 + oh
+
+                # Verifica se há interseção
+                if not (x2 <= ox1 or ox2 <= x1 or y2 <= oy1 or oy2 <= y1):
+                    # Retângulo de interseção
+                    xi1 = max(x1, ox1)
+                    yi1 = max(y1, oy1)
+                    xi2 = min(x2, ox2)
+                    yi2 = min(y2, oy2)
+
+                    inter_corners = [(xi1, yi1), (xi2, yi1), (xi2, yi2), (xi1, yi2)]
+
+                    for px, py in inter_corners:
+                        # Adiciona se não estiver dentro de um terceiro AABB (não i nem j)
+                        if any(is_inside_aabb(px, py, aabbs[k]) for k in range(len(aabbs))):
+                            continue
+                        all_points.add((px, py))
+
+        # for i, aabb in enumerate(aabbs):
+        #     (x1, y1), w, h = aabb
+        #     x2, y2 = x1 + w, y1 + h
+        #     label = f"aabb_{i}"
+        #     all_points = points_by_aabb[label]
+
+        #     sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
+        #             ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
+            
+        #     # Adiciona os 4 cantos do AABB, se não estiverem dentro de outro AABB
+        #     corners = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
+        #     for cx, cy in corners:
+        #         if any(is_inside_aabb(cx, cy, other) for k, other in enumerate(aabbs) if k != i):
+        #             continue  # ignora o canto se estiver dentro de outro AABB
+        #         else:
+        #             all_points.add((cx, cy))
+
+        #     for (sx, sy), (ex, ey) in sides:
+        #         for j in range(max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2))) + 1):
+        #             px = sx + j * (ex - sx) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
+        #             py = sy + j * (ey - sy) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
+
+        #             # Verifica se o ponto está dentro de algum outro AABB (não o atual)
+        #             if any(is_inside_aabb(px, py, other) for k, other in enumerate(aabbs) if k != i):
+        #                 continue  # ignora o ponto
+
+        #             if all(point_distance((px, py), p) >= threshold for p in all_points):
+        #                 all_points.add((px, py))
+
+
+
         # for i, aabb in enumerate(aabbs):
         #     (x1, y1), w, h = aabb
         #     x2, y2 = x1 + w, y1 + h
@@ -420,37 +476,6 @@ class SegmentUtils:
         #             if all(point_distance((px, py), p) >= threshold for p in all_points):
         #                 all_points.add((px, py))
 
-#TESTAR ESSA PARTE
-            # # Verifica interseções entre este AABB e os demais
-            # for j, other_aabb in enumerate(aabbs):
-            #     if j == i:
-            #         continue
-            #     (ox1, oy1), ow, oh = other_aabb
-            #     ox2, oy2 = ox1 + ow, oy1 + oh
-            #     other_sides = [((ox1, oy1), (ox2, oy1)), ((ox2, oy1), (ox2, oy2)),
-            #                 ((ox2, oy2), (ox1, oy2)), ((ox1, oy2), (ox1, oy1))]
-
-            #     for side1 in sides:
-            #         line1 = LineString([side1[0], side1[1]])
-            #         for side2 in other_sides:
-            #             line2 = LineString([side2[0], side2[1]])
-            #             if line1.intersects(line2):
-            #                 intersec = line1.intersection(line2)
-            #                 if not isinstance(intersec, Point):
-            #                     continue  # ignora interseções múltiplas ou em linha
-            #                 ix, iy = intersec.x, intersec.y
-
-            #                 # Verifica se o ponto de interseção está dentro de qualquer outro AABB (exceto os dois testados)
-            #                 if any(
-            #                     is_inside_aabb(ix, iy, aabb_check)
-            #                     for k, aabb_check in enumerate(aabbs)
-            #                     if k != i and k != j
-            #                 ):
-            #                     continue
-
-            #                 if all(point_distance((ix, iy), p) >= threshold for p in all_points):
-            #                     all_points.add((ix, iy))
-
         # Passo 3: Conectar pontos de cada AABB formando ciclo fechado
         for i, aabb in enumerate(aabbs):
             inner_label_counter = 1
@@ -463,12 +488,12 @@ class SegmentUtils:
 
             for p1 in points:
                 for p2 in points:
+                    # Evitar conexões entre os mesmos pontos
                     if p1 == p2 or p2 in graph[p1]:
                         continue
+                    # Não ultrapassar 2 conexões por ponto
                     if len(graph[p1]) >= 2 or len(graph[p2]) >= 2:
                         continue
-                    # if segment_intersects_inside(p1[0], p1[1], p2[0], p2[1], aabb):
-                    #     continue
                     if any(
                         segment_intersects_inside(p1[0], p1[1], p2[0], p2[1], other_aabb)
                         for j, other_aabb in enumerate(aabbs)
@@ -485,9 +510,9 @@ class SegmentUtils:
                     final_segments.append((p1[0], p1[1], p2[0], p2[1]))
 
             # Verificação de ciclo fechado
-            # degrees = [len(neigh) for neigh in graph.values()]
-            # if not all(deg == 2 for deg in degrees):
-            #     print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+            degrees = [len(neigh) for neigh in graph.values()]
+            if not all(deg == 2 for deg in degrees):
+                print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
 
             # Adicionar rótulos
             for p in points:
@@ -774,20 +799,8 @@ class SegmentUtils:
 
         return G
 
-    @staticmethod    
+    @staticmethod
     def resolve_segment_intersections(segments, threshold=1.0):
-        """Resolve interseções entre segmentos de linha.
-        Se dois segmentos se cruzam, eles são quebrados em novos segmentos.
-        segments = ponto de início, ponto final
-        
-        Parametros:
-            segments: lista de segmentos [(x1, y1, x2, y2), ...]
-            threshold: distância mínima para considerar uma interseção
-        Retorna:
-            - segments: lista de segmentos atualizada
-            - new_points: lista de novos pontos de interseção
-        """
-
         def is_horizontal(s):
             """Verifica se o segmento é horizontal"""
             return math.isclose(s[1], s[3], abs_tol=1e-6)
@@ -795,7 +808,7 @@ class SegmentUtils:
         def is_vertical(s):
             """Verifica se o segmento é vertical"""
             return math.isclose(s[0], s[2], abs_tol=1e-6)
-        
+
         def distance(p1, p2):
             """Calcula a distância entre dois pontos"""
             return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
@@ -803,141 +816,76 @@ class SegmentUtils:
         # Inicializa listas
         horizontal_segments = []
         vertical_segments = []
-        new_segments = set()
-        new_points = set()
+        new_segments = []
+        new_points = []
 
         # Separar segmentos horizontais e verticais
         for seg in segments:
-            line = LineString([(seg[0], seg[1]), (seg[2], seg[3])])
             if is_horizontal(seg):
-                horizontal_segments.append(line)
+                horizontal_segments.append(seg)
             elif is_vertical(seg):
-                vertical_segments.append(line)
+                vertical_segments.append(seg)
 
         # Verifica interseções entre segmentos horizontais e verticais,
         # quebra os segmentos em novos segmentos
         # e adiciona os pontos de interseção
         for h in horizontal_segments:
+            xh1, yh, xh2, _ = h
+            xh_min, xh_max = sorted([xh1, xh2]) # Ordena os extremos
+
             for v in vertical_segments:
-                if h.intersects(v):
-                    pass
-                    # # Obter o ponto de interseção
-                    # intersection = h.intersection(v)
-                    # ip = (intersection.x, intersection.y)
+                xv, yv1, _, yv2 = v
+                yv_min, yv_max = sorted([yv1, yv2]) # Ordena os extremos
 
-                    # # Checar se as divisões seriam válidas
-                    # if (
-                    #         distance(h.coords[0], ip) < threshold or
-                    #         distance(h.coords[1], ip) < threshold or
-                    #         distance(v.coords[0], ip) < threshold or
-                    #         distance(v.coords[1], ip) < threshold
-                    # ):
-                    #     continue
+                # Testa se intersectam
+                if (xh_min < xv < xh_max) and (yv_min < yh < yv_max):
+                    ip = (xv, yh)
 
-                    # new_points.add(ip)
+                    # Checar se as divisões seriam válidas
+                    if (
+                            distance((xh1, yh), ip) < threshold or
+                            distance((xh2, yh), ip) < threshold or
+                            distance((xv, yv1), ip) < threshold or
+                            distance((xv, yv2), ip) < threshold
+                    ):
+                        continue
 
                     # Quebrar h e v em 2 cada
-                    # new_segments.update([
-                    #     (h.coords[0][0], h.coords[0][1], ip[0], ip[1]),  # h1
-                    #     (ip[0], ip[1], h.coords[1][0], h.coords[1][1]),  # h2
-                    #     (v.coords[0][0], v.coords[0][1], ip[0], ip[1]),  # v1
-                    #     (ip[0], ip[1], v.coords[1][0], v.coords[1][1])   # v2
-                    # ])
-
+                    new_segments.extend([
+                        (xh1, yh, xv, yh),  # h1
+                        (xv, yh, xh2, yh),  # h2
+                        (xv, yv1, xv, yh),  # v1
+                        (xv, yh, xv, yv2)  # v2
+                    ])
+                    new_points.append(ip)
                 else:
-                    new_segments.add((h.coords[0][0], h.coords[0][1], h.coords[1][0], h.coords[1][1]))
-                    new_segments.add((v.coords[0][0], v.coords[0][1], v.coords[1][0], v.coords[1][1]))
+                    # Sem interseção: manter originais
+                    continue
 
-        return list(new_segments), list(new_points)
+        # Agora precisamos adicionar os segmentos que **não foram quebrados**
+        # Ou seja, aqueles que não participaram de interseção
 
+        broken_set = set()
+        for s in new_segments:
+            broken_set.add(((s[0], s[1]), (s[2], s[3])))
 
+        # Para evitar duplicidade, normalizamos extremidades
+        def normalize(p1, p2):
+            return tuple(sorted([p1, p2]))
 
-    # def resolve_segment_intersections(segments, threshold=1.0):
-    #     def is_horizontal(s):
-    #         """Verifica se o segmento é horizontal"""
-    #         return math.isclose(s[1], s[3], abs_tol=1e-6)
+        original_set = set()
+        for s in segments:
+            p1 = (s[0], s[1])
+            p2 = (s[2], s[3])
+            original_set.add(normalize(p1, p2))
 
-    #     def is_vertical(s):
-    #         """Verifica se o segmento é vertical"""
-    #         return math.isclose(s[0], s[2], abs_tol=1e-6)
+        new_normalized = set(normalize((s[0], s[1]), (s[2], s[3])) for s in new_segments)
+        untouched = original_set - new_normalized
 
-    #     def distance(p1, p2):
-    #         """Calcula a distância entre dois pontos"""
-    #         return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+        untouched_segments = [(p1[0], p1[1], p2[0], p2[1]) for p1, p2 in untouched]
+        final_segments = untouched_segments + new_segments
 
-    #     # Inicializa listas
-    #     horizontal_segments = []
-    #     vertical_segments = []
-    #     new_segments = []
-    #     new_points = []
-
-    #     # Separar segmentos horizontais e verticais
-    #     for seg in segments:
-    #         if is_horizontal(seg):
-    #             horizontal_segments.append(seg)
-    #         elif is_vertical(seg):
-    #             vertical_segments.append(seg)
-
-    #     # Verifica interseções entre segmentos horizontais e verticais,
-    #     # quebra os segmentos em novos segmentos
-    #     # e adiciona os pontos de interseção
-    #     for h in horizontal_segments:
-    #         xh1, yh, xh2, _ = h
-    #         xh_min, xh_max = sorted([xh1, xh2]) # Ordena os extremos
-
-    #         for v in vertical_segments:
-    #             xv, yv1, _, yv2 = v
-    #             yv_min, yv_max = sorted([yv1, yv2]) # Ordena os extremos
-
-    #             # Testa se intersectam
-    #             if (xh_min < xv < xh_max) and (yv_min < yh < yv_max):
-    #                 ip = (xv, yh)
-
-    #                 # Checar se as divisões seriam válidas
-    #                 if (
-    #                         distance((xh1, yh), ip) < threshold or
-    #                         distance((xh2, yh), ip) < threshold or
-    #                         distance((xv, yv1), ip) < threshold or
-    #                         distance((xv, yv2), ip) < threshold
-    #                 ):
-    #                     continue
-
-    #                 # Quebrar h e v em 2 cada
-    #                 new_segments.extend([
-    #                     (xh1, yh, xv, yh),  # h1
-    #                     (xv, yh, xh2, yh),  # h2
-    #                     (xv, yv1, xv, yh),  # v1
-    #                     (xv, yh, xv, yv2)  # v2
-    #                 ])
-    #                 new_points.append(ip)
-    #             else:
-    #                 # Sem interseção: manter originais
-    #                 continue
-
-    #     # Agora precisamos adicionar os segmentos que **não foram quebrados**
-    #     # Ou seja, aqueles que não participaram de interseção
-
-    #     broken_set = set()
-    #     for s in new_segments:
-    #         broken_set.add(((s[0], s[1]), (s[2], s[3])))
-
-    #     # Para evitar duplicidade, normalizamos extremidades
-    #     def normalize(p1, p2):
-    #         return tuple(sorted([p1, p2]))
-
-    #     original_set = set()
-    #     for s in segments:
-    #         p1 = (s[0], s[1])
-    #         p2 = (s[2], s[3])
-    #         original_set.add(normalize(p1, p2))
-
-    #     new_normalized = set(normalize((s[0], s[1]), (s[2], s[3])) for s in new_segments)
-    #     untouched = original_set - new_normalized
-
-    #     untouched_segments = [(p1[0], p1[1], p2[0], p2[1]) for p1, p2 in untouched]
-    #     final_segments = untouched_segments + new_segments
-
-    #     return final_segments, new_points
+        return final_segments, new_points
 
     @staticmethod
     def create_graph(final_segments, obstacles):
