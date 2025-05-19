@@ -62,13 +62,13 @@ def main():
     print("🔹 criando o grafo ...")
     G_corrigido = SegmentUtils.create_graph_with_passage_points_new(broken_segments, passage_points, observation_points, obstacles)
 
-    print(f"verificando ilhas....")
-    hasislands = SegmentUtils.has_islands(G_corrigido)
-    print(f"ilhas: {hasislands}")
+    # print(f"verificando ilhas....")
+    # hasislands = SegmentUtils.has_islands(G_corrigido)
+    # print(f"ilhas: {hasislands}")
 
-    if hasislands:
-        print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
-        G_corrigido = SegmentUtils.fix_missing_connections_safe_new(G_corrigido, aabbs)
+    # if hasislands:
+    #     print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
+    #     G_corrigido = SegmentUtils.fix_missing_connections_safe_new(G_corrigido, aabbs)
 
 
     print("🔹 plotando grafo...")
@@ -83,11 +83,6 @@ def main():
 
 
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
-
-
-
-
-
 
     print(f"🔹 Salvando grafo em: {grafo_path}")
     SegmentUtils.save_graph_json(G_corrigido, grafo_path)

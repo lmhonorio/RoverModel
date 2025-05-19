@@ -18,7 +18,7 @@ from scipy.spatial import distance
 import itertools
 import matplotlib.colors as mcolors
 from shapely.geometry import LineString, Point
-
+from math import dist
 
 
 class SegmentUtils:
@@ -356,6 +356,7 @@ class SegmentUtils:
         final_segments = list(segments)
         labeled_points = []
         label_counter = 1
+        single_connection_points = []
 
         # Passo 1: Associar pontos dos segmentos aos AABBs
         for x1, y1, x2, y2 in segments:
@@ -401,80 +402,29 @@ class SegmentUtils:
                     if all(point_distance((px, py), p) >= threshold for p in all_points):
                         all_points.add((px, py))
 
-            # Adiciona os cantos das interseções com outros AABBs
-            for j, other_aabb in enumerate(aabbs):
-                if j <= i:
-                    continue  # Evita repetir pares ou comparar consigo mesmo
+            # # Adiciona os cantos das interseções com outros AABBs
+            # for j, other_aabb in enumerate(aabbs):
+            #     if j <= i:
+            #         continue  # Evita repetir pares ou comparar consigo mesmo
 
-                (ox1, oy1), ow, oh = other_aabb
-                ox2, oy2 = ox1 + ow, oy1 + oh
+            #     (ox1, oy1), ow, oh = other_aabb
+            #     ox2, oy2 = ox1 + ow, oy1 + oh
 
-                # Verifica se há interseção
-                if not (x2 <= ox1 or ox2 <= x1 or y2 <= oy1 or oy2 <= y1):
-                    # Retângulo de interseção
-                    xi1 = max(x1, ox1)
-                    yi1 = max(y1, oy1)
-                    xi2 = min(x2, ox2)
-                    yi2 = min(y2, oy2)
+            #     # Verifica se há interseção
+            #     if not (x2 <= ox1 or ox2 <= x1 or y2 <= oy1 or oy2 <= y1):
+            #         # Retângulo de interseção
+            #         xi1 = max(x1, ox1)
+            #         yi1 = max(y1, oy1)
+            #         xi2 = min(x2, ox2)
+            #         yi2 = min(y2, oy2)
 
-                    inter_corners = [(xi1, yi1), (xi2, yi1), (xi2, yi2), (xi1, yi2)]
+            #         inter_corners = [(xi1, yi1), (xi2, yi1), (xi2, yi2), (xi1, yi2)]
 
-                    for px, py in inter_corners:
-                        # Adiciona se não estiver dentro de um terceiro AABB (não i nem j)
-                        if any(is_inside_aabb(px, py, aabbs[k]) for k in range(len(aabbs))):
-                            continue
-                        all_points.add((px, py))
-
-        # for i, aabb in enumerate(aabbs):
-        #     (x1, y1), w, h = aabb
-        #     x2, y2 = x1 + w, y1 + h
-        #     label = f"aabb_{i}"
-        #     all_points = points_by_aabb[label]
-
-        #     sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
-        #             ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
-            
-        #     # Adiciona os 4 cantos do AABB, se não estiverem dentro de outro AABB
-        #     corners = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
-        #     for cx, cy in corners:
-        #         if any(is_inside_aabb(cx, cy, other) for k, other in enumerate(aabbs) if k != i):
-        #             continue  # ignora o canto se estiver dentro de outro AABB
-        #         else:
-        #             all_points.add((cx, cy))
-
-        #     for (sx, sy), (ex, ey) in sides:
-        #         for j in range(max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2))) + 1):
-        #             px = sx + j * (ex - sx) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
-        #             py = sy + j * (ey - sy) / max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
-
-        #             # Verifica se o ponto está dentro de algum outro AABB (não o atual)
-        #             if any(is_inside_aabb(px, py, other) for k, other in enumerate(aabbs) if k != i):
-        #                 continue  # ignora o ponto
-
-        #             if all(point_distance((px, py), p) >= threshold for p in all_points):
-        #                 all_points.add((px, py))
-
-
-
-        # for i, aabb in enumerate(aabbs):
-        #     (x1, y1), w, h = aabb
-        #     x2, y2 = x1 + w, y1 + h
-        #     label = f"aabb_{i}"
-        #     all_points = points_by_aabb[label]
-
-        #     sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
-        #              ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
-
-        #     for (sx, sy), (ex, ey) in sides:
-        #         all_points.add((sx, sy))
-        #         all_points.add((ex, ey))
-        #         length = point_distance((sx, sy), (ex, ey))
-        #         steps = max(2, int(length / (threshold / 2)))
-        #         for j in range(steps + 1):
-        #             px = sx + j * (ex - sx) / steps
-        #             py = sy + j * (ey - sy) / steps
-        #             if all(point_distance((px, py), p) >= threshold for p in all_points):
-        #                 all_points.add((px, py))
+            #         for px, py in inter_corners:
+            #             # Adiciona se não estiver dentro de um terceiro AABB (não i nem j)
+            #             if any(is_inside_aabb(px, py, aabbs[k]) for k in range(len(aabbs))):
+            #                 continue
+            #             all_points.add((px, py))
 
         # Passo 3: Conectar pontos de cada AABB formando ciclo fechado
         for i, aabb in enumerate(aabbs):
@@ -509,17 +459,50 @@ class SegmentUtils:
                     graph[p2].add(p1)
                     final_segments.append((p1[0], p1[1], p2[0], p2[1]))
 
-            # Verificação de ciclo fechado
-            degrees = [len(neigh) for neigh in graph.values()]
-            if not all(deg == 2 for deg in degrees):
-                print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+            # Encontra pontos com apenas uma conexão
+            for point, neighbors in graph.items():
+                # aqui você tem: point = chave, neighbors = set de vizinhos
+                if len(neighbors) < 2:
+                    single_connection_points.append((point, i)) # Guarda o ponto e o aabb a que pertence
 
-            # Adicionar rótulos
+            # # Verificação de ciclo fechado
+            # degrees = [len(neigh) for neigh in graph.values()]
+            # if not all(deg == 2 for deg in degrees):
+            #     print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+
+            # Adicionar rótulos nos pontos
             for p in points:
                 label_obs = nearest_obstacle_label(p[0], p[1])
                 labeled_points.append((p[0], p[1], f"{label_obs}.{label_counter}"))
                 inner_label_counter += 1
                 label_counter += 1
+
+        # Conecta pontos com aabbs vizinhos        
+        for point1, label1 in single_connection_points:
+            closest_point = None
+            closest_label = None
+            min_distance = float('inf')
+
+            for point2, label2 in single_connection_points:
+
+                if point1 == point2:
+                    continue  
+
+                d = dist(point1, point2)
+
+                if d < min_distance:
+                    min_distance = d
+                    closest_point = point2
+                    closest_label = label2
+
+            if closest_point is not None: 
+                # Adiciona conexão entre os pontos
+                graph[point1].add(closest_point)
+                graph[closest_point].add(point1)
+                print(f"Conectando {point1} com {closest_point}")
+                final_segments.append((point1[0], point1[1], closest_point[0], closest_point[1]))
+            else:
+                print(f"Não foi possível conectar {point1} com nenhum ponto próximo.")
 
         return final_segments, labeled_points
 
