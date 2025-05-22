@@ -357,6 +357,7 @@ class SegmentUtils:
         labeled_points = []
         label_counter = 1
         single_connection_points = []
+        distances = []
 
         # Passo 1: Associar pontos dos segmentos aos AABBs
         for x1, y1, x2, y2 in segments:
@@ -402,30 +403,6 @@ class SegmentUtils:
                     if all(point_distance((px, py), p) >= threshold for p in all_points):
                         all_points.add((px, py))
 
-            # # Adiciona os cantos das interseções com outros AABBs
-            # for j, other_aabb in enumerate(aabbs):
-            #     if j <= i:
-            #         continue  # Evita repetir pares ou comparar consigo mesmo
-
-            #     (ox1, oy1), ow, oh = other_aabb
-            #     ox2, oy2 = ox1 + ow, oy1 + oh
-
-            #     # Verifica se há interseção
-            #     if not (x2 <= ox1 or ox2 <= x1 or y2 <= oy1 or oy2 <= y1):
-            #         # Retângulo de interseção
-            #         xi1 = max(x1, ox1)
-            #         yi1 = max(y1, oy1)
-            #         xi2 = min(x2, ox2)
-            #         yi2 = min(y2, oy2)
-
-            #         inter_corners = [(xi1, yi1), (xi2, yi1), (xi2, yi2), (xi1, yi2)]
-
-            #         for px, py in inter_corners:
-            #             # Adiciona se não estiver dentro de um terceiro AABB (não i nem j)
-            #             if any(is_inside_aabb(px, py, aabbs[k]) for k in range(len(aabbs))):
-            #                 continue
-            #             all_points.add((px, py))
-
         # Passo 3: Conectar pontos de cada AABB formando ciclo fechado
         for i, aabb in enumerate(aabbs):
             inner_label_counter = 1
@@ -459,11 +436,11 @@ class SegmentUtils:
                     graph[p2].add(p1)
                     final_segments.append((p1[0], p1[1], p2[0], p2[1]))
 
-            # Encontra pontos com apenas uma conexão
+            # Encontra pontos com menos de duas conexões
             for point, neighbors in graph.items():
                 # aqui você tem: point = chave, neighbors = set de vizinhos
                 if len(neighbors) < 2:
-                    single_connection_points.append((point, i)) # Guarda o ponto e o aabb a que pertence
+                    single_connection_points.append((point, i, neighbors)) # Guarda o ponto e o aabb a que pertence
 
             # # Verificação de ciclo fechado
             # degrees = [len(neigh) for neigh in graph.values()]
@@ -478,31 +455,44 @@ class SegmentUtils:
                 label_counter += 1
 
         # Conecta pontos com aabbs vizinhos        
-        for point1, label1 in single_connection_points:
+        for point1, label1, connections in single_connection_points:
             closest_point = None
             closest_label = None
             min_distance = float('inf')
 
-            for point2, label2 in single_connection_points:
+            for point2, label2, connections2 in single_connection_points:
 
                 if point1 == point2:
                     continue  
 
                 d = dist(point1, point2)
+                distances.append((d, point2, label2))
 
-                if d < min_distance:
-                    min_distance = d
-                    closest_point = point2
-                    closest_label = label2
+                # if d < min_distance:
+                #     min_distance = d
+                #     closest_point = point2
+                #     closest_label = label2
+            
+            # Ordena pelas distâncias e pega os dois menores
+            distances.sort(key=lambda x: x[0])
+            if len(connections) < 1:
+                closest_points = distances[:2]  # Pegando os dois mais próximos
+            else:
+                closest_points = distances[:1]
 
-            if closest_point is not None: 
-                # Adiciona conexão entre os pontos
+            distances = []
+            for _, closest_point, closest_label in closest_points:
+                
                 graph[point1].add(closest_point)
                 graph[closest_point].add(point1)
                 print(f"Conectando {point1} com {closest_point}")
                 final_segments.append((point1[0], point1[1], closest_point[0], closest_point[1]))
-            else:
-                print(f"Não foi possível conectar {point1} com nenhum ponto próximo.")
+
+            # # Adiciona conexão entre os pontos
+            # graph[point1].add(closest_point)
+            # graph[closest_point].add(point1)
+            # print(f"Conectando {point1} com {closest_point}")
+            # final_segments.append((point1[0], point1[1], closest_point[0], closest_point[1]))
 
         return final_segments, labeled_points
 
