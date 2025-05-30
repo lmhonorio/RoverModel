@@ -3,6 +3,7 @@ import ast
 import math
 import re
 import json
+import matplotlib.pyplot as plt
 
 class AjustePlanilha:
     def __init__(self, sheet_name="Parnaiba3"):
@@ -89,6 +90,21 @@ class AjustePlanilha:
             self.salvar_parametros_conversao(writer)
 
         print(f"✅ Conversão concluída e salva em '{output_path}'.")
+
+        return df
+
+    def plotar_coordenadas_labels(self, df):
+        
+        plt.figure(figsize=(10, 6))
+        plt.scatter(df["Px"], df["Py"], c='blue', marker='o', label='Coordenadas')
+        for i, row in df.iterrows():
+            plt.text(row["Px"], row["Py"], row["ID"], fontsize=8, ha='right')
+        plt.xlabel("Posição X (metros)")
+        plt.ylabel("Posição Y (metros)")
+        plt.title("Coordenadas dos Equipamentos")
+        plt.legend()
+        plt.grid()
+        plt.show()
 
     @staticmethod
     def metros_para_geocoordenadas(lista_metros, file_path_parametros):

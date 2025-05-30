@@ -4,8 +4,8 @@ from ajusteplanilha import AjustePlanilha
 if __name__ == "__main__":
     conversor = AjustePlanilha()
     # conversor.processar("./planilhas/obstaculos.xlsx", "./planilhas/obstaculos_processado6.xlsx")
-    conversor.processar("./planilhas/equipment.xlsx", "./planilhas/equipment_processado.xlsx")
-
+    df = conversor.processar("./planilhas/equipment.xlsx", "./planilhas/equipment_processado.xlsx")
+    conversor.plotar_coordenadas_labels(df)
 
 
 
