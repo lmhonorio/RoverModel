@@ -1,5 +1,4 @@
 import pandas as pd
-import ast
 import math
 import re
 import json
@@ -132,3 +131,10 @@ class AjustePlanilha:
             lat = y / 111132.0 + med_lat
             resultado.append((lat, lon))
         return resultado
+    
+if __name__ == "__main__":
+
+    conversor = AjustePlanilha()
+    # conversor.processar("./planilhas/obstaculos.xlsx", "./planilhas/obstaculos_processado6.xlsx")
+    df = conversor.processar("./planilhas/equipment.xlsx", "./planilhas/equipment_processado.xlsx")
+    conversor.plotar_coordenadas_labels(df)

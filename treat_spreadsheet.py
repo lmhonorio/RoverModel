@@ -8,7 +8,7 @@ import matplotlib.patches as patches
 import numpy as np
 import json
 
-class TreatData:
+class TreatSpreadsheet:
     """ Treat data about equipment dimensions and coordinates from a spreadsheet.
 
     Obs: we use as standard the longitude as x and the latitude as y.
@@ -16,13 +16,19 @@ class TreatData:
 
     def __init__(self):
 
+        # Spreadsheet file path
+        self.original_file_path = "planilhas/models.xlsx"
+        self.transformed_file_path = "planilhas/equipment.xlsx"
+
+        self.geolocation_from_gazebo = True
+
         self.df = self.LoadFileToDataframe()
 
         self.equipment_lat = self.df['Latitude']
         self.equipment_lon = self.df['Longitude']
         self.model_name = self.df['Model Name']
 
-        # Equipment dimensions, half of width and height in meters
+        # Equipment dimensions, HALF of width and height [meters]
         # Data from gazebo dae file
         dimension_REATOR = (1.534546, 3.054527) 
         dimension_PR = (0.6871033, 0.6181564) 
@@ -36,55 +42,61 @@ class TreatData:
         dimension_BUSIP = (0.7805519, 0.54982) 
         dimension_ESTRUTURA2 = (2.74, 1.3, -2.74, -1.3)
         dimension_ESTRUTURA3 = (2.74, 1.3, -2.74, -1.3)
-        dimension_canaletas_horizontal = (11, 2) # Não é usado, só tá por causa da estrutura do for principal
+        dimension_canaletas_horizontal = (11, 2) # Não é usado SE GAZEBO, só tá por causa da estrutura do for principal
 
-        # width, height and x, y from gazebo global frame
-        self.dimension_canaletas_taludes = {
-            "canaleta1": (11, 2, -0.459704, -123.217343),
-            "canaleta2": (2, 23.6, -13.222777, -118.792624),
-            "canaleta3": (2, 16.62, 8.387840, -118.721732),
-            "canaleta4": (101, 2, 17, -68.997061),
-            "canaleta5": (2, 83, 58.553385, -98.998900),
-            "canaleta6": (101, 2, -87.351506, -19.399625),
-            "canaleta7": (2, 123, -24.635673, -21),
-            "canaleta8": (202, 2, 38.059014, 27),
-            "canaleta9": (103, 2, -28, -21),
-            "talude1": (2, 50, -95, -74.099800),
-            "talude2": (180, 2, -72, 15), 
-            "talude3": (250, 2, 22.256600, 10),
-            "talude4": (2, 100, -35, 120),
-            "talude5": (2, 75, 59.464300, -67.093500)
-            }
+        if self.geolocation_from_gazebo:
 
-        # Base for the transformation, cartesian to geodesic
-        lat0, lon0 = -3.123199, -41.764537 
+            # width, height and x, y from gazebo global frame
+            self.dimension_canaletas_taludes = {
+                "canaleta1": (11, 2, -0.459704, -123.217343),
+                "canaleta2": (2, 23.6, -13.222777, -118.792624),
+                "canaleta3": (2, 16.62, 8.387840, -118.721732),
+                "canaleta4": (101, 2, 17, -68.997061),
+                "canaleta5": (2, 83, 58.553385, -98.998900),
+                "canaleta6": (101, 2, -87.351506, -19.399625),
+                "canaleta7": (2, 123, -24.635673, -21),
+                "canaleta8": (202, 2, 38.059014, 27),
+                "canaleta9": (103, 2, -28, -21),
+                "talude1": (2, 50, -95, -74.099800),
+                "talude2": (180, 2, -72, 15), 
+                "talude3": (250, 2, 22.256600, 10),
+                "talude4": (2, 100, -35, 120),
+                "talude5": (2, 75, 59.464300, -67.093500)
+                }
 
-        # Convert the canaletas and taludes coordinates from cartesian to geodesic
-        for name, canaleta in self.dimension_canaletas_taludes.items():
-            novo_lat, novo_lon = self.CartesianToGeodesic(-canaleta[2], canaleta[3], lat0, lon0) # Tem algum problema no sinal do x no gazebo, não mudar isso
-            self.dimension_canaletas_taludes[name] = (canaleta[0], canaleta[1], novo_lat, novo_lon)
+            # Base for the transformation, cartesian to geodesic
+            lat0, lon0 = -3.123199, -41.764537 
 
-        # Other objects
-        self.dimensions = [dimension_REATOR, dimension_PR, dimension_TPC, dimension_IP, dimension_SECH, dimension_TC, dimension_SECV, dimension_DISJUNTOR, dimension_BUSCSB, dimension_BUSIP, dimension_ESTRUTURA2, dimension_ESTRUTURA3, dimension_canaletas_horizontal] 
-        self.equipment_name = ["REATOR", "PR", "TPC", "IP", "SECH", "TC", "SECV", "DISJUNTOR", "BUSCSB", "BUSIP", "ESTRUTURA2", "ESTRUTURA3", "canaletas"]
+            # Convert the canaletas and taludes coordinates from cartesian to geodesic
+            for name, canaleta in self.dimension_canaletas_taludes.items():
+                novo_lat, novo_lon = self.CartesianToGeodesic(-canaleta[2], canaleta[3], lat0, lon0) # Tem algum problema no sinal do x no gazebo, não mudar isso
+                self.dimension_canaletas_taludes[name] = (canaleta[0], canaleta[1], novo_lat, novo_lon)
 
-    def LoadFileToDataframe(self, file_path = "planilhas/models.xlsx"):
+        # Other objects        
+        if self.geolocation_from_gazebo:
+
+            self.dimensions = [dimension_REATOR, dimension_PR, dimension_TPC, dimension_IP, dimension_SECH, dimension_TC, dimension_SECV, dimension_DISJUNTOR, dimension_BUSCSB, dimension_BUSIP, dimension_ESTRUTURA2, dimension_ESTRUTURA3, dimension_canaletas_horizontal] 
+            self.equipment_name = ["REATOR", "PR", "TPC", "IP", "SECH", "TC", "SECV", "DISJUNTOR", "BUSCSB", "BUSIP", "ESTRUTURA2", "ESTRUTURA3", "canaletas"]
+        
+        else:
+
+            self.equipment_name = ["reator", "pr", "tpc", "ip", "sech", "tc", "secv", "disjuntor", "buscsb", "busip", "estrutura2", "estrutura3", "canaleta", "talude", "obstaculo", "bombeiro", "torre", "transformador", "caixa"]
+
+    def LoadFileToDataframe(self):
         """
         Load file to pandas dataframe.
 
-        Args:
-            file_path (str): File path
         Returns:
             pd.DataFrame: Dataframe
         """
         try:
-            df = pd.read_excel(file_path)
+            df = pd.read_excel(self.original_file_path)
             return df
         except Exception as e:
             print(f"Could not load the file: {e}")
             return None
         
-    def calcular_vetores(self, lat, lon, ponto_medio):
+    def CalculateVectors(self, lat, lon, ponto_medio):
         """
         Calculate the vectors x and y from the midpoint.
 
@@ -183,7 +195,7 @@ class TreatData:
         plt.axis('equal')
         plt.show()
 
-    def safe_json_load(self, val):
+    def SafeJsonLoad(self, val):
         """
         Safely load a JSON string into a Python object.
         
@@ -230,7 +242,7 @@ class TreatData:
 
         return lat, lon
     
-    def  new_line(self, name, lat, lon, alt, vx, vy, dx, dy):
+    def NewLine(self, name, lat, lon, alt, vx, vy, dx, dy):
         """
         Create a new line with the given parameters.
         Args:
@@ -259,7 +271,7 @@ class TreatData:
         }
         return nova_linha
 
-    def process_canaleta_talude(self, i):
+    def ProcessCanaletaTalude(self, i):
         """
         Process the canaleta and talude dimensions and coordinates.
         Args:
@@ -270,13 +282,13 @@ class TreatData:
             ponto_medio = (data[2], data[3]) # lat, lon
             dx, dy = data[0], data[1] # central cartesian coordinates
             lat, lon = self.CartesianToGeodesic(dx, dy, data[0], data[1]) # transformation
-            vetores_x, vetores_y = self.calcular_vetores(lat, lon, ponto_medio)
+            vetores_x, vetores_y = self.CalculateVectors(lat, lon, ponto_medio)
 
             # Add new line
-            nova_linha = self.new_line(f'ARGO_PARNAIBAIII_V2_LD::BASE::{name}', ponto_medio[0], ponto_medio[1], 77, vetores_x, vetores_y, dx, dy)
+            nova_linha = self.NewLine(f'ARGO_PARNAIBAIII_V2_LD::BASE::{name}', ponto_medio[0], ponto_medio[1], 77, vetores_x, vetores_y, dx, dy)
             self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
 
-    def process_other_equipment(self, i, dimension):
+    def ProcessOtherEquipment(self, i, dimension):
         """
         Process the other equipment dimensions and coordinates.
         Args:
@@ -287,7 +299,7 @@ class TreatData:
         ponto_medio = (self.equipment_lat[i], self.equipment_lon[i])
         dx, dy = dimension
         lat, lon = self.CartesianToGeodesic(dx, dy, ponto_medio[0], ponto_medio[1])
-        vetores_x, vetores_y = self.calcular_vetores(lat, lon, ponto_medio)
+        vetores_x, vetores_y = self.CalculateVectors(lat, lon, ponto_medio)
 
         self.df.loc[i, 'LatLonCentral'] = json.dumps([ponto_medio[1], ponto_medio[0]])
         self.df.loc[i, 'Vx'] = json.dumps(vetores_x)
@@ -298,7 +310,7 @@ class TreatData:
         # Test vectors position
         # self.PlotEquipamentCoordinates(vetores_x, vetores_y)
 
-    def process_estrutura(self, i, dimension):
+    def ProcessEstrutura(self, i, dimension):
         """
         Process the structure dimensions and coordinates.
         Args:
@@ -324,10 +336,10 @@ class TreatData:
             lat, lon = self.CartesianToGeodesic(dx, dy, lat0, lon0)
 
             # Calcular os vetores
-            vx, vy = self.calcular_vetores(lat, lon, ponto_medio)
+            vx, vy = self.CalculateVectors(lat, lon, ponto_medio)
 
             # Add new line
-            nova_linha = self.new_line(f'{self.model_name[i]}middle', ponto_medio[0], ponto_medio[1], self.df['Altitude'][i], vx, vy, dimension[0], dimension[1])
+            nova_linha = self.NewLine(f'{self.model_name[i]}middle', ponto_medio[0], ponto_medio[1], self.df['Altitude'][i], vx, vy, dimension[0], dimension[1])
             self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
 
         #--------------------------------------------------------------------
@@ -356,10 +368,10 @@ class TreatData:
         lat1, lon1 = self.CartesianToGeodesic(dx, dy, lat1, lon1)
         
         # Calcular os vetores
-        vx1, vy1 = self.calcular_vetores(lat1, lon1, ponto_medio1)
+        vx1, vy1 = self.CalculateVectors(lat1, lon1, ponto_medio1)
 
         # Add new line
-        nova_linha = self.new_line(f'{self.model_name[i]}top', ponto_medio1[0], ponto_medio1[1], self.df['Altitude'][i], vx1, vy1, dimension[0], dimension[1])
+        nova_linha = self.NewLine(f'{self.model_name[i]}top', ponto_medio1[0], ponto_medio1[1], self.df['Altitude'][i], vx1, vy1, dimension[0], dimension[1])
         self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
 
         #------------------- Parte inferior da estrutura --------------------
@@ -379,9 +391,9 @@ class TreatData:
         lat2, lon2 = self.CartesianToGeodesic(dx, dy, lat2, lon2)
 
         # Calcular os vetores
-        vx2, vy2 = self.calcular_vetores(lat2, lon2, ponto_medio2)
+        vx2, vy2 = self.CalculateVectors(lat2, lon2, ponto_medio2)
 
-        nova_linha = self.new_line(f'{self.model_name[i]}bottom', ponto_medio2[0], ponto_medio2[1], self.df['Altitude'][i], vx2, vy2, dimension[0], dimension[1])
+        nova_linha = self.NewLine(f'{self.model_name[i]}bottom', ponto_medio2[0], ponto_medio2[1], self.df['Altitude'][i], vx2, vy2, dimension[0], dimension[1])
         self.df = pd.concat([self.df, pd.DataFrame([nova_linha])], ignore_index=True)
     
     def main(self):
@@ -389,6 +401,7 @@ class TreatData:
         Main function to process the data and plot the equipment dimensions.
         """
 
+        # Process each equipment based on its model name and dimensions
         for k in range(len(self.dimensions)):
             dimension = self.dimensions[k]
 
@@ -396,29 +409,34 @@ class TreatData:
                 
                 if self.equipment_name[k] in self.model_name[i]:
 
-                    if "ESTRUTURA2" in self.model_name[i] or "ESTRUTURA3" in self.model_name[i]:
-                        self.process_estrutura(i, dimension)
-                        self.df.to_excel("planilhas/equipment.xlsx", index=False)
+                    if self.geolocation_from_gazebo and ("ESTRUTURA2" in self.model_name[i] or "ESTRUTURA3" in self.model_name[i]):
+                        self.ProcessEstrutura(i, dimension)
+                        self.df.to_excel(self.transformed_file_path, index=False)
 
                     elif "canaletas" in self.model_name[i]:
-                        self.process_canaleta_talude(i)
-                        self.df.to_excel("planilhas/equipment.xlsx", index=False)
+                        self.ProcessCanaletaTalude(i)
+                        self.df.to_excel(self.transformed_file_path, index=False)
                     else:
-                        self.process_other_equipment(i, dimension)
-                        self.df.to_excel("planilhas/equipment.xlsx", index=False)       
+                        self.ProcessOtherEquipment(i, dimension)
+                        self.df.to_excel(self.transformed_file_path, index=False)
 
-        self.df['Vx_largura'] = self.df['Vx_largura'].apply(self.safe_json_load)
-        self.df['Vy_altura'] = self.df['Vy_altura'].apply(self.safe_json_load)
-        dx = self.df['Vx_largura']
-        dy = self.df['Vy_altura']
+        # Save the transformed DataFrame to an Excel file
+        self.df['Vx_largura'] = self.df['Vx_largura'].apply(self.SafeJsonLoad)
+        self.df['Vy_altura'] = self.df['Vy_altura'].apply(self.SafeJsonLoad)
 
-        self.df['Vx'] = self.df['Vx'].apply(self.safe_json_load)
-        self.df['Vy'] = self.df['Vy'].apply(self.safe_json_load)
-        lat_lon_central = self.df['LatLonCentral'].apply(self.safe_json_load)
+        # Width and height of the rectangle [meters]
+        dx = self.df['Vx_largura'] 
+        dy = self.df['Vy_altura'] 
 
+        # Save the transformed DataFrame to an Excel file
+        self.df['Vx'] = self.df['Vx'].apply(self.SafeJsonLoad)
+        self.df['Vy'] = self.df['Vy'].apply(self.SafeJsonLoad)
+        lat_lon_central = self.df['LatLonCentral'].apply(self.SafeJsonLoad)
+
+        # Plot the equipment dimensions
         self.PlotEquipamentDimensions(dx, dy, lat_lon_central)
 
 if __name__ == "__main__":  
 
-    treat_data = TreatData()
+    treat_data = TreatSpreadsheet()
     treat_data.main()

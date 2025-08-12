@@ -24,7 +24,7 @@ def main():
     observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 6.5
 
     # Carregar obstáculos

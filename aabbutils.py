@@ -275,7 +275,7 @@ class AABBUtils:
     @staticmethod
     def merge_overlapping_aabbs(aabbs):
         merged = []
-        threshold = 100
+        threshold = 6
         while aabbs:
             base = aabbs.pop(0)
             bx, by = base[0]
