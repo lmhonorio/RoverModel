@@ -3,6 +3,7 @@
 ###############################################################################
 import math
 
+import pandas as pd
 from sympy import false
 
 from roverclass import ObstacleLoader
