@@ -16,8 +16,8 @@ from tspOptimization import FixedTaskPlanner
 from old.multigraphplanner import MultiGraphPlanner
 
 # ---------------------- ARQUIVOS DO SCRIPT ORIGINAL --------------------
-G_FILE   = "./jsons/graph9_new.json"
-OBS_FILE = "./jsons/obp_6.json"
+G_FILE   = "../jsons/graph9_new.json"
+OBS_FILE = "../jsons/obp_6.json"
 MISSIONS = ['b_busip4', 'ef_reator1', 'ls_pr4']
 
 # CARREGA O GRAFO COMPLETO QUE PlotUtils USA  ⬇⬇⬇

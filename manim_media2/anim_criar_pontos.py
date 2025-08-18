@@ -14,7 +14,7 @@ config.disable_caching = True
 config.media_dir = "C://Users//lmhon//Documents"      # fora do Dropbox
 
 # ---------- AJUSTE OS MESMOS CAMINHOS DO SEU SCRIPT ------------------
-FILE_PATH   = "./planilhas/obstaculos_processado6.xlsx"
+FILE_PATH   = "../planilhas/obstaculos_processado6.xlsx"
 SHEET_NAME  = "Parnaiba3_Transformado"
 MARGIN      = 2.5
 SEG_STEP    = 4.0
