@@ -58,8 +58,6 @@ class AjustePlanilha:
 
         df["Py"] = df["Latitude"].apply(lambda x: self.posicao_em_metros_lat(x, self.med_lat))
         df["Px"] = df["Longitude"].apply(lambda x: self.posicao_em_metros_lon(x, self.med_lon, self.med_lat))
-        # df["Vx_largura"] = df["Vx"].apply(self.separar_largura)
-        # df["Vy_altura"] = df["Vy"].apply(self.separar_altura)
 
         def gerar_id_simplificado(full_name):
             if not isinstance(full_name, str) or "::" not in full_name:
