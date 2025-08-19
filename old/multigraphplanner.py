@@ -1494,7 +1494,93 @@ class MultiGraphPlanner:
         with open(file_path, "w") as f:
             json.dump(serializable, f, indent=4)
 
+    ########################################## EXECUTE PLAN E GANTT PARA ABORDAGEM MOVNS #########################
 
 
+    def simulate_execution_from_solution(self, solution):
+        """
+        Simula a execução da solução encontrada, considerando deslocamento e tempo de execução.
+        Gera estrutura para gráfico de Gantt e estatísticas.
+        """
+        planned_paths = {f"R{robot.id}": [] for robot in solution.robots}
+        robot_time = {f"R{robot.id}": 0.0 for robot in solution.robots}
+        robot_position = {f"R{robot.id}": robot.initial_position for robot in solution.robots}
+        cache_astar = solution.cache_astar
 
+        for robot_idx, task_list in enumerate(solution.allocations):
+            robot_id = f"R{solution.robots[robot_idx].id}"
 
+            for task in task_list:
+                origin = robot_position[robot_id]
+                destino = task.entry_point["label"]
+
+                path, travel_time = cache_astar.get_path(origin, destino)
+                start_time = robot_time[robot_id]
+                arrival_time = start_time + travel_time
+                exec_time = task.inspection_time
+                end_time = arrival_time + exec_time
+
+                planned_paths[robot_id].append({
+                    "mission": task.id,
+                    "path": path,
+                    "travel_time": travel_time,
+                    "execution_time": exec_time,
+                    "start_time": start_time,
+                    "end_time": end_time
+                })
+
+                robot_time[robot_id] = end_time
+                robot_position[robot_id] = task.exit_point["label"]
+
+        total_time = max([robot_time[rid] for rid in robot_time])
+        return planned_paths, total_time
+    
+    def plot_gantt_from_plan(self, planned_paths, total_time):
+        travel_color = "#7FB3D5"
+        exec_color = "#82E0AA"
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        all_robots = sorted(planned_paths.keys())
+        y_map = {r: i for i, r in enumerate(all_robots)}
+
+        for robot in all_robots:
+            y = y_map[robot]
+            for task_data in planned_paths[robot]:
+                st = task_data["start_time"]
+                tt = task_data["travel_time"]
+                et = task_data["execution_time"]
+                arr = st + tt
+                end = arr + et
+                mission = task_data["mission"]
+
+                ax.barh(y, tt, left=st, color=travel_color, edgecolor="black")
+                ax.text((st + arr) / 2, y, "Desloc.", ha="center", va="center", fontsize=8)
+                ax.barh(y, et, left=arr, color=exec_color, edgecolor="black")
+                ax.text((arr + end) / 2, y, mission, ha="center", va="center", fontsize=8)
+
+        ax.set_yticks(list(y_map.values()))
+        ax.set_yticklabels(all_robots)
+
+        patches = [
+            Patch(facecolor=travel_color, label="Deslocamento"),
+            Patch(facecolor=exec_color, label="Execução")
+        ]
+        ax.legend(handles=patches)
+        ax.set_xlabel("Tempo (s)")
+        ax.set_ylabel("Robô")
+        ax.set_title("Gantt - Deslocamento e Execução")
+        plt.show()
+
+    
+    def execute_plan_from_solution(self, solution):
+        planned_paths, total_time = self.simulate_execution_from_solution(solution)
+
+        print(f"🔹 Tempo total para executar todas as tarefas: {total_time:.2f}s")
+        for robot, missions in planned_paths.items():
+            for task in missions:
+                print(
+                    f"🚀 {robot} fará {task['mission']} em {task['path'][-1]} "
+                    f"(Desloc: {task['travel_time']:.2f}s, Exec: {task['execution_time']:.2f}s)"
+                )
+
+        self.plot_gantt_from_plan(planned_paths, total_time)
