@@ -350,6 +350,70 @@ class SegmentUtils:
                 return False
 
             return True
+        
+        def segment_inside_aabb(x1, y1, x2, y2, aabb):
+            (ax, ay), w, h = aabb
+            ax2, ay2 = ax + w, ay + h
+
+            # Função auxiliar: ponto dentro do retângulo
+            def point_inside(px, py):
+                return ax <= px <= ax2 and ay <= py <= ay2  # estritamente dentro (sem borda)
+
+            # 1) Se ambos os pontos estão dentro -> passa pelo interior
+            if point_inside(x1, y1) and point_inside(x2, y2):
+                return True
+
+            # Definir lados do retângulo
+            sides = [
+                ((ax, ay), (ax2, ay)),   # inferior
+                ((ax2, ay), (ax2, ay2)), # direita
+                ((ax2, ay2), (ax, ay2)), # superior
+                ((ax, ay2), (ax, ay)),   # esquerda
+            ]
+
+            # Função para checar interseção de segmentos
+            def orientation(a, b, c):
+                return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
+
+            def on_segment(a, b, c):
+                return (min(a[0],c[0]) <= b[0] <= max(a[0],c[0]) and
+                        min(a[1],c[1]) <= b[1] <= max(a[1],c[1]))
+
+            def segments_intersect(p1, p2, q1, q2):
+                o1 = orientation(p1, p2, q1)
+                o2 = orientation(p1, p2, q2)
+                o3 = orientation(q1, q2, p1)
+                o4 = orientation(q1, q2, p2)
+
+                # Interseção geral
+                if o1*o2 < 0 and o3*o4 < 0:
+                    return True
+
+                # Casos colineares (apenas tocar → vamos ignorar como "interior")
+                if o1 == 0 and on_segment(p1, q1, p2): return False
+                if o2 == 0 and on_segment(p1, q2, p2): return False
+                if o3 == 0 and on_segment(q1, p1, q2): return False
+                if o4 == 0 and on_segment(q1, p2, q2): return False
+
+                return False
+
+            # 2) Se cruza algum lado "de verdade"
+            for side in sides:
+                if segments_intersect((x1,y1),(x2,y2), side[0], side[1]):
+                    return True
+
+            # 3) Caso contrário, não passa pelo interior
+            return False
+
+            # (ax, ay), w, h = aabb
+            # ax2, ay2 = ax + w, ay + h
+
+            # # Função auxiliar: verifica se ponto está dentro do retângulo
+            # def point_inside(px, py):
+            #     return ax <= px <= ax2 and ay <= py <= ay2
+
+            # # O segmento está dentro se AMBOS os pontos estão dentro
+            # return point_inside(x1, y1) and point_inside(x2, y2)
 
         # Mapeamento dos pontos por AABB
         points_by_aabb = defaultdict(set)
@@ -454,7 +518,7 @@ class SegmentUtils:
                 inner_label_counter += 1
                 label_counter += 1
 
-        # Conecta pontos com aabbs vizinhos        
+        # Passo 4: Conecta pontos com aabbs vizinhos        
         for point1, label1, connections in single_connection_points:
             closest_point = None
             closest_label = None
@@ -464,6 +528,12 @@ class SegmentUtils:
 
                 if point1 == point2:
                     continue  
+
+                if any(
+                        segment_inside_aabb(point1[0], point1[1], point2[0], point2[1], other_aabb)
+                        for j, other_aabb in enumerate(aabbs)
+                    ):
+                        continue
 
                 d = dist(point1, point2)
                 distances.append((d, point2, label2))

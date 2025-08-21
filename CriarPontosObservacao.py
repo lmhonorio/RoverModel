@@ -24,8 +24,9 @@ def main():
     observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 1  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 6.5
+    threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
@@ -33,7 +34,7 @@ def main():
 
     # AABBs
 
-    aabbs = AABBUtils.get_aabbs(obstacles, margin)
+    aabbs = AABBUtils.get_aabbs(obstacles, margin, threshold)
 
     segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 4.0)
 
@@ -105,10 +106,6 @@ def main():
     # plt.imshow(img)
     # plt.axis('off')  # Remover eixos
     # plt.show()
-
-
-
-
 
 if __name__ == "__main__":
     main()
