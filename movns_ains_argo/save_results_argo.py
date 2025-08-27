@@ -53,7 +53,7 @@ def analyze_metrics_evolution(metrics_log, normalize=False):
     return evolutions
 
 def save_results_to_file(evolutions, filename):
-    filename = f'/home/milena/catkin_ws/src/ardupilot_gazebo/experiment_results_balance/{filename}'
+    filename = f'Resultados_otimizacao/{filename}'
     """
     Salva as evoluções das métricas em um arquivo JSON.
 
