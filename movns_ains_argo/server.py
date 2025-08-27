@@ -162,7 +162,7 @@ def rota_regiao():
     return {"output": "Rota na região '{}' realizada.".format(regiao), "outputList": lista_pontos_mundo, "equipments_count": qtde_equip, "pontos_count": qtde_pontos, "dist_percorrida": dist_percorrida}
 
 
-
+"""
 def rota_completa():
     trajetoria.clear()
     # Recebe as tasks em formato JSON e converte para objetos
@@ -196,7 +196,7 @@ def ir_para_ponto():
     caminho = rota.rota_ponto(rota, ponto)
     trajetoria.extend(caminho)
     return "Inspeção do equipamento '{}' na região '{}' realizada.".format(nome, regiao)
-
+"""
 
 def ir_para_equipamento():
     trajetoria.clear()
@@ -230,7 +230,7 @@ def ir_para_equipamento():
         ]
     }
 
-
+"""
 def plotar_caminho():
     global plot_path  # Adicione esta linha para acessar a variável global plot_path
     plot_path = Mapa.desenhar_rota(mapa, trajetoria)
@@ -244,7 +244,7 @@ def gerar_rota_georaferenciada():
     global trajetoria_gps
     trajetoria_gps = rota.gerar_missao(trajetoria)
     return str(trajetoria_gps)
-
+"""
 
 def gerar_missao_tasks(robot_id, waypoints):
     global trajetoria_gps
