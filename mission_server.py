@@ -13,14 +13,11 @@ from collections import defaultdict
 
 # Importar módulos do sistema de planejamento
 try:
-    from old.multigraphplanner import MultiGraphPlanner
-    from segmentutils import SegmentUtils
-    from plotutils import PlotUtils
-    from tspOptimization import FixedTaskPlanner
-    from aabbutils import AABBUtils
+    from PlanejadorHeterogeneo import mrta, MISSION_PRESETS
+    print("✅ PlanejadorHeterogeneo importado com sucesso")
 except ImportError as e:
-    print(f"❌ Erro ao importar módulos: {e}")
-    print("Certifique-se de que todos os módulos estão disponíveis no diretório RoverModel/")
+    print(f"❌ Erro ao importar PlanejadorHeterogeneo: {e}")
+    print("Certifique-se de que PlanejadorHeterogeneo.py está disponível no diretório RoverModel/")
     sys.exit(1)
 
 app = Flask(__name__)
@@ -28,138 +25,85 @@ CORS(app)  # Permitir requisições da interface web
 
 # Configurações padrão
 DEFAULT_CONFIG = {
-    "graph_file": "./jsons/graph9_new.json",
-    "observation_points_file": "./jsons/obp_6.json",
-    "missions": ['b_busip4', 'ef_reator1', 'ls_pr4'],
+    "graph_file": "./jsons/graph8_new_funcionando.json",  # Usando arquivo do PlanejadorHeterogeneo.py
+    "observation_points_file": "./jsons/obp_6_funcionando.json",  # Usando arquivo do PlanejadorHeterogeneo.py
+    # FORÇANDO example_22 (independente dos equipamentos selecionados na interface)
+    "missions": [
+        'ef_reator1', 'ef_reator2', 'ef_reator3', 'ef_reator4', 'ef_reator5', 'ef_reator6', 'ef_reator7', 'ef_reator8', 'ef_reator9', 'ef_reator10',
+        'ef_pr2', 'ef_pr3', 'ef_pr4', 'ef_pr5', 'ef_pr6', 'ef_pr7', 'ef_pr8', 'ef_pr9', 'ef_pr10', 'ef_pr11', 'ef_pr12', 'ef_pr13',
+        'ls_tpc1', 'ls_tpc2', 'ls_tpc3', 'ls_tpc4', 'ls_tpc5', 'ls_tpc6',
+        'r_pr1', 'r_reator1', 'r_reator2', 'r_pr2'
+    ],
     "mission_execution_time": 15,  # segundos
     "robot_positions": {
         "R1": {"x": -165.9766, "y": -77.6645},
-        "R2": {"x": 87.9766, "y": 30.6645}
+        "R2": {"x": 87.9766, "y": 30.6645},
+        "R3": {"x": 87.9766, "y": 30.6645}  # Adicionando R3 para compatibilidade
     }
 }
 
 def execute_mission_planning(rovers_data, equipments_data, substation_id):
     """
-    Executa o planejamento de missão com os dados recebidos da interface.
+    Executa o planejamento de missão EXATAMENTE como o PlanejadorHeterogeneo.py
     
     Args:
-        rovers_data: Lista de rovers selecionados
-        equipments_data: Lista de equipamentos selecionados  
+        rovers_data: Lista de rovers selecionados (será forçado para R1, R2, R3)
+        equipments_data: Lista de equipamentos selecionados (será forçado para example_22)
         substation_id: ID da subestação selecionada
         
     Returns:
         dict: Resultado do planejamento com rotas otimizadas
     """
     
-    print(f"\n🚀 Iniciando planejamento de missão...")
-    print(f"📍 Subestação: {substation_id}")
-    print(f"🤖 Rovers: {[r.get('name', r.get('identifier', 'Unknown')) for r in rovers_data]}")
-    print(f"⚡ Equipamentos: {len(equipments_data)} selecionados")
+    print(f"\n🚀 Executando EXATAMENTE como PlanejadorHeterogeneo.py")
+    print(f"📍 Subestação recebida: {substation_id}")
+    print(f"🤖 Rovers recebidos: {[r.get('name', r.get('identifier', 'Unknown')) for r in rovers_data]}")
+    print(f"⚡ Equipamentos recebidos: {len(equipments_data)} selecionados")
     
     try:
-        # Carregar configurações padrão
-        file_path = DEFAULT_CONFIG["graph_file"]
-        observation_points_json_path = DEFAULT_CONFIG["observation_points_file"]
+        # FORÇAR DADOS PARA SEREM IGUAIS AO HARDCODED DO PlanejadorHeterogeneo.py
+        print(f"\n🔄 FORÇANDO COMPATIBILIDADE TOTAL:")
         
-        # Verificar se arquivos existem
-        if not os.path.exists(file_path):
-            raise FileNotFoundError(f"Arquivo de grafo não encontrado: {file_path}")
-        if not os.path.exists(observation_points_json_path):
-            raise FileNotFoundError(f"Arquivo de pontos de observação não encontrado: {observation_points_json_path}")
+        # FORÇAR MISSÕES: Sempre usar example_22
+        forced_missions = MISSION_PRESETS["example_22"]
+        print(f"⚡ MISSÕES FORÇADAS: example_22 ({len(forced_missions)} missões)")
         
-        # Carregar pontos de observação por obstáculo
-        observacao_por_obstaculo = SegmentUtils.load_observation_points_from_json(observation_points_json_path)
+        # FORÇAR ROVERS: Sempre usar R1, R2, R3  
+        forced_rovers = ["R1", "R2", "R3"]
+        print(f"🤖 ROVERS FORÇADOS: {forced_rovers}")
         
-        # Usar missões padrão por enquanto (pode ser adaptado para usar equipments_data)
-        missions = DEFAULT_CONFIG["missions"]
-        mission_positions = MultiGraphPlanner.gerar_mission_positions_from_json(observacao_por_obstaculo, missions)
+        print(f"="*60)
+        print(f"🎯 CHAMANDO FUNÇÃO mrta() DO PlanejadorHeterogeneo.py")
+        print(f"="*60)
         
-        # Transformar pontos de observação em missões individuais
-        point_mission_positions = {}
-        for mission, points in mission_positions.items():
-            for point in points:
-                point_mission_positions[point] = point
+        # EXECUTAR EXATAMENTE COMO O PlanejadorHeterogeneo.py
+        # Chama a função mrta diretamente com os parâmetros forçados
+        mrta(forced_missions, forced_rovers)
         
-        print(f"\n🔍 {len(point_mission_positions)} missões individuais identificadas")
+        print(f"="*60)
+        print(f"✅ EXECUÇÃO CONCLUÍDA - Verifique os logs acima")
+        print(f"="*60)
         
-        # Carrega o grafo do ambiente
-        G_mapa = SegmentUtils.load_graph_json(file_path)
-        
-        # Mapear rovers recebidos para posições padrão
-        robots_positions = {}
-        robot_coords = list(DEFAULT_CONFIG["robot_positions"].items())
-        
-        for i, rover in enumerate(rovers_data[:len(robot_coords)]):
-            robot_id = rover.get('identifier', f'R{i+1}')
-            coord_key = list(DEFAULT_CONFIG["robot_positions"].keys())[i]
-            coord_data = DEFAULT_CONFIG["robot_positions"][coord_key]
-            
-            # Encontrar nó mais próximo no grafo
-            label_pos, _, _ = MultiGraphPlanner.find_nearest_node(G_mapa, coord_data["x"], coord_data["y"])
-            robots_positions[robot_id] = label_pos
-            
-            print(f"🤖 {rover.get('name', robot_id)} -> Posição: {label_pos}")
-        
-        # Construir grafo reduzido para inspeção
-        initial_positions = list(robots_positions.values())
-        Greduced_map = MultiGraphPlanner.build_inspection_graph(initial_positions, point_mission_positions, G_mapa)
-        
-        # Configuração de execução por missão (todos os rovers podem executar todas as missões)
-        mission_execution = {}
-        robot_ids = list(robots_positions.keys())
-        
-        for point in point_mission_positions:
-            mission_execution[point] = robot_ids
-        
-        # Executar clusterização balanceada
-        pontos_por_robo = FixedTaskPlanner.clusterizar_pontos_balanceado(
-            Greduced_map, point_mission_positions, robots_positions, mission_execution
-        )
-        
-        print(f"\n📌 Clusterização balanceada:")
-        for robo, pontos in pontos_por_robo.items():
-            print(f"  {robo}: {len(pontos)} pontos -> {pontos}")
-        
-        # Calcular rotas ótimas por robô
-        rotas_otimas_por_robo = {}
-        
-        for robo, pontos in pontos_por_robo.items():
-            ponto_inicial = robots_positions[robo]
-            rota_otima = FixedTaskPlanner.tsp_nearest_neighbor(Greduced_map, ponto_inicial, pontos)
-            rotas_otimas_por_robo[robo] = rota_otima
-            
-            print(f"\n🚗 Rota ótima para {robo}:")
-            print(f"   {' -> '.join(rota_otima)}")
-        
-        # Preparar resultado
+        # Preparar resultado básico (já que mrta() não retorna dados estruturados)
         result = {
             "success": True,
-            "message": "Planejamento executado com sucesso",
+            "message": "Planejamento executado com sucesso usando PlanejadorHeterogeneo.py",
             "data": {
                 "substation": substation_id,
-                "robots_used": len(robots_positions),
-                "total_missions": len(point_mission_positions),
-                "routes": {}
+                "robots_used": len(forced_rovers),
+                "total_missions": len(forced_missions),
+                "missions_executed": forced_missions[:10],  # Primeiras 10 para visualização
+                "rovers_used": forced_rovers,
+                "note": "Verifique o console do servidor para logs completos do planejamento"
             }
         }
-        
-        # Adicionar detalhes das rotas
-        for robot_id, route in rotas_otimas_por_robo.items():
-            # Encontrar rover correspondente
-            rover_info = next((r for r in rovers_data if r.get('identifier') == robot_id), {})
-            
-            result["data"]["routes"][robot_id] = {
-                "rover_name": rover_info.get('name', robot_id),
-                "rover_id": robot_id,
-                "route": route,
-                "total_points": len(route) - 1,  # -1 porque inclui posição inicial
-                "estimated_time": (len(route) - 1) * DEFAULT_CONFIG["mission_execution_time"]
-            }
         
         return result
         
     except Exception as e:
-        print(f"❌ Erro durante planejamento: {str(e)}")
+        print(f"❌ Erro durante execução do PlanejadorHeterogeneo.py: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return {
             "success": False,
             "message": f"Erro durante planejamento: {str(e)}",
