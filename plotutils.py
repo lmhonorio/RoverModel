@@ -3,6 +3,7 @@
 ###############################################################################
 
 import math
+import random
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
@@ -490,3 +491,252 @@ class PlotUtils:
         ax.set_ylabel("Y")
         ax.set_title(f"Segmentos em verde + vértices vermelhos (raio={raio})")
         plt.show()
+
+    def plotar_rotas_dos_robos(G_mapa, robots):
+        pos = nx.get_node_attributes(G_mapa, 'pos')  # Posições dos nós
+
+        plt.figure(figsize=(12, 10))
+        nx.draw(G_mapa, pos, node_size=10, node_color='lightgray', edge_color='lightgray', with_labels=False)
+
+        cores = {}
+
+        for robot in robots:
+            caminho = getattr(robot, "path", [])
+            if not caminho:
+                continue
+
+            # Cor aleatória para o robô
+            if robot.id not in cores:
+                cores[robot.id] = [random.random() for _ in range(3)]
+
+            cor = cores[robot.id]
+            caminho_pos = [pos[n] for n in caminho if n in pos]
+
+            if len(caminho_pos) >= 2:
+                xs, ys = zip(*caminho_pos)
+                plt.plot(xs, ys, label=f"Robo {robot.id}", color=cor, linewidth=2)
+                plt.scatter(xs[0], ys[0], color='green', marker='s', s=80, label=f"{robot.id} Start")
+                plt.scatter(xs[-1], ys[-1], color='red', marker='X', s=80, label=f"{robot.id} End")
+
+        plt.title("Rotas dos Robôs sobre o Grafo")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.axis('equal')
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+    
+
+
+    def plot_robot_routes_from_solution(solution, G_mapa):
+        pos = nx.get_node_attributes(G_mapa, 'pos')  # Posições dos nós do grafo
+        cache_astar = solution.cache_astar
+        robots = solution.robots
+        allocations = solution.allocations
+
+        plt.figure(figsize=(12, 10))
+        nx.draw(G_mapa, pos, node_size=10, node_color='lightgray', edge_color='lightgray', with_labels=False)
+
+        cores = {}
+
+        for robot_idx, robot in enumerate(robots):
+            tarefas = allocations[robot_idx]
+            if not tarefas:
+                continue
+
+            if robot.id not in cores:
+                cores[robot.id] = [random.random() for _ in range(3)]
+            cor = cores[robot.id]
+
+            caminho_labels = []
+            try:
+                # Ponto inicial até a primeira tarefa
+                entrada_primeira = tarefas[0].entry_point["label"]
+                caminho, _ = cache_astar.get_path(robot.initial_position, entrada_primeira)
+                caminho_labels.extend(caminho)
+
+                for i in range(len(tarefas)):
+                    task = tarefas[i]
+                    # Caminho interno da task
+                    rota_interna = [p["label"] for p in task.rota]
+                    caminho_labels.extend(rota_interna)
+
+                    if i < len(tarefas) - 1:
+                        origem = task.exit_point["label"]
+                        destino = tarefas[i + 1].entry_point["label"]
+                        caminho, _ = cache_astar.get_path(origem, destino)
+                        caminho_labels.extend(caminho)
+
+                # Volta para o início (opcional)
+                saida_final = tarefas[-1].exit_point["label"]
+                caminho, _ = cache_astar.get_path(saida_final, robot.initial_position)
+                caminho_labels.extend(caminho)
+
+            except Exception as e:
+                print(f"[⚠️ Erro ao obter caminho para robô {robot.id}]: {e}")
+                continue
+
+            # Converte labels em posições
+            caminho_pos = [pos[n] for n in caminho_labels if n in pos]
+            if len(caminho_pos) >= 2:
+                xs, ys = zip(*caminho_pos)
+                plt.plot(xs, ys, label=f"Robô {robot.id}", color=cor, linewidth=2)
+                plt.scatter(xs[0], ys[0], color='green', marker='s', s=80, label=f"{robot.id} Start")
+                plt.scatter(xs[-1], ys[-1], color='red', marker='X', s=80, label=f"{robot.id} End")
+
+        plt.title("Rotas dos Robôs sobre o Grafo (com base na Solution)")
+        plt.xlabel("X")
+        plt.ylabel("Y")
+        plt.axis('equal')
+        plt.grid(True)
+        plt.legend()
+        plt.tight_layout()
+        plt.show()
+
+    def plotar_rotas_de_tasks(tasks):
+
+        plt.figure(figsize=(12, 10))
+
+        for task in tasks:
+            rota = task.rota
+            if not rota:
+                continue
+
+            x = [pt["coord_abs"][0] for pt in rota]
+            y = [pt["coord_abs"][1] for pt in rota]
+            labels = [pt["label"] for pt in rota]
+
+            cor = [random.random() for _ in range(3)]
+            plt.plot(x, y, marker='o', linestyle='-', color=cor, label=f'{task.id}')
+
+            if len(rota) >= 2:
+                plt.scatter(x[0], y[0], color='green', label=f'{task.id} Start')
+                plt.scatter(x[-1], y[-1], color='red', label=f'{task.id} End')
+            else:
+                plt.scatter(x[0], y[0], color='blue', label=f'{task.id} Único Ponto')
+
+            for i in range(len(rota)):
+                plt.text(x[i], y[i], f"{labels[i]}", fontsize=7)
+
+        plt.xlabel("X (px)")
+        plt.ylabel("Y (py)")
+        plt.title("Rotas das Tasks com Pontos de Observação")
+        plt.legend(fontsize=7, loc='upper right')
+        plt.grid(True)
+        plt.axis("equal")
+        plt.tight_layout()
+        plt.show()
+
+    @staticmethod
+    def plot_rotas_grafo(G, rotas_por_robo):
+        pos = nx.get_node_attributes(G, 'pos')
+
+        plt.figure(figsize=(12, 10))
+
+        # Plotar o grafo base
+        nx.draw(G, pos, node_color='lightgray', edge_color='gray', node_size=50, with_labels=False)
+
+        # Plotar rotas por robô com cores diferentes
+        cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+        for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+            coords_rota = np.array([pos[node] for node in rota])
+            plt.plot(coords_rota[:, 0], coords_rota[:, 1], marker='o', linestyle='-', linewidth=2,
+                     color=cores[i % len(cores)], label=f'Rota {robo}')
+
+        plt.xlabel("X (metros)")
+        plt.ylabel("Y (metros)")
+        plt.title("Rotas Otimizadas por Robô (Grafo)")
+        # ➤ Legenda no canto superior direito, mas mais centralizada
+        plt.legend(loc='upper right', bbox_to_anchor=(0.85, 0.85), fontsize=10, frameon=True)
+
+        plt.grid(True)
+        plt.axis('equal')
+        plt.show()
+
+    @staticmethod
+    def plot_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria, title):
+        fig, ax = plt.subplots(figsize=(12, 10))
+
+        cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+        for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+            caminho_completo = []
+
+            for j in range(len(rota) - 1):
+                u, v = rota[j], rota[j + 1]
+                subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+                if caminho_completo and subpath[0] == caminho_completo[-1]:
+                    caminho_completo.extend(subpath[1:])
+                else:
+                    caminho_completo.extend(subpath)
+
+            coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+
+            # Plota todo o caminho em linha
+            ax.plot(coords_caminho[:, 0], coords_caminho[:, 1],
+                    linestyle='-', linewidth=2,
+                    color=cores[i % len(cores)], label=f'Rota {robo}')
+
+            # Diferencia pontos de vistoria dos pontos intermediários
+            for ponto in caminho_completo:
+                x, y = G_robot.nodes[ponto]['pos']
+                if ponto in pontos_vistoria:
+                    ax.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
+                else:
+                    ax.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
+
+            # Marca posição inicial claramente
+            ax.plot(coords_caminho[0, 0], coords_caminho[0, 1], marker='s', color='black', markersize=12, zorder=6)
+
+            # Setas indicando o percurso
+            for k in range(len(coords_caminho) - 1):
+                ax.arrow(coords_caminho[k, 0], coords_caminho[k, 1],
+                        coords_caminho[k + 1, 0] - coords_caminho[k, 0],
+                        coords_caminho[k + 1, 1] - coords_caminho[k, 1],
+                        shape='full', lw=0, length_includes_head=True, head_width=1.0,
+                        color=cores[i % len(cores)], alpha=0.4, zorder=3)
+
+        # Configurações dos rótulos e legendas com fonte maior
+        ax.set_xlabel("X (metros)", fontsize=16)
+        ax.set_ylabel("Y (metros)", fontsize=16)
+        ax.tick_params(axis='both', which='major', labelsize=16)
+        ax.set_title(title)
+        ax.legend(fontsize=16)
+        ax.grid(True)
+        ax.axis('equal')
+
+        plt.show()
+    
+    @staticmethod
+    def plot_comparacao_robo_a_robo(G_mapa, rotas_leo, rotas_movns, pontos_vistoria, titulo_base="Comparação por robô"):
+        robos = list(rotas_leo.keys())
+        
+        for robo in robos:
+            # Converte 'R1' → 'robot_1', etc.
+            sufixo_numerico = ''.join(filter(str.isdigit, robo))
+            robo_movns = f"robot_{sufixo_numerico}"
+
+            if robo_movns not in rotas_movns:
+                print(f"[Aviso] Robô '{robo_movns}' não encontrado na abordagem MOVNS.")
+                continue
+
+            rota_leo = rotas_leo[robo]
+            rota_movns = rotas_movns[robo_movns]
+
+            fig, axs = plt.subplots(1, 2, figsize=(16, 8))
+
+            # Plot da abordagem Leonardo
+            PlotUtils.plot_rotas_reais(
+                G_mapa, {robo: rota_leo}, pontos_vistoria,
+                titulo=f"{titulo_base} - {robo} - Prof. Leonardo", ax=axs[0], cor_fixa='blue'
+            )
+
+            # Plot da abordagem MOVNS
+            PlotUtils.plot_rotas_reais(
+                G_mapa, {robo_movns: rota_movns}, pontos_vistoria,
+                titulo=f"{titulo_base} - {robo_movns} - MOVNS", ax=axs[1], cor_fixa='red'
+            )
+
+            plt.tight_layout()
+            plt.show()

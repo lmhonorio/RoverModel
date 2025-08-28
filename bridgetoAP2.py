@@ -2,6 +2,8 @@ from missionmanager import  MissionManager
 
 
 # Exemplo de uso
+# nao pode ter se conectado no qground por enquanto. o link de comunicacao tem que estar livre. vou tentar fazer outro link out
+# o link de comunicacao com o qgc tem que ser o 14550 - ou seja, diferente de todos os outros robos.
 if __name__ == "__main__":
     # Coordenadas GPS da missão
 
@@ -36,9 +38,15 @@ if __name__ == "__main__":
     ALT = 2.0  # Altitude padrão
 
     # Configuração dos robôs
+    # robots = [
+    #     {"channel": "udp:0.0.0.0:14551", "mission": mission_points_1, "source_system":201 },
+    #     {"channel": "udp:0.0.0.0:14552", "mission": mission_points_2, "source_system":202 }
+    # ]
+
+    # 0.0.0.0 habilita para receber de qq IP
     robots = [
-        {"channel": "udp:0.0.0.0:14551", "mission": mission_points_1, "source_system":201 },
-        {"channel": "udp:0.0.0.0:14552", "mission": mission_points_2, "source_system":202 }
+        {"channel": "udp:0.0.0.0:14551", "mission": mission_points_1, "source_system":1 },
+        {"channel": "udp:0.0.0.0:14552", "mission": mission_points_2, "source_system":2 }
     ]
 
     managers = []

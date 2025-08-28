@@ -1,0 +1,790 @@
+{
+  "0": [
+    "ef_reator1",
+    "ef_reator2",
+    "ef_reator3",
+    "ef_reator4",
+    "ef_reator5",
+    "ef_reator6",
+    "r_reator1"
+  ],
+  "1": [
+    "ef_reator7",
+    "ef_reator8",
+    "ef_reator9",
+    "ef_reator10"
+  ],
+  "2": [
+    "ef_pr2"
+  ],
+  "3": [
+    "ef_pr3"
+  ],
+  "4": [
+    "ef_pr4"
+  ],
+  "5": [
+    "ef_pr5"
+  ],
+  "6": [
+    "ef_pr6"
+  ],
+  "7": [
+    "ef_pr7"
+  ],
+  "8": [
+    "ef_pr8"
+  ],
+  "9": [
+    "ef_pr9"
+  ],
+  "10": [
+    "ef_pr10"
+  ],
+  "11": [
+    "ef_pr11",
+    "ef_tpc1"
+  ],
+  "12": [
+    "ef_pr12",
+    "ef_tpc2"
+  ],
+  "13": [
+    "ef_pr13",
+    "ef_tpc3"
+  ],
+  "14": [
+    "ef_ip1",
+    "ef_sech1"
+  ],
+  "15": [
+    "ef_ip2",
+    "ef_sech2"
+  ],
+  "16": [
+    "ef_ip3",
+    "ef_sech3"
+  ],
+  "17": [
+    "ef_ip4",
+    "ef_sech4"
+  ],
+  "18": [
+    "ef_ip5",
+    "ef_sech5"
+  ],
+  "19": [
+    "ef_ip6",
+    "ef_sech6"
+  ],
+  "20": [
+    "ef_ip7",
+    "ef_secv1"
+  ],
+  "21": [
+    "ef_ip8",
+    "ef_secv2"
+  ],
+  "22": [
+    "ef_ip9",
+    "ef_secv3"
+  ],
+  "23": [
+    "ef_ip10",
+    "ef_secv4"
+  ],
+  "24": [
+    "ef_ip11",
+    "ef_secv5"
+  ],
+  "25": [
+    "ef_ip12",
+    "ef_secv6"
+  ],
+  "26": [
+    "ef_ip13",
+    "ef_secv13"
+  ],
+  "27": [
+    "ef_ip14",
+    "ef_secv14"
+  ],
+  "28": [
+    "ef_ip15",
+    "ef_secv15"
+  ],
+  "29": [
+    "ef_ip16",
+    "ef_sech22"
+  ],
+  "30": [
+    "ef_ip17",
+    "ef_sech23"
+  ],
+  "31": [
+    "ef_ip18",
+    "ef_sech24"
+  ],
+  "32": [
+    "ef_sech7",
+    "ef_tc1",
+    "ef_disjuntor1"
+  ],
+  "33": [
+    "ef_sech8",
+    "ef_tc2",
+    "ef_disjuntor2"
+  ],
+  "34": [
+    "ef_sech9",
+    "ef_tc3",
+    "ef_disjuntor3"
+  ],
+  "35": [
+    "ef_sech10",
+    "ef_tc4",
+    "ef_disjuntor4"
+  ],
+  "36": [
+    "ef_sech11",
+    "ef_tc5",
+    "ef_disjuntor5"
+  ],
+  "37": [
+    "ef_sech12",
+    "ef_tc6",
+    "ef_disjuntor6"
+  ],
+  "38": [
+    "ef_sech13",
+    "ef_tc7"
+  ],
+  "39": [
+    "ef_sech14",
+    "ef_tc8"
+  ],
+  "40": [
+    "ef_sech15",
+    "ef_tc9"
+  ],
+  "41": [
+    "ef_sech16",
+    "ef_sech19",
+    "ef_tc10",
+    "ef_tc13"
+  ],
+  "42": [
+    "ef_sech17",
+    "ef_sech20",
+    "ef_tc11",
+    "ef_tc14"
+  ],
+  "43": [
+    "ef_sech18",
+    "ef_sech21",
+    "ef_tc12",
+    "ef_tc15"
+  ],
+  "44": [
+    "ef_secv7"
+  ],
+  "45": [
+    "ef_secv8"
+  ],
+  "46": [
+    "ef_secv9"
+  ],
+  "47": [
+    "ef_secv10",
+    "ef_disjuntor7"
+  ],
+  "48": [
+    "ef_secv11",
+    "ef_disjuntor8"
+  ],
+  "49": [
+    "ef_secv12",
+    "ef_disjuntor9"
+  ],
+  "50": [
+    "ef_disjuntor10"
+  ],
+  "51": [
+    "ef_buscsb1",
+    "ef_buscsb2",
+    "ef_buscsb3"
+  ],
+  "52": [
+    "ef_buscsb4"
+  ],
+  "53": [
+    "ef_buscsb5",
+    "ef_buscsb6",
+    "ef_buscsb7"
+  ],
+  "54": [
+    "ef_buscsb8"
+  ],
+  "55": [
+    "ef_buscsb9"
+  ],
+  "56": [
+    "ef_buscsb10"
+  ],
+  "57": [
+    "ef_buscsb11",
+    "ef_buscsb12",
+    "ef_buscsb13"
+  ],
+  "58": [
+    "ef_buscsb14"
+  ],
+  "59": [
+    "ef_buscsb15",
+    "ef_buscsb16",
+    "ef_buscsb17",
+    "ef_buscsb18",
+    "ef_buscsb19",
+    "ef_buscsb20",
+    "ef_buscsb21"
+  ],
+  "60": [
+    "ef_buscsb22"
+  ],
+  "61": [
+    "ef_busip1",
+    "ef_busip2",
+    "ef_busip3",
+    "ef_busip4"
+  ],
+  "62": [
+    "ef_busip5",
+    "ef_busip6",
+    "ef_busip7",
+    "ef_busip8",
+    "ef_busip9"
+  ],
+  "63": [
+    "ef_busip10"
+  ],
+  "64": [
+    "ef_busip11"
+  ],
+  "65": [
+    "ef_busip12"
+  ],
+  "66": [
+    "ef_busip13",
+    "ef_busip14",
+    "ef_busip15",
+    "ef_busip16",
+    "ef_busip17",
+    "ef_busip18",
+    "ef_busip19",
+    "ef_busip20",
+    "ef_busip21",
+    "ef_busip22"
+  ],
+  "67": [
+    "ef_busip23"
+  ],
+  "68": [
+    "ef_busip24",
+    "ef_busip25",
+    "ef_busip26",
+    "ef_busip27"
+  ],
+  "69": [
+    "ef_busip28",
+    "ef_busip29",
+    "ef_busip30",
+    "ef_busip31",
+    "ef_busip32",
+    "ef_busip33",
+    "ef_busip34"
+  ],
+  "70": [
+    "ef_busip35"
+  ],
+  "71": [
+    "ef_busip36"
+  ],
+  "72": [
+    "ef_busip37",
+    "ef_busip38",
+    "ef_busip39",
+    "ef_busip40",
+    "ef_busip41",
+    "ef_busip42",
+    "ef_busip43",
+    "ef_busip44",
+    "ef_busip45",
+    "ef_busip46"
+  ],
+  "73": [
+    "ef_busip47"
+  ],
+  "74": [
+    "ef_pr1"
+  ],
+  "75": [
+    "cd_tc9",
+    "cd_sech9"
+  ],
+  "76": [
+    "cd_tc8",
+    "cd_sech8"
+  ],
+  "77": [
+    "cd_tc7",
+    "cd_sech7"
+  ],
+  "78": [
+    "cd_tc6",
+    "cd_sech6",
+    "cd_disjuntor6"
+  ],
+  "79": [
+    "cd_tc5",
+    "cd_sech5",
+    "cd_disjuntor5"
+  ],
+  "80": [
+    "cd_tc4",
+    "cd_sech4",
+    "cd_disjuntor4"
+  ],
+  "81": [
+    "cd_tc3",
+    "cd_sech3",
+    "cd_disjuntor3"
+  ],
+  "82": [
+    "cd_tc2",
+    "cd_sech2",
+    "cd_disjuntor2"
+  ],
+  "83": [
+    "cd_tc12",
+    "cd_sech12"
+  ],
+  "84": [
+    "cd_tc11",
+    "cd_sech11"
+  ],
+  "85": [
+    "cd_tc10",
+    "cd_sech10"
+  ],
+  "86": [
+    "cd_tc1",
+    "cd_sech1",
+    "cd_disjuntor1"
+  ],
+  "87": [
+    "cd_secv9",
+    "cd_disjuntor9"
+  ],
+  "88": [
+    "cd_secv8",
+    "cd_disjuntor8"
+  ],
+  "89": [
+    "cd_secv7",
+    "cd_disjuntor7"
+  ],
+  "90": [
+    "cd_secv6",
+    "cd_ip12"
+  ],
+  "91": [
+    "cd_secv5",
+    "cd_ip11"
+  ],
+  "92": [
+    "cd_secv4",
+    "cd_ip10"
+  ],
+  "93": [
+    "cd_secv3",
+    "cd_ip9"
+  ],
+  "94": [
+    "cd_secv2",
+    "cd_ip8",
+    "b_busip26"
+  ],
+  "95": [
+    "cd_secv12",
+    "cd_disjuntor12"
+  ],
+  "96": [
+    "cd_secv11",
+    "cd_disjuntor11"
+  ],
+  "97": [
+    "cd_secv10",
+    "cd_disjuntor10"
+  ],
+  "98": [
+    "cd_secv1",
+    "cd_ip7"
+  ],
+  "99": [
+    "cd_busip12",
+    "cd_busip11",
+    "cd_busip10",
+    "cd_busip9",
+    "cd_busip8"
+  ],
+  "100": [
+    "cd_busip59"
+  ],
+  "101": [
+    "cd_busip58",
+    "cd_busip57",
+    "cd_busip56",
+    "cd_busip55",
+    "cd_busip54",
+    "cd_busip53",
+    "cd_busip52",
+    "cd_busip51",
+    "cd_busip50"
+  ],
+  "102": [
+    "cd_busip7",
+    "cd_busip6",
+    "cd_busip5",
+    "cd_busip4",
+    "cd_busip3",
+    "cd_busip1",
+    "cd_busip2"
+  ],
+  "103": [
+    "cd_busip49"
+  ],
+  "104": [
+    "cd_busip46"
+  ],
+  "105": [
+    "cd_busip45",
+    "cd_busip44",
+    "cd_busip43",
+    "cd_busip42",
+    "cd_busip41",
+    "cd_busip40",
+    "cd_busip39"
+  ],
+  "106": [
+    "cd_busip38",
+    "cd_busip37",
+    "cd_busip36",
+    "cd_busip35",
+    "cd_busip34",
+    "cd_busip33",
+    "cd_busip32"
+  ],
+  "107": [
+    "cd_busip30"
+  ],
+  "108": [
+    "cd_busip29",
+    "cd_busip28",
+    "cd_busip27",
+    "cd_busip26",
+    "cd_busip25",
+    "cd_busip24",
+    "cd_busip23",
+    "cd_busip22",
+    "cd_busip21",
+    "cd_busip20",
+    "cd_busip18",
+    "cd_busip17",
+    "cd_busip19"
+  ],
+  "109": [
+    "cd_busip14"
+  ],
+  "110": [
+    "cd_busip13"
+  ],
+  "111": [
+    "cd_buscsb10"
+  ],
+  "112": [
+    "cd_buscsb9"
+  ],
+  "113": [
+    "cd_buscsb8",
+    "cd_buscsb7",
+    "cd_buscsb6"
+  ],
+  "114": [
+    "cd_buscsb5"
+  ],
+  "115": [
+    "cd_buscsb4",
+    "cd_buscsb3",
+    "cd_buscsb2"
+  ],
+  "116": [
+    "cd_buscsb25"
+  ],
+  "117": [
+    "cd_buscsb24",
+    "cd_buscsb23",
+    "cd_buscsb22",
+    "cd_buscsb21",
+    "cd_buscsb20",
+    "cd_buscsb19",
+    "cd_buscsb18"
+  ],
+  "118": [
+    "cd_buscsb17"
+  ],
+  "119": [
+    "cd_buscsb16",
+    "cd_buscsb15",
+    "cd_buscsb14"
+  ],
+  "120": [
+    "cd_buscsb11"
+  ],
+  "121": [
+    "cd_reator1",
+    "cd_reator2",
+    "cd_reator3",
+    "cd_reator4",
+    "cd_reator5",
+    "cd_reator6",
+    "cd_pr1",
+    "cd_pr2",
+    "cd_pr3",
+    "cd_pr4",
+    "cd_pr5",
+    "cd_pr6",
+    "r_reator2",
+    "r_pr2"
+  ],
+  "122": [
+    "cd_busip16"
+  ],
+  "123": [
+    "cd_busip31"
+  ],
+  "124": [
+    "cd_busip15"
+  ],
+  "125": [
+    "cd_buscsb12"
+  ],
+  "126": [
+    "cd_busip48"
+  ],
+  "127": [
+    "cd_busip47"
+  ],
+  "128": [
+    "cd_buscsb13"
+  ],
+  "129": [
+    "cd_buscsb1"
+  ],
+  "130": [
+    "cd_ip1"
+  ],
+  "131": [
+    "cd_ip2"
+  ],
+  "132": [
+    "cd_ip3"
+  ],
+  "133": [
+    "cd_ip4"
+  ],
+  "134": [
+    "cd_ip5"
+  ],
+  "135": [
+    "cd_ip6"
+  ],
+  "136": [
+    "b_tc3",
+    "b_sech3",
+    "b_disjuntor3"
+  ],
+  "137": [
+    "b_tc2",
+    "b_sech2",
+    "b_disjuntor2"
+  ],
+  "138": [
+    "b_tc1",
+    "b_sech1",
+    "b_disjuntor1"
+  ],
+  "139": [
+    "b_tc6",
+    "b_sech6"
+  ],
+  "140": [
+    "b_tc5",
+    "b_sech5"
+  ],
+  "141": [
+    "b_tc4",
+    "b_sech4"
+  ],
+  "142": [
+    "b_secv3",
+    "b_ip3"
+  ],
+  "143": [
+    "b_secv2",
+    "b_ip2"
+  ],
+  "144": [
+    "b_secv1",
+    "b_ip1"
+  ],
+  "145": [
+    "b_secv6",
+    "b_disjuntor6"
+  ],
+  "146": [
+    "b_secv5",
+    "b_disjuntor5"
+  ],
+  "147": [
+    "b_secv4",
+    "b_disjuntor4"
+  ],
+  "148": [
+    "b_busip23",
+    "b_busip22",
+    "b_busip21",
+    "b_busip20",
+    "b_busip19"
+  ],
+  "149": [
+    "b_busip31",
+    "b_busip30",
+    "b_busip29",
+    "b_busip28",
+    "b_busip27"
+  ],
+  "150": [
+    "b_busip25"
+  ],
+  "151": [
+    "b_busip24"
+  ],
+  "152": [
+    "b_buscsb5"
+  ],
+  "153": [
+    "b_buscsb4"
+  ],
+  "154": [
+    "b_buscsb3",
+    "b_buscsb2",
+    "b_buscsb1"
+  ],
+  "155": [
+    "b_busip36"
+  ],
+  "156": [
+    "b_busip32"
+  ],
+  "157": [
+    "b_buscsb6"
+  ],
+  "158": [
+    "b_busip37"
+  ],
+  "159": [
+    "b_busip33"
+  ],
+  "160": [
+    "b_buscsb7"
+  ],
+  "161": [
+    "b_busip38"
+  ],
+  "162": [
+    "b_busip34"
+  ],
+  "163": [
+    "b_buscsb8"
+  ],
+  "164": [
+    "b_busip39"
+  ],
+  "165": [
+    "b_busip35"
+  ],
+  "166": [
+    "b_busip40"
+  ],
+  "167": [
+    "b_busip16"
+  ],
+  "168": [
+    "b_busip17"
+  ],
+  "169": [
+    "b_busip18"
+  ],
+  "170": [
+    "b_busip15"
+  ],
+  "171": [
+    "b_busip14"
+  ],
+  "172": [
+    "b_busip13"
+  ],
+  "173": [
+    "b_busip9",
+    "b_busip5",
+    "b_busip1",
+    "b_busip2",
+    "b_busip3",
+    "b_busip7",
+    "b_busip6",
+    "b_busip10",
+    "b_busip11"
+  ],
+  "174": [
+    "b_busip4",
+    "b_busip8",
+    "b_busip12"
+  ],
+  "175": [
+    "ls_pr1",
+    "ls_tpc1"
+  ],
+  "176": [
+    "ls_pr2",
+    "ls_tpc2"
+  ],
+  "177": [
+    "ls_pr3",
+    "ls_tpc3"
+  ],
+  "178": [
+    "ls_pr4",
+    "ls_tpc4"
+  ],
+  "179": [
+    "ls_pr5",
+    "ls_tpc5"
+  ],
+  "180": [
+    "ls_pr6",
+    "ls_tpc6"
+  ],
+  "181": [
+    "r_pr1"
+  ]
+}

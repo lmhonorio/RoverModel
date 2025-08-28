@@ -273,9 +273,8 @@ class AABBUtils:
         plt.show()
     
     @staticmethod
-    def merge_overlapping_aabbs(aabbs):
+    def merge_overlapping_aabbs(aabbs, threshold):
         merged = []
-        threshold = 6
         while aabbs:
             base = aabbs.pop(0)
             bx, by = base[0]
@@ -305,7 +304,7 @@ class AABBUtils:
         return merged
 
     @staticmethod
-    def get_aabbs(obstacles, margin):
+    def get_aabbs(obstacles, margin, threshold=6.0):
         """
         Cria AABBs a partir de obstacles, adicionando 'margin'.
         Retorna lista [((ax, ay), w, h, label), ...].
@@ -326,7 +325,7 @@ class AABBUtils:
 
         # Dupla fusão para garantir, mantendo os labels junto dos AABBs
         merged_aabbs = AABBUtils.merge_overlapping_aabbs(
-            AABBUtils.merge_overlapping_aabbs(aabbs)
+            AABBUtils.merge_overlapping_aabbs(aabbs, threshold), threshold
         )
 
         return merged_aabbs
