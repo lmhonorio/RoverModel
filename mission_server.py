@@ -6,10 +6,13 @@ e executar o planejamento de rotas dos rovers.
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_socketio import SocketIO, emit
 import json
 import sys
 import os
 from collections import defaultdict
+import threading
+import time
 
 # Importar módulos do sistema de planejamento
 try:
@@ -22,6 +25,12 @@ except ImportError as e:
 
 app = Flask(__name__)
 CORS(app)  # Permitir requisições da interface web
+socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+
+# Armazenamento em memória para posições dos robôs e waypoints
+robot_positions = {}
+mission_waypoints = {}
+mission_status = {}
 
 # Configurações padrão
 DEFAULT_CONFIG = {
@@ -207,21 +216,188 @@ def get_config():
         "data": DEFAULT_CONFIG
     })
 
+@app.route('/send_gps', methods=['POST'])
+def receive_robot_position():
+    """
+    Endpoint para receber posições dos robôs do MonitoraRobo.py
+    
+    Espera receber:
+    {
+        "robo": "1",
+        "latitude": -3.123456,
+        "longitude": -41.765432
+    }
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "message": "Nenhum dado recebido"}), 400
+        
+        robot_id = str(data.get('robo'))
+        latitude = data.get('latitude')
+        longitude = data.get('longitude')
+        
+        if not all([robot_id, latitude is not None, longitude is not None]):
+            return jsonify({
+                "success": False, 
+                "message": "Dados incompletos: robo, latitude e longitude são obrigatórios"
+            }), 400
+        
+        # Atualizar posição do robô
+        robot_positions[robot_id] = {
+            "latitude": latitude,
+            "longitude": longitude,
+            "timestamp": time.time()
+        }
+        
+        # Emitir atualização via WebSocket para todos os clientes conectados
+        socketio.emit('robot_position_update', {
+            "robot_id": robot_id,
+            "latitude": latitude,
+            "longitude": longitude,
+            "timestamp": time.time()
+        })
+        
+        print(f"📍 Posição atualizada - Robô {robot_id}: [{latitude:.6f}, {longitude:.6f}]")
+        
+        return jsonify({
+            "success": True,
+            "message": f"Posição do robô {robot_id} atualizada com sucesso"
+        })
+        
+    except Exception as e:
+        print(f"❌ Erro ao processar posição do robô: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Erro interno: {str(e)}"
+        }), 500
+
+@app.route('/waypoints', methods=['POST'])
+def receive_mission_waypoints():
+    """
+    Endpoint para receber waypoints das missões do PlanejadorHeterogeneo.py
+    
+    Espera receber:
+    {
+        "robo": "1",
+        "trajetoria": [
+            {"latitude": -3.123456, "longitude": -41.765432},
+            {"latitude": -3.123457, "longitude": -41.765433}
+        ]
+    }
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "message": "Nenhum dado recebido"}), 400
+        
+        robot_id = str(data.get('robo'))
+        trajetoria = data.get('trajetoria', [])
+        
+        if not robot_id:
+            return jsonify({
+                "success": False, 
+                "message": "ID do robô é obrigatório"
+            }), 400
+        
+        if not trajetoria or not isinstance(trajetoria, list):
+            return jsonify({
+                "success": False, 
+                "message": "Trajetória deve ser uma lista não vazia de waypoints"
+            }), 400
+        
+        # Validar estrutura dos waypoints
+        for i, waypoint in enumerate(trajetoria):
+            if not isinstance(waypoint, dict) or 'latitude' not in waypoint or 'longitude' not in waypoint:
+                return jsonify({
+                    "success": False,
+                    "message": f"Waypoint {i+1} deve conter 'latitude' e 'longitude'"
+                }), 400
+        
+        # Armazenar waypoints da missão
+        mission_waypoints[robot_id] = {
+            "waypoints": trajetoria,
+            "timestamp": time.time(),
+            "total_points": len(trajetoria)
+        }
+        
+        # Emitir waypoints via WebSocket para todos os clientes conectados
+        socketio.emit('mission_waypoints_update', {
+            "robot_id": robot_id,
+            "waypoints": trajetoria,
+            "total_points": len(trajetoria),
+            "timestamp": time.time()
+        })
+        
+        print(f"🗺️ Waypoints recebidos - Robô {robot_id}: {len(trajetoria)} pontos")
+        
+        return jsonify({
+            "success": True,
+            "message": f"Waypoints do robô {robot_id} recebidos com sucesso",
+            "data": {
+                "robot_id": robot_id,
+                "total_waypoints": len(trajetoria)
+            }
+        })
+        
+    except Exception as e:
+        print(f"❌ Erro ao processar waypoints: {e}")
+        return jsonify({
+            "success": False,
+            "message": f"Erro interno: {str(e)}"
+        }), 500
+
+@app.route('/mission-status', methods=['GET'])
+def get_mission_status():
+    """Endpoint para obter status atual das missões, posições dos robôs e waypoints."""
+    return jsonify({
+        "success": True,
+        "data": {
+            "robot_positions": robot_positions,
+            "mission_waypoints": mission_waypoints,
+            "mission_status": mission_status,
+            "active_robots": len(robot_positions),
+            "active_missions": len(mission_waypoints)
+        }
+    })
+
+# WebSocket events
+@socketio.on('connect')
+def handle_connect():
+    """Cliente conectado ao WebSocket."""
+    print(f"🔌 Cliente conectado: {request.sid}")
+    # Enviar dados atuais para o cliente recém-conectado
+    emit('initial_data', {
+        "robot_positions": robot_positions,
+        "mission_waypoints": mission_waypoints,
+        "mission_status": mission_status
+    })
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    """Cliente desconectado do WebSocket."""
+    print(f"🔌 Cliente desconectado: {request.sid}")
+
 if __name__ == '__main__':
     print(f"\n🚀 Iniciando servidor de planejamento de missões...")
     print(f"📁 Diretório de trabalho: {os.getcwd()}")
     print(f"🔗 Endpoints disponíveis:")
     print(f"   GET  /health - Verificar status do servidor")
     print(f"   POST /execute-mission - Executar planejamento")
+    print(f"   POST /send_gps - Receber posições dos robôs")
+    print(f"   POST /waypoints - Receber waypoints das missões")
+    print(f"   GET  /mission-status - Obter status das missões")
     print(f"   GET  /config - Obter configurações")
     print(f"\n🌐 Servidor rodando em: http://localhost:5000")
     print(f"🔄 CORS habilitado para requisições da interface web")
+    print(f"🔌 WebSocket habilitado para comunicação em tempo real")
     print(f"="*60)
     
-    # Rodar servidor
-    app.run(
+    # Rodar servidor com SocketIO
+    socketio.run(
+        app,
         host='0.0.0.0',
         port=5000,
         debug=True,
-        threaded=True
+        allow_unsafe_werkzeug=True
     )

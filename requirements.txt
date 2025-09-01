@@ -1,6 +1,9 @@
 # Dependências para o servidor de planejamento de missões
 Flask==2.3.3
 Flask-CORS==4.0.0
+Flask-SocketIO==5.3.6
+python-socketio==5.9.0
+python-engineio==4.7.1
 numpy>=1.21.0
 matplotlib>=3.5.0
 networkx>=2.8.0
