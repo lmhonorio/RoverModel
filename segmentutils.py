@@ -38,6 +38,68 @@ class SegmentUtils:
         return data  # dict: {label: [[lat, lon], [lat, lon], ...]}
 
 
+    # @staticmethod
+    # def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
+    #                                 offset_lon_meters=0.0):
+    #     import os
+    #     import math
+    #     from xml.dom.minidom import Document
+    #     from ajusteplanilha import AjustePlanilha
+
+    #     def distance(p1, p2):
+    #         return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+    #     if not os.path.exists(output_folder):
+    #         os.makedirs(output_folder)
+
+    #     # Converter pontos (x, y) para (lat, lon)
+    #     pontos_xy = [(px, py) for px, py, _ in perimeter_points]
+    #     pontos_xy_offset = [(px + offset_lon_meters, py + offset_lat_meters) for px, py, _ in perimeter_points]
+    #     gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_xy_offset, xlsx_path)
+    #     coord_map = dict(zip(pontos_xy, gps_coords))
+
+    #     # Criar documento KML uma única vez
+    #     doc = Document()
+    #     kml = doc.createElement("kml")
+    #     kml.setAttribute("xmlns", "http://www.opengis.net/kml/2.2")
+    #     doc.appendChild(kml)
+
+    #     document = doc.createElement("Document")
+    #     kml.appendChild(document)
+
+    #     # Adicionar todos os obstáculos ao mesmo KML
+    #     for obs in obstacles:
+    #         ox, oy = obs["pos"]
+    #         label = obs["label"]
+    #         pontos_obs = []
+
+    #         for px, py, _ in perimeter_points:
+    #             if distance((ox, oy), (px, py)) <= threshold:
+    #                 lat, lon = coord_map[(px, py)]
+    #                 pontos_obs.append((lat, lon))
+
+    #         for lat, lon in pontos_obs:
+    #             placemark = doc.createElement("Placemark")
+
+    #             # Adicionar label do obstáculo como nome
+    #             name = doc.createElement("name")
+    #             name.appendChild(doc.createTextNode(label))
+    #             placemark.appendChild(name)
+
+    #             point = doc.createElement("Point")
+    #             coordinates = doc.createElement("coordinates")
+    #             coordinates.appendChild(doc.createTextNode(f"{lon},{lat},0"))
+
+    #             point.appendChild(coordinates)
+    #             placemark.appendChild(point)
+    #             document.appendChild(placemark)
+
+    #     filename = os.path.join(output_folder, "all_obstacles.kml")
+    #     with open(filename, "w", encoding="utf-8") as f:
+    #         f.write(doc.toprettyxml(indent="  "))
+
+    #     print(f"✅ KML único salvo com todos os obstáculos: {filename}")
+
     @staticmethod
     def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
                                        offset_lon_meters=0.0):

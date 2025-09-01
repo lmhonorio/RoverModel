@@ -104,7 +104,7 @@ class AjustePlanilha:
         plt.show()
 
     @staticmethod
-    def metros_para_geocoordenadas(lista_metros, file_path_parametros):
+    def metros_para_geocoordenadas(lista_metros, file_path_parametros, offset_lat_m=0.0, offset_lon_m=0.0):
         """
         Converte lista de coordenadas em metros para coordenadas geográficas (lat, lon),
         lendo os parâmetros da aba 'ParametrosConversao' de um arquivo Excel.
@@ -125,8 +125,8 @@ class AjustePlanilha:
 
         resultado = []
         for x, y in lista_metros:
-            lon = x / (111320.0 * math.cos(math.radians(med_lat))) + med_lon
-            lat = y / 111132.0 + med_lat
+            lon = (x + offset_lon_m) / (111320.0 * math.cos(math.radians(med_lat))) + med_lon
+            lat = (y + offset_lat_m) / 111132.0 + med_lat
             resultado.append((lat, lon))
         return resultado
     

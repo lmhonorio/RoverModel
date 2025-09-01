@@ -22,10 +22,11 @@ def main():
     grafo_path = "./jsons/graph_equipment.json"
     # observation_path ="./jsons/obpc_6.json"
     observation_path ="./jsons/obs_equipment.json"
-    observation_folter = "./pontos_observacao"
+    # observation_folter = "./pontos_observacao"
+    observation_folter = "./pontos_observacao2"
     padding = 15
-    margin = 1  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
-    # margin = 6.5
+    margin = 1.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    # margin = 2.5
     threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
 
     # Carregar obstáculos
@@ -47,7 +48,7 @@ def main():
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
     SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
-   # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
+    SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=0.0, offset_lon_meters=0.0)
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
