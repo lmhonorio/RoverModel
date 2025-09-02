@@ -173,19 +173,40 @@ class SegmentUtils:
         except Exception as e:
             print(f"[ERRO] Falha ao converter pontos para GPS: {e}")
             return
-
+        
         # Agrupa pontos por obstáculo
         obs_points_map = {obs["label"]: [] for obs in obstacles}
+
         for obs in obstacles:
             ox, oy = obs["pos"]
             label = obs["label"]
+
             for px, py, ponto_label in perimeter_points:
-                if distance((ox, oy), (px, py)) <= threshold:
+                # Prefixo antes do ponto (ex: "machine1.1" -> "machine1")
+                ponto_prefix = ponto_label.split(".")[0]
+
+                # Condição de associação:
+                # 1) Prefixo igual OU
+                # 2) Dentro do threshold de distância
+                if ponto_prefix == label: # or distance((ox, oy), (px, py)) <= threshold:
                     lat, lon = coord_map[(px, py)]
                     obs_points_map[label].append({
                         "label": ponto_label,
                         "coord": [lat, lon]
                     })
+
+        # # Agrupa pontos por obstáculo
+        # obs_points_map = {obs["label"]: [] for obs in obstacles}
+        # for obs in obstacles:
+        #     ox, oy = obs["pos"]
+        #     label = obs["label"]
+        #     for px, py, ponto_label in perimeter_points:
+        #         if distance((ox, oy), (px, py)) <= threshold:
+        #             lat, lon = coord_map[(px, py)]
+        #             obs_points_map[label].append({
+        #                 "label": ponto_label,
+        #                 "coord": [lat, lon]
+        #             })
 
         # Salva em JSON
         with open(json_path, "w", encoding="utf-8") as f:

@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import json
 from collections import defaultdict
@@ -18,21 +20,61 @@ from movns_ains_argo import movns_ains_argo
 from tspOptimization import FixedTaskPlanner
 from movns_ains_argo import send_mission_argo
 
+from ajusteplanilha import AjustePlanilha
+import rospy
+from threading import Lock
+from sensor_msgs.msg import NavSatFix
+
+# =====================================================================================
+#                           PEGA POSICAO ATUAL DE CADA ROBO
+# =====================================================================================
+
+def iniciar_posicao_atual_robo():
+    """
+    Inicializa os subscribers para cada robô e retorna um dicionário
+    compartilhado com as trajetórias.
+    """
+    rospy.init_node('current_position_multirobot', anonymous=True)
+
+    # Trajetória local de cada robô
+    trajetoria = {1: [], 2: [], 3: []}
+
+    # Lock para evitar race conditions
+    lock = Lock()
+
+    # Callback único que acessa a lista compartilhada
+    def gps_callback(msg, rover_id):
+        latitude = msg.latitude
+        longitude = msg.longitude
+        with lock:
+            trajetoria[rover_id].append((latitude, longitude))
+
+    # Subscribers para cada robô
+    rospy.Subscriber("/rover_1/mavros/global_position/global", NavSatFix, gps_callback, callback_args=1)
+    rospy.Subscriber("/rover_2/mavros/global_position/global", NavSatFix, gps_callback, callback_args=2)
+    rospy.Subscriber("/rover_3/mavros/global_position/global", NavSatFix, gps_callback, callback_args=3)
+
+    return trajetoria, lock, gps_callback
 
 # =====================================================================================
 #                                  CONFIG / TOGGLES
 # =====================================================================================
 
 # --- Arquivos ---
-GRAPH_JSON = "./jsons/graph8_new_funcionando.json"
-OBS_POINTS_JSON = "./jsons/obp_6_funcionando.json"
+# GRAPH_JSON = "./jsons/graph8_new_funcionando.json"
+# OBS_POINTS_JSON = "./jsons/obp_6_funcionando.json"
+GRAPH_JSON = "./jsons/graph_equipment.json"
+OBS_POINTS_JSON = "./jsons/obs_equipment.json"
 AABB_POR_EQUIPAMENTO_JSON = "./jsons/aabb_por_equipamento.json"
 EQUIPAMENTOS_FILTRADOS_JSON = "./jsons/equipamentos_filtrados.json"
 AABB_INFO_JSON = "./jsons/aabb_info.json"
 CACHE_ASTAR_PATH = "./cache_astar.json"
 
+file_path = "./planilhas/equipment_processado.xlsx"
+
 # --- Presets de missões (mantenho as tuas, com um seletor simples) ---
 MISSION_PRESETS: Dict[str, List[str]] = {
+    "default": ['b_busip4', 'ef_reator1', 'ls_pr4'],
     "mini": ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator2', 'ef_reator3', 'ef_reator4', 'ef_disjuntor1', 'ef_sech1', 'b_buscsb5'],
 
     ################ 22 TASKS ###############################
@@ -153,14 +195,14 @@ MISSION_PRESETS: Dict[str, List[str]] = {
         'ef_disjuntor1', 'ef_disjuntor2', 'ef_disjuntor3', 'ef_disjuntor4', 'ef_disjuntor5', 'ef_disjuntor6', 'ef_disjuntor7', 'ef_disjuntor8', 'ef_disjuntor9', 'ef_disjuntor10']
 
 }
-MISSION_PRESET_KEY = "example_22"  # escolha aqui
+MISSION_PRESET_KEY = "mini" #"example_22"  # escolha aqui
 
 # --- Execução ---
-RUN_MOVNS = True
+RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
 SEND_MISSIONS = True
 DO_PLOTS = True
-SEND_TO_SERVER = True
+SEND_TO_SERVER = False
 
 # --- MOVNS ---
 MOVNS_TIME_LIMIT = 5  # segundos
@@ -172,13 +214,46 @@ CLUSTER_TITLE = "Abordagem Professor Leonardo"
 MOVNS_TITLE = "Abordagem MOVNS"
 
 # --- Posições base dos robôs (coordenadas brutas; serão mapeadas para nós do grafo) ---
-ALL_ROBOT_COORDS = [
-    (-165.9766, -77.6645),  # R1
-    (87.9766, 30.6645),     # R2
-    (87.9766, 30.6645),     # R3
-    (-165.9766, -77.6645),  # R4
-    (-165.9766, -77.6645),  # R5
-]
+
+if SEND_MISSIONS:
+    # Inicializa subscribers e obtém trajetórias compartilhadas
+    trajetoria, lock, _ = iniciar_posicao_atual_robo()
+
+    # Espera um pouco para garantir que algumas mensagens cheguem
+    import time
+    time.sleep(1)  # 2 segundos de coleta inicial (ajuste se precisar)
+
+    # Agora pega as posições atuais
+    with lock:
+        ALL_ROBOT_COORDS_GPS = [
+            trajetoria[1][-1] if trajetoria[1] else None,
+            trajetoria[2][-1] if trajetoria[2] else None,
+            trajetoria[3][-1] if trajetoria[3] else None,
+        ]
+
+    print("Posições atuais dos robôs:", ALL_ROBOT_COORDS_GPS)
+
+    ALL_ROBOT_COORDS = []
+
+    for coord in ALL_ROBOT_COORDS_GPS:
+        if coord is not None:
+            lat, lon = coord
+            x = AjustePlanilha.posicao_em_metros_lat(lat=lat, file_path_parametros=file_path)
+            y = AjustePlanilha.posicao_em_metros_lon(lon=lon, file_path_parametros=file_path)
+            ALL_ROBOT_COORDS.append((x, y))
+        else:
+            ALL_ROBOT_COORDS.append((None, None))
+
+    print("Posições atuais dos robôs:", ALL_ROBOT_COORDS)
+
+else:
+    ALL_ROBOT_COORDS = [
+        (-165.9766, -77.6645),  # R1
+        (87.9766, 30.6645),     # R2
+        (87.9766, 30.6645),     # R3
+        (-165.9766, -77.6645),  # R4
+        (-165.9766, -77.6645),  # R5
+    ]
 
 SELECTED_ROBOTS = ["R1", "R2", "R3"]
 
@@ -202,6 +277,7 @@ def load_data_and_graphs():
     ensure_file(AABB_INFO_JSON, "AABB_INFO_JSON")
 
     observacao_por_obstaculo = SegmentUtils.load_observation_points_from_json(OBS_POINTS_JSON)
+
     G_mapa = SegmentUtils.load_graph_json(GRAPH_JSON)
     if G_mapa is None or len(G_mapa) == 0:
         raise RuntimeError("G_mapa não carregado ou vazio.")
@@ -284,11 +360,34 @@ def build_label_to_coord_map(observacao_por_obstaculo: dict) -> Dict[str, Tuple[
     for _, items in observacao_por_obstaculo.items():
         for item in items:
             label = item.get("label")
-            coord = item.get("coord_gps")
+            coord = item.get("coord")
+            # coord = item.get("coord_gps") # json anterior 
             if label and coord:
                 label_to_coord[label] = coord
     return label_to_coord
 
+def convert_labels_to_gps(rotas_por_robo: Dict[str, List[str]],
+                           observacao_por_obstaculo: dict) -> Dict[str, List[Tuple[float, float]]]:
+    """Converte rótulos de rota para coordenadas GPS."""
+    
+    label_to_coord = build_label_to_coord_map(observacao_por_obstaculo)
+    coords_by_robot: Dict[str, List[Tuple[float, float]]] = {}
+
+    for robot_id, labels in rotas_por_robo.items():
+
+        if robot_id.startswith("R"):
+            robot_id = "robot_" + robot_id[1:]
+
+        coords = []
+
+        for label in labels:
+            if label in label_to_coord:
+                coords.append(label_to_coord[label])
+            else:
+                print(f"⚠️  Label sem coord_gps: {label}")
+        coords_by_robot[robot_id] = coords
+
+    return coords_by_robot
 
 def run_movns_pipeline(robots: List[Robot],
                        tasks,
@@ -304,17 +403,19 @@ def run_movns_pipeline(robots: List[Robot],
 
     rotas_por_robo_movns = solution_priority_argo.calcula_metricas(best_by_time)
 
-    # Converter rotas (labels) para GPS
-    label_to_coord = build_label_to_coord_map(observacao_por_obstaculo)
-    coords_by_robot: Dict[str, List[Tuple[float, float]]] = {}
-    for robot_id, labels in rotas_por_robo_movns.items():
-        coords = []
-        for label in labels:
-            if label in label_to_coord:
-                coords.append(label_to_coord[label])
-            else:
-                print(f"⚠️  Label sem coord_gps: {label}")
-        coords_by_robot[robot_id] = coords
+    coords_by_robot = convert_labels_to_gps(rotas_por_robo_movns, observacao_por_obstaculo)
+
+    # # Converter rotas (labels) para GPS
+    # label_to_coord = build_label_to_coord_map(observacao_por_obstaculo)
+    # coords_by_robot: Dict[str, List[Tuple[float, float]]] = {}
+    # for robot_id, labels in rotas_por_robo_movns.items():
+    #     coords = []
+    #     for label in labels:
+    #         if label in label_to_coord:
+    #             coords.append(label_to_coord[label])
+    #         else:
+    #             print(f"⚠️  Label sem coord_gps: {label}")
+    #     coords_by_robot[robot_id] = coords
 
     print("✅ MOVNS concluído.")
     return best_by_time, rotas_por_robo_movns, coords_by_robot
@@ -377,6 +478,8 @@ def prepare_cluster_baseline_and_routes(G_mapa: nx.Graph,
                                         rotas_por_robo_movns: Dict[str, List[str]]):
     """Baseline (cluster + TSP vizinho mais próximo) e rotas reais."""
     print("🧭 Gerando baseline (cluster + TSP NN)...")
+
+    # Carrega  pontos de observação por obstáculo, missões por obstáculo
     mission_positions = MultiGraphPlanner.gerar_mission_positions_from_json(
         SegmentUtils.load_observation_points_from_json(OBS_POINTS_JSON),
         missions
@@ -499,6 +602,7 @@ def mrta(missions, selected_robots):
     point_mission_positions = None
     rotas_otimas_por_robo = None
     mission_positions = None
+    coords_by_robot_baseline = {} # Adicionado para o baseline
 
     if RUN_BASELINE_CLUSTER:
         (Greduced_map,
@@ -511,12 +615,23 @@ def mrta(missions, selected_robots):
         # Métricas do baseline (se existir)
         if rotas_otimas_por_robo:
             try:
+                # Converter rotas do baseline para GPS
+                coords_by_robot_baseline = convert_labels_to_gps(rotas_otimas_por_robo, observacao_por_obstaculo)
+
                 tempo, distancia, balances, qtde_pontos = solution_priority_argo.calcular_custos_totais_solucao(
                     rotas_otimas_por_robo, cache_astar
                 )
                 print(f"📊 Baseline — Tempo: {tempo:.2f}, Distância: {distancia:.2f}, Balance: {balances}, Pontos: {qtde_pontos}")
+
             except Exception as e:
                 print(f"⚠️ calcular_custos_totais_solucao falhou: {e}")
+
+            # Envio de missões para o Baseline
+            if SEND_MISSIONS and coords_by_robot_baseline:
+                send_gps_routes_to_vehicles(coords_by_robot_baseline)
+            if SEND_TO_SERVER and coords_by_robot_baseline:
+                SERVER_URL = "http://127.0.0.1:5000"
+                send_gps_routes_to_server(coords_by_robot_baseline, SERVER_URL )
 
     # 7) Plots
     plot_all(G_mapa, Greduced_map, rotas_otimas_por_robo, rotas_por_robo_movns, point_mission_positions or {})
@@ -526,10 +641,6 @@ def mrta(missions, selected_robots):
 
 if __name__ == "__main__":
     mrta(MISSION_PRESETS[MISSION_PRESET_KEY], SELECTED_ROBOTS)
-
-
-
-
 
 
 

@@ -3,11 +3,13 @@ import rospy
 from sensor_msgs.msg import NavSatFix
 import time
 import requests
+from threading import Lock
 
 class MonitoraRobo:
     """Classe para monitorar a posição de cada robô"""
 
-    def __init__(self, servidor_url):
+    def __init__(self, servidor_url="http://127.0.0.1:5000"):
+
         rospy.init_node('gps_listener_multirobot', anonymous=True)
 
         self.servidor_url = servidor_url
@@ -17,6 +19,9 @@ class MonitoraRobo:
 
         # Controle de tempo para enviar 1 vez por segundo
         self.last_time = {1: 0, 2: 0, 3: 0}
+
+        # Lock para evitar race conditions
+        self.lock = Lock()
 
         # Subscribers para cada robô
         rospy.Subscriber("/rover_1/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=1)
@@ -37,7 +42,8 @@ class MonitoraRobo:
         longitude = msg.longitude
 
         # Armazena na lista
-        self.trajetoria[rover_id].append((latitude, longitude))
+        with self.lock:
+            self.trajetoria[rover_id].append((latitude, longitude))
         rospy.loginfo(f"Robo {rover_id} -> Lat: {latitude:.7f}, Lon: {longitude:.7f}")
         
         # Envia para o servidor Flask
@@ -55,7 +61,7 @@ class MonitoraRobo:
 
 if __name__ == '__main__':
     try:
-        servidor = "http://192.168.0.100:5000"
+        servidor = "http://127.0.0.1:5000"
         monitora_robo = MonitoraRobo(servidor)
         monitora_robo.listener()
     except rospy.ROSInterruptException:
