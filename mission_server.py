@@ -32,24 +32,11 @@ robot_positions = {}
 mission_waypoints = {}
 mission_status = {}
 
-# Configurações padrão
-DEFAULT_CONFIG = {
-    "graph_file": "./jsons/graph8_new_funcionando.json",  # Usando arquivo do PlanejadorHeterogeneo.py
-    "observation_points_file": "./jsons/obp_6_funcionando.json",  # Usando arquivo do PlanejadorHeterogeneo.py
-    # FORÇANDO example_22 (independente dos equipamentos selecionados na interface)
-    "missions": [
-        'ef_reator1', 'ef_reator2', 'ef_reator3', 'ef_reator4', 'ef_reator5', 'ef_reator6', 'ef_reator7', 'ef_reator8', 'ef_reator9', 'ef_reator10',
-        'ef_pr2', 'ef_pr3', 'ef_pr4', 'ef_pr5', 'ef_pr6', 'ef_pr7', 'ef_pr8', 'ef_pr9', 'ef_pr10', 'ef_pr11', 'ef_pr12', 'ef_pr13',
-        'ls_tpc1', 'ls_tpc2', 'ls_tpc3', 'ls_tpc4', 'ls_tpc5', 'ls_tpc6',
-        'r_pr1', 'r_reator1', 'r_reator2', 'r_pr2'
-    ],
-    "mission_execution_time": 15,  # segundos
-    "robot_positions": {
-        "R1": {"x": -165.9766, "y": -77.6645},
-        "R2": {"x": 87.9766, "y": 30.6645},
-        "R3": {"x": 87.9766, "y": 30.6645}  # Adicionando R3 para compatibilidade
-    }
-}
+# Configurações agora são gerenciadas pelo PlanejadorHeterogeneo.py
+# - Arquivos JSON: GRAPH_JSON, OBS_POINTS_JSON, etc.
+# - Missões: MISSION_PRESETS com diferentes presets
+# - Posições dos robôs: ALL_ROBOT_COORDS obtidas dinamicamente via GPS
+# - Configurações de execução: RUN_MOVNS, RUN_BASELINE_CLUSTER, SEND_MISSIONS, etc.
 
 def execute_mission_planning(rovers_data, equipments_data, substation_id):
     """
@@ -74,7 +61,7 @@ def execute_mission_planning(rovers_data, equipments_data, substation_id):
         print(f"\n🔄 FORÇANDO COMPATIBILIDADE TOTAL:")
         
         # FORÇAR MISSÕES: Sempre usar example_22
-        forced_missions = MISSION_PRESETS["example_22"]
+        forced_missions = MISSION_PRESETS["default"]
         print(f"⚡ MISSÕES FORÇADAS: example_22 ({len(forced_missions)} missões)")
         
         # FORÇAR ROVERS: Sempre usar R1, R2, R3  
@@ -208,13 +195,7 @@ def execute_mission():
             "message": error_msg
         }), 500
 
-@app.route('/config', methods=['GET'])
-def get_config():
-    """Endpoint para obter configurações atuais do servidor."""
-    return jsonify({
-        "success": True,
-        "data": DEFAULT_CONFIG
-    })
+# Endpoint /config removido - configurações agora são gerenciadas pelo PlanejadorHeterogeneo.py
 
 @app.route('/send_gps', methods=['POST'])
 def receive_robot_position():
@@ -387,7 +368,6 @@ if __name__ == '__main__':
     print(f"   POST /send_gps - Receber posições dos robôs")
     print(f"   POST /waypoints - Receber waypoints das missões")
     print(f"   GET  /mission-status - Obter status das missões")
-    print(f"   GET  /config - Obter configurações")
     print(f"\n🌐 Servidor rodando em: http://localhost:5000")
     print(f"🔄 CORS habilitado para requisições da interface web")
     print(f"🔌 WebSocket habilitado para comunicação em tempo real")
