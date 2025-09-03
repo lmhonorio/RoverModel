@@ -37,23 +37,23 @@ class MonitoraRobo:
         if current_time - self.last_time[rover_id] >= 1.0:
             self.last_time[rover_id] = current_time
 
-        # Extrai latitude e longitude
-        latitude = msg.latitude
-        longitude = msg.longitude
+            # Extrai latitude e longitude
+            latitude = msg.latitude
+            longitude = msg.longitude
 
-        # Armazena na lista
-        with self.lock:
-            self.trajetoria[rover_id].append((latitude, longitude))
-        rospy.loginfo(f"Robo {rover_id} -> Lat: {latitude:.7f}, Lon: {longitude:.7f}")
-        
-        # Envia para o servidor Flask
-        try:
-            payload = {"robo": rover_id, "latitude": latitude, "longitude": longitude}
-            response = requests.post(f"{self.servidor_url}/send_gps", json=payload, timeout=1)
-            if response.status_code != 200:
-                rospy.logwarn(f"Falha ao enviar GPS do Robo {rover_id}: {response.text}")
-        except requests.exceptions.RequestException as e:
-            rospy.logwarn(f"Erro de conexão ao enviar GPS do Robo {rover_id}: {e}")
+            # Armazena na lista
+            with self.lock:
+                self.trajetoria[rover_id].append((latitude, longitude))
+            rospy.loginfo(f"Robo {rover_id} -> Lat: {latitude:.7f}, Lon: {longitude:.7f}")
+            
+            # Envia para o servidor Flask
+            try:
+                payload = {"robo": rover_id, "latitude": latitude, "longitude": longitude}
+                response = requests.post(f"{self.servidor_url}/send_gps", json=payload, timeout=1)
+                if response.status_code != 200:
+                    rospy.logwarn(f"Falha ao enviar GPS do Robo {rover_id}: {response.text}")
+            except requests.exceptions.RequestException as e:
+                rospy.logwarn(f"Erro de conexão ao enviar GPS do Robo {rover_id}: {e}")
 
     def listener(self):
         """Inicia o listener do ROS"""
