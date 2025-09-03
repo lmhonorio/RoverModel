@@ -74,7 +74,7 @@ file_path = "./planilhas/equipment_processado.xlsx"
 
 # --- Presets de missões (mantenho as tuas, com um seletor simples) ---
 MISSION_PRESETS: Dict[str, List[str]] = {
-    "default": ['b_busip4', 'ef_reator1', 'ls_pr4'],
+    "default": ['ls_estrutura3123top', 'ls_estrutura3123middle', 'ls_estrutura3123bottom'],
     "mini": ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator2', 'ef_reator3', 'ef_reator4', 'ef_disjuntor1', 'ef_sech1', 'b_buscsb5'],
 
     ################ 22 TASKS ###############################
@@ -195,7 +195,7 @@ MISSION_PRESETS: Dict[str, List[str]] = {
         'ef_disjuntor1', 'ef_disjuntor2', 'ef_disjuntor3', 'ef_disjuntor4', 'ef_disjuntor5', 'ef_disjuntor6', 'ef_disjuntor7', 'ef_disjuntor8', 'ef_disjuntor9', 'ef_disjuntor10']
 
 }
-MISSION_PRESET_KEY = "mini" #"example_22"  # escolha aqui
+MISSION_PRESET_KEY = "default" #"example_22"  # escolha aqui
 
 # --- Execução ---
 RUN_MOVNS = False
@@ -221,7 +221,7 @@ if SEND_MISSIONS:
 
     # Espera um pouco para garantir que algumas mensagens cheguem
     import time
-    time.sleep(1)  # 2 segundos de coleta inicial (ajuste se precisar)
+    time.sleep(2)  # 2 segundos de coleta inicial (ajuste se precisar)
 
     # Agora pega as posições atuais
     with lock:
@@ -238,8 +238,8 @@ if SEND_MISSIONS:
     for coord in ALL_ROBOT_COORDS_GPS:
         if coord is not None:
             lat, lon = coord
-            x = AjustePlanilha.posicao_em_metros_lat(lat=lat, file_path_parametros=file_path)
-            y = AjustePlanilha.posicao_em_metros_lon(lon=lon, file_path_parametros=file_path)
+            x = AjustePlanilha.posicao_em_metros_lon(lon=lon, file_path_parametros=file_path)
+            y = AjustePlanilha.posicao_em_metros_lat(lat=lat, file_path_parametros=file_path)
             ALL_ROBOT_COORDS.append((x, y))
         else:
             ALL_ROBOT_COORDS.append((None, None))
