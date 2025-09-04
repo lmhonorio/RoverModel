@@ -202,7 +202,7 @@ RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
 SEND_MISSIONS = True
 DO_PLOTS = True
-SEND_TO_SERVER = False
+SEND_TO_SERVER = True
 
 # --- MOVNS ---
 MOVNS_TIME_LIMIT = 5  # segundos
