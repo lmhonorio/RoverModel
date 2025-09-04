@@ -25,12 +25,24 @@ except ImportError as e:
 
 app = Flask(__name__)
 CORS(app)  # Permitir requisições da interface web
-socketio = SocketIO(app, cors_allowed_origins="*", logger=True, engineio_logger=True)
+# Configurações otimizadas para WebSocket - reduzir overhead
+socketio = SocketIO(
+    app, 
+    cors_allowed_origins="*", 
+    logger=False,  # Reduzir logs para melhor performance
+    engineio_logger=False,
+    ping_timeout=60,
+    ping_interval=25
+)
 
 # Armazenamento em memória para posições dos robôs e waypoints
 robot_positions = {}
 mission_waypoints = {}
 mission_status = {}
+
+# Throttling para emissões WebSocket - evitar spam de atualizações
+last_position_emission = {}
+POSITION_EMISSION_INTERVAL = 3.0  # 3 segundos entre emissões por robô
 
 # Configurações agora são gerenciadas pelo PlanejadorHeterogeneo.py
 # - Arquivos JSON: GRAPH_JSON, OBS_POINTS_JSON, etc.
@@ -224,22 +236,34 @@ def receive_robot_position():
                 "message": "Dados incompletos: robo, latitude e longitude são obrigatórios"
             }), 400
         
-        # Atualizar posição do robô
+        # Atualizar posição do robô (sempre atualiza internamente)
+        current_time = time.time()
         robot_positions[robot_id] = {
             "latitude": latitude,
             "longitude": longitude,
-            "timestamp": time.time()
+            "timestamp": current_time
         }
         
-        # Emitir atualização via WebSocket para todos os clientes conectados
-        socketio.emit('robot_position_update', {
-            "robot_id": robot_id,
-            "latitude": latitude,
-            "longitude": longitude,
-            "timestamp": time.time()
-        })
+        # Throttling para emissão WebSocket - apenas a cada 3 segundos
+        last_emission = last_position_emission.get(robot_id, 0)
+        should_emit = (current_time - last_emission) >= POSITION_EMISSION_INTERVAL
         
-        print(f"📍 Posição atualizada - Robô {robot_id}: [{latitude:.6f}, {longitude:.6f}]")
+        if should_emit:
+            # Emitir atualização via WebSocket para todos os clientes conectados
+            socketio.emit('robot_position_update', {
+                "robot_id": robot_id,
+                "latitude": latitude,
+                "longitude": longitude,
+                "timestamp": current_time
+            })
+            
+            last_position_emission[robot_id] = current_time
+            print(f"📍 Posição atualizada (emitida) - Robô {robot_id}: [{latitude:.6f}, {longitude:.6f}]")
+        else:
+            # Log silencioso - posição atualizada mas não emitida
+            time_since_last = current_time - last_emission
+            # print(f"⏱️ Posição do robô {robot_id} throttled ({time_since_last:.1f}s desde última emissão)")
+            pass
         
         return jsonify({
             "success": True,
