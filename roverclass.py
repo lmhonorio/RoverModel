@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-# Classe para carregar obstáculos a partir da planilha
+# Classe para carregar obstáculos a partir da planilha testeststewtsat
 class ObstacleLoader:
     def __init__(self, file_path, sheet_name):
         self.file_path = file_path
