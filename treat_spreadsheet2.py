@@ -41,6 +41,8 @@ class TreatSpreadsheet:
         "transformador": (2*1.534546, 2*3.054527),
         "obstaculo": (1,1),
         "cercado": (11.41, 6.8),
+        "diversos": (69, 48),
+        "svc": (44.9, 82.5)
     }
 
     def __init__(self):

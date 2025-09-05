@@ -24,9 +24,9 @@ class MonitoraRobo:
         self.lock = Lock()
 
         # Subscribers para cada robô
-        rospy.Subscriber("/rover_1/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=1)
-        rospy.Subscriber("/rover_2/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=2)
-        rospy.Subscriber("/rover_3/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=3)
+        rospy.Subscriber("/rover_argo_N1/Instance1/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=1)
+        rospy.Subscriber("/rover_argo_N1/Instance2/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=2)
+        rospy.Subscriber("/rover_argo_N1/Instance3/mavros/global_position/global", NavSatFix, self.gps_callback, callback_args=3)
 
     def gps_callback(self, msg, rover_id):
         """Callback de GPS para cada robô"""

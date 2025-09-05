@@ -25,6 +25,8 @@ import rospy
 from threading import Lock
 from sensor_msgs.msg import NavSatFix
 
+import numpy as np
+
 # =====================================================================================
 #                           PEGA POSICAO ATUAL DE CADA ROBO
 # =====================================================================================
@@ -50,9 +52,9 @@ def iniciar_posicao_atual_robo():
             trajetoria[rover_id].append((latitude, longitude))
 
     # Subscribers para cada robô
-    rospy.Subscriber("/rover_1/mavros/global_position/global", NavSatFix, gps_callback, callback_args=1)
-    rospy.Subscriber("/rover_2/mavros/global_position/global", NavSatFix, gps_callback, callback_args=2)
-    rospy.Subscriber("/rover_3/mavros/global_position/global", NavSatFix, gps_callback, callback_args=3)
+    rospy.Subscriber("/rover_argo_N1/Instance1/mavros/global_position/global", NavSatFix, gps_callback, callback_args=1)
+    rospy.Subscriber("/rover_argo_N1/Instance2/mavros/global_position/global", NavSatFix, gps_callback, callback_args=2)
+    rospy.Subscriber("/rover_argo_N1/Instance3/mavros/global_position/global", NavSatFix, gps_callback, callback_args=3)
 
     return trajetoria, lock, gps_callback
 
@@ -202,7 +204,7 @@ RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
 SEND_MISSIONS = True
 DO_PLOTS = True
-SEND_TO_SERVER = True
+SEND_TO_SERVER = False
 
 # --- MOVNS ---
 MOVNS_TIME_LIMIT = 5  # segundos
@@ -551,6 +553,28 @@ def plot_all(G_mapa: nx.Graph,
         except Exception as e:
             print(f"⚠️ plot_rotas_reais (MOVNS) falhou: {e}")
 
+def calcula_rota_completa(G_robot: nx.Graph,
+                          rotas_por_robo: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    """Dado um grafo e rotas (rótulos), calcula a rota completa"""
+    rotas_completas = {}
+
+    for robo, rota in rotas_por_robo.items():
+        caminho_completo = []
+
+        for j in range(len(rota) - 1):
+            u, v = rota[j], rota[j + 1]
+            subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+            # Evita duplicar o último nó do subpath
+            if caminho_completo and subpath[0] == caminho_completo[-1]:
+                caminho_completo.extend(subpath[1:])
+            else:
+                caminho_completo.extend(subpath)
+
+        # Guarda no dicionário mantendo o mesmo formato
+        rotas_completas[robo] = caminho_completo
+
+    return rotas_completas
 
 # =====================================================================================
 #                                      MAIN
@@ -615,11 +639,13 @@ def mrta(missions, selected_robots):
         # Métricas do baseline (se existir)
         if rotas_otimas_por_robo:
             try:
+                # Calcular rotas completas no grafo original
+                rotas_otimas_por_robo_baseline = calcula_rota_completa(Greduced_map, rotas_otimas_por_robo)
                 # Converter rotas do baseline para GPS
-                coords_by_robot_baseline = convert_labels_to_gps(rotas_otimas_por_robo, observacao_por_obstaculo)
+                coords_by_robot_baseline = convert_labels_to_gps(rotas_otimas_por_robo_baseline, observacao_por_obstaculo)
 
                 tempo, distancia, balances, qtde_pontos = solution_priority_argo.calcular_custos_totais_solucao(
-                    rotas_otimas_por_robo, cache_astar
+                    rotas_otimas_por_robo_baseline, cache_astar
                 )
                 print(f"📊 Baseline — Tempo: {tempo:.2f}, Distância: {distancia:.2f}, Balance: {balances}, Pontos: {qtde_pontos}")
 
