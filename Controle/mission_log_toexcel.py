@@ -1,5 +1,4 @@
 # Exemplo de uso:
-from geneticoptimizator import GeneticRoverParameterIdentifier
 import pandas as pd
 import matplotlib.pyplot as plt
 from pymavlog import MavLog
@@ -23,10 +22,10 @@ if __name__ == "__main__":
     # xlsx_path = "./planilhas/sequencia_14s.xlsx"
 
     #sequencia1 -
-    file_bin = "./Arquivossuporte/sequencia1.bin"
+    file_bin = "../Arquivossuporte/sequencia1.bin"
     tmin = 47.5
     tmax = 67.5
-    xlsx_path = "./planilhas/sequencia_1_1.xlsx"
+    xlsx_path = "../planilhas/sequencia_1_1.xlsx"
 
     #sequencia4 -
     # file_bin = "./Arquivossuporte/sequencia4.bin"

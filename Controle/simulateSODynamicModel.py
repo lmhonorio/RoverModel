@@ -1,9 +1,7 @@
 import numpy as np
-import matplotlib.pyplot as plt
 # from sympy.printing.pretty.pretty_symbology import line_width
 
-from roverdynamics import EvaluateRoverParameters
-import pandas as pd
+from Controle.roverdynamics import EvaluateRoverParameters
 
 param_names = [
     "vscale", "vgain", "vtau", "vzeta",
@@ -38,7 +36,7 @@ print(res.tolist())
 
 individual =res
 
-excel_file = "./planilhas/sequencia_2_1.xlsx"
+excel_file = "../planilhas/sequencia_2_1.xlsx"
 sheet_name = "Sheet1"
 
 rover = EvaluateRoverParameters(excel_file, sheet_name,dt=0.05)

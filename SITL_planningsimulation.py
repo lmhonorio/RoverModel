@@ -1,5 +1,5 @@
 import json
-from old.multigraphplanner import MultiGraphPlanner
+from multigraphplanner import MultiGraphPlanner
 
 # Se estiver em outro módulo, ajuste os imports conforme sua estrutura de pastas
 from segmentutils import SegmentUtils  # -> onde está load_graph_json

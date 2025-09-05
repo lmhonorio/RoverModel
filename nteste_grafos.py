@@ -1,4 +1,4 @@
-from old.multigraphplanner import MultiGraphPlanner
+from multigraphplanner import MultiGraphPlanner
 from segmentutils import SegmentUtils
 from plotutils import PlotUtils
 from collections import defaultdict

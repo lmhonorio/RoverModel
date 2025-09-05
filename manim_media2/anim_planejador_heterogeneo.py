@@ -9,11 +9,10 @@ from manim import config
 config.media_dir = "C://Users//lmhon//Documents" # fora da pasta sincronizada
 config.disable_caching = True             # evita WinError 32
 
-import numpy as np, networkx as nx
+import networkx as nx
 from segmentutils import SegmentUtils
-from aabbutils import AABBUtils
 from tspOptimization import FixedTaskPlanner
-from old.multigraphplanner import MultiGraphPlanner
+from multigraphplanner import MultiGraphPlanner
 
 # ---------------------- ARQUIVOS DO SCRIPT ORIGINAL --------------------
 G_FILE   = "../jsons/graph9_new.json"

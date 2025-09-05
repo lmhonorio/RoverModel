@@ -49,6 +49,19 @@ if __name__ == "__main__":
         {"id": 8, "lat": -3.12316325, "lon": -41.76546074}
     ]
 
+    mission_points_5 = [
+        {"id": 0, "lat": -3.1231500, "lon": -41.7655296},
+        {"id": 1, "lat": -3.1233147, "lon": -41.7655305},
+        {"id": 2, "lat": -3.1233219, "lon": -41.7645251},
+        {"id": 3, "lat": -3.1233179, "lon": -41.7640358},
+        {"id": 4, "lat": -3.1231654, "lon": -41.7640343},
+        {"id": 5, "lat": -3.1230317, "lon": -41.7640315},
+        {"id": 6, "lat": -3.1230254, "lon": -41.7643312},
+        {"id": 7, "lat": -3.1225256, "lon": -41.7643279},
+        {"id": 8, "lat": -3.1225297, "lon": -41.7650169},
+        {"id": 9, "lat": -3.1233560, "lon": -41.7650141}
+    ]
+
     ALT = 2.0  # Altitude padrão
 
     # Configuração dos robôs
@@ -62,6 +75,10 @@ if __name__ == "__main__":
         {"channel": "udp:0.0.0.0:14551", "mission": mission_points_1, "source_system":1 },
         {"channel": "udp:0.0.0.0:14561", "mission": mission_points_4, "source_system":2 }
     ]
+
+    # robots = [
+    #     {"channel": "udp:0.0.0.0:14551", "mission": mission_points_5, "source_system":1 },
+    # ]
 
     managers = []
 

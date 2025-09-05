@@ -1,8 +1,3 @@
-from geneticSOoptimizator import GeneticRoverParameterIdentifier
-import pandas as pd
-import matplotlib.pyplot as plt
-from pymavlog import MavLog
-import numpy as np
 from roverdynamics import EvaluateRoverParameters
 import cma
 
@@ -42,7 +37,7 @@ if __name__ == '__main__':
 
 
 
-    xlsx_path = "./planilhas/sequencia_1_1.xlsx"
+    xlsx_path = "../planilhas/sequencia_1_1.xlsx"
     # xlsx_path = "./planilhas/sequencia_2_1.xlsx"
 
     sheet_name = "Sheet1"

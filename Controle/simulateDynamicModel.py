@@ -24,7 +24,7 @@ print(res.tolist())
 
 individual = res
 
-excel_file = "./planilhas/sequencia_1_1.xlsx"
+excel_file = "../planilhas/sequencia_1_1.xlsx"
 sheet_name = "Sheet1"
 
 rover = EvaluateRoverParameters(excel_file, sheet_name)
