@@ -1,5 +1,5 @@
 from missionmanagerunificado import MissionManager
-from PlanejadorHeterogeneoIntegrado import run_planner, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
+from PlanejadorHeterogeneoIntegrado import run_planner, montar_missoes_por_robo, retorna_pontos_passagem, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
 from segmentutils import SegmentUtils  # para carregar o grafo, se precisar
 
 
@@ -52,11 +52,10 @@ if __name__ == "__main__":
     lat1, lon1 = get_latlon(all_states, "R1")
     lat2, lon2 = get_latlon(all_states, "R2")
 
-    ref_lat_lon = MissionManager.read_parametros_conversao_lat_lon(file_path_parametros)
 
     # Define posições iniciais reais dos robôs com base em coordenadas (x, y)
-    tx1, ty1 = MissionManager.gps_to_xy(lat1, lon1, ref_lat_lon['lat_ref'], ref_lat_lon['lon_ref'])
-    tx2, ty2 = MissionManager.gps_to_xy(lat2, lon2, ref_lat_lon['lat_ref'], ref_lat_lon['lon_ref'])
+    tx1, ty1 = MissionManager.gps_to_xy(lat1, lon1, ref["lat_ref"], ref["lon_ref"])
+    tx2, ty2 = MissionManager.gps_to_xy(lat2, lon2, ref["lat_ref"], ref["lon_ref"])
 
     print((tx1,ty1))
     print((tx2, ty2))
@@ -76,32 +75,70 @@ if __name__ == "__main__":
     for r, rota in saida["rotas_otimas_por_robo"].items():
         print(f"{r}: {' -> '.join(rota)}")
 
-    label2gps = load_label2gps(observation_points_json_path)
+    pontos_vistoria = []
+    for robo, missions in saida["missoes_completas"].items():
+        for m in missions:
+            for t in m["tasks"]:
+                pontos_vistoria.append(t["point"])
 
-    missoes_por_robo = {}
+    # 2) Chama a função corretamente e materializa o gerador
+    missoes_completas = list(retorna_pontos_passagem(
+        G_mapa,  # grafo completo com 'pos' e 'weight'
+        saida["rotas_otimas_por_robo"],  # dict: robo -> [labels na ordem]
+        pontos_vistoria  # lista de labels que são marcos de vistoria
+    ))
 
-    for robo, tarefas in saida["missoes_completas"].items():
-        missoes_por_robo[robo] = {}
-        for t_idx, tarefa in enumerate(tarefas):
-            path_gps = extract_path_gps_from_obp(
-                tarefa,
-                label2gps,
-                rota_labels_fallback=saida.get("rotas_otimas_por_robo", {}).get(robo)
-            )
-            mission_points = build_mission_points_from_path_gps(
-                path_gps,
-                holds=0.0,
-                default_hold=2.0,
-                duplicate_first=True,
-                start_id=0
-            )
-            missoes_por_robo[robo] = mission_points
+    # (Opcional) Exemplo de uso do retorno
+    for item in missoes_completas:  # 1 por robô
+        info = item[0]  # a função rende uma lista com um dict dentro
+        robo = info["robo"]
+        caminho_completo, pts_vistoria, pts_passagem = info["rotas_detalhadas"]
+        print(
+            f"[{robo}] nós no caminho: {len(caminho_completo)} | vistoria: {len(pts_vistoria)} | passagem: {len(pts_passagem)}")
+
+    missoes_por_robo = montar_missoes_por_robo(
+        missoes_completas=missoes_completas,
+        G_mapa=G_mapa,
+        observation_points_json_path=observation_points_json_path,
+        lat_ref=lat_ref, lon_ref=lon_ref,
+        duplicate_first=True,  # se quiser repetir o 1º ponto
+        hold_vistoria=5.0,
+        hold_passagem=0.0,
+        MissionManager=MissionManager
+    )
 
 
-    mission_1 = missoes_por_robo['R1']
-    mission_2 = missoes_por_robo['R2']
 
-    managers = []
+    # label2gps = load_label2gps(observation_points_json_path)
+    #
+    # missoes_por_robo = {}
+    #
+    # for robo, tarefas in saida["missoes_completas"].items():
+    #     missoes_por_robo[robo] = {}
+    #     for t_idx, tarefa in enumerate(tarefas):
+    #         path_gps = extract_path_gps_from_obp(
+    #             tarefa,
+    #             label2gps,
+    #             rota_labels_fallback=saida.get("rotas_otimas_por_robo", {}).get(robo)
+    #         )
+    #         mission_points = build_mission_points_from_path_gps(
+    #             path_gps,
+    #             holds=0.0,
+    #             default_hold=2.0,
+    #             duplicate_first=True,
+    #             start_id=0
+    #         )
+    #         missoes_por_robo[robo] = mission_points
+    #
+    #
+    #
+    #
+    #
+    #
+    # mission_1 = missoes_por_robo['R1']
+    # mission_2 = missoes_por_robo['R2']
+    #
+    # managers = []
 
     # Configuração das missões
     for robot in robots:

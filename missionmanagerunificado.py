@@ -109,7 +109,7 @@ class MissionManager:
         return (lat - lat_ref) * 111132.0
 
     @staticmethod
-    def posicao_em_metros_lon(lon, lat_ref, lon_ref):
+    def posicao_em_metros_lon(lon, lon_ref, lat_ref):
         return (lon - lon_ref) * (111320.0 * math.cos(math.radians(lat_ref)))
 
     @staticmethod

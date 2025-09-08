@@ -8,6 +8,116 @@ from collections import OrderedDict, defaultdict
 import math
 import networkx as nx
 import json
+import numpy as np
+
+
+
+def _load_label_to_gps_map(observation_points_json_path):
+    """Flatten do obp_6.json: label -> (lat, lon)"""
+    with open(observation_points_json_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    label2gps = {}
+    for _, arr in data.items():
+        if isinstance(arr, list):
+            for obj in arr:
+                label = obj.get("label")
+                coord = obj.get("coord")
+                if label and coord and len(coord) == 2:
+                    # coord = [lat, lon]
+                    label2gps[label] = (float(coord[0]), float(coord[1]))
+    return label2gps
+
+def montar_missoes_por_robo(
+    missoes_completas,         # list(retorna_pontos_passagem(...))
+    G_mapa,                    # grafo completo com nós e atributo 'pos' = (x,y)
+    observation_points_json_path,
+    lat_ref, lon_ref,          # ref. para conversão se faltar GPS no JSON
+    duplicate_first=True,      # repete o 1º ponto
+    hold_vistoria=5.0,
+    hold_passagem=0.0,
+    MissionManager=None        # se tiver xy_to_gps; senão cai no conversor local
+):
+    """
+    Retorna: dict robô -> [ {id,lat,lon,hold}, ... ] pronto para upload_mission
+    """
+    # 1) Mapa label->(lat,lon) vindo do JSON de observação
+    label2gps = _load_label_to_gps_map(observation_points_json_path)
+
+    # 2) Conversor local caso algum label não esteja no JSON
+    import math
+    def xy_to_gps_local(x, y):
+        R = 6378137.0
+        dlat = y / R
+        dlon = x / (R * math.cos(math.radians(lat_ref)))
+        return (lat_ref + math.degrees(dlat), lon_ref + math.degrees(dlon))
+
+    missoes_por_robo = {}
+
+    for item in missoes_completas:
+        info = item[0]  # retorna_pontos_passagem yielda [ { ... } ]
+        robo = info["robo"]
+        caminho_completo, pts_vistoria, pts_passagem = info["rotas_detalhadas"]
+
+        path_gps = []
+        holds = []
+
+        for label in caminho_completo:
+            # 3) Pega lat/lon do JSON; se não tiver, converte do (x,y) do grafo
+            if label in label2gps:
+                lat, lon = label2gps[label]
+            else:
+                x, y = G_mapa.nodes[label]['pos']
+                if MissionManager and hasattr(MissionManager, "xy_to_gps"):
+                    lat, lon = MissionManager.xy_to_gps(x, y, lat_ref, lon_ref)
+                else:
+                    lat, lon = xy_to_gps_local(x, y)
+
+            path_gps.append((lat, lon))
+            holds.append(hold_vistoria if label in pts_vistoria else hold_passagem)
+
+        # 4) Constrói mission_points (IDs sequenciais, com opção de duplicar o primeiro)
+        mission_points = build_mission_points_from_path_gps(
+            path_gps,
+            holds=holds,             # <- importante: passa uma lista, não float!
+            default_hold=0.0,
+            duplicate_first=duplicate_first,
+            start_id=0
+        )
+
+        missoes_por_robo[robo] = mission_points
+
+    return missoes_por_robo
+
+
+
+def retorna_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria):
+
+    for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+        caminho_completo = []
+
+        for j in range(len(rota) - 1):
+            u, v = rota[j], rota[j + 1]
+
+            subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+            if caminho_completo and subpath[0] == caminho_completo[-1]:
+                caminho_completo.extend(subpath[1:])
+            else:
+                caminho_completo.extend(subpath)
+
+        coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+
+
+        # Diferencia pontos de vistoria dos pontos intermediários
+        for ponto in caminho_completo:
+            x, y = G_robot.nodes[ponto]['pos']
+            if ponto in pontos_vistoria:
+                i=0
+                # plt.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
+            else:
+                i=1
+                # plt.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
+
 
 
 def load_label2gps(observation_points_json_path: str) -> dict[str, tuple[float, float]]:
@@ -208,6 +318,38 @@ def build_mission_points_from_path_gps(
             "hold": float(holds_list[i]),
         })
     return out
+
+
+def retorna_pontos_passagem(G_robot, rotas_por_robo, pontos_vistoria):
+
+    for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+        pts_caminho = []
+        pts_vistoria = []
+        caminho_completo = []
+
+        for j in range(len(rota) - 1):
+            u, v = rota[j], rota[j + 1]
+
+            subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+            if caminho_completo and subpath[0] == caminho_completo[-1]:
+                caminho_completo.extend(subpath[1:])
+            else:
+                caminho_completo.extend(subpath)
+
+        coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+
+        # Diferencia pontos de vistoria dos pontos intermediários
+        for ponto in caminho_completo:
+            x, y = G_robot.nodes[ponto]['pos']
+            if ponto in pontos_vistoria:
+                pts_vistoria.append(ponto)
+            else:
+                pts_caminho.append(ponto)
+
+        yield [{"robo":robo, "rotas_detalhadas":[caminho_completo, pts_vistoria, pts_caminho]}]
+
+
 
 def retorna_rotas_completas(G_robot, rotas_por_robo, pontos_vistoria, xlsx_param_path):
     """

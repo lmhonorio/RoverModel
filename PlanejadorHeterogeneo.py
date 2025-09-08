@@ -157,8 +157,11 @@ if __name__ == "__main__":
     # tx, ty = -165.9766, -77.6645
     # tx2, ty2 = 87.9766, 30.6645
 
-    tx, ty = -0.9766, -0.6645
-    tx2, ty2 = 0.9766, 0.6645
+    tx, ty = -144.66934069048625, -76.90938526639975
+    tx2, ty2 = -120.60435639037568, 103.09111513360044
+
+    # tx, ty = -0.9766, -0.6645
+    # tx2, ty2 = 0.9766, 0.6645
 
     label_posr1, _, _ = MultiGraphPlanner.find_nearest_node(G_mapa, tx, ty)
     label_posr2, _, _ = MultiGraphPlanner.find_nearest_node(G_mapa, tx2, ty2)
