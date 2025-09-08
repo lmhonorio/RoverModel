@@ -148,49 +148,7 @@ if __name__ == "__main__":
             mm.upload_mission(missoes_por_robo[robot['name']], robot = robot['name'])
 
 
-    # # Configuração das missões
-    # for robot in robots:
-    #     print(f"\n🛠 Configurando robô em {robot['channel']}")
-    #     manager = MissionManager(
-    #         udp_channel=robot["channel"],
-    #         source_system=robot["source_system"],
-    #         timeout=15,
-    #         max_attempts=50
-    #     )
-    #     if not manager.connect():
-    #         print(f"❌ {robot['name']}: falha ao conectar.")
-    #         continue
-    #
-    #     mission_list = missoes_por_robo.get(robot["name"], [])
-    #     if not mission_list:
-    #         print(f"ℹ️ {robot['name']}: nenhuma missão atribuída.")
-    #         continue
-    #
-    #     print(f"🚀 Enviando {len(mission_list)} missão(ões) para {robot['name']}")
-    #     for idx, mission_points in enumerate(mission_list, start=1):
-    #         # sanity-check simples:
-    #         if not mission_points or not isinstance(mission_points[0], dict):
-    #             print(f"  ⚠️ Missão {idx} de {robot['name']} não está no formato esperado (lista de dicts).")
-    #             continue
-    #
-    #         print(f"  ▶️ Upload missão {idx} ({len(mission_points)} WPs)")
-    #         if not manager.upload_mission(mission_points):
-    #             print(f"  ❌ Falha no upload da missão {idx} para {robot['name']}")
-    #             break
-    #
-    #         # iniciar + esperar (ajuste para os métodos que sua classe tiver)
-    #         if hasattr(manager, "start_mission"):
-    #             manager.start_mission()
-    #         elif hasattr(manager, "arm_and_start_mission"):
-    #             manager.arm_and_start_mission()
-    #         elif hasattr(manager, "arm_and_start"):
-    #             manager.arm_and_start()
-    #         if hasattr(manager, "wait_until_mission_done"): manager.wait_until_mission_done()
-    #
-    #     managers.append(manager)
-    #
-    #
-    #     print(f"❌ Falha na configuração do robô em {robot['channel']}")
+
 
     # Iniciar missões
     print("\n🚀 Iniciando missões...")
