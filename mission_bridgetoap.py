@@ -15,23 +15,28 @@ def get_latlon(all_states, robot):
 if __name__ == "__main__":
     # Coordenadas GPS da missão
     file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
-    file_path = "./jsons/graph9_new.json"
+    graph_path = "./jsons/graph9_new.json"
     observation_points_json_path = "./jsons/obp_6.json"
-    missions = ['b_busip4', 'ef_reator1', 'ls_pr4']
-    mission_execution_config = {
-        "b_busip4": ["R1", "R2"],
-        "ef_reator1": ["R1", "R2"],
-        "ls_pr4": ["R1", "R2"],
-    }
-
-
-    # 0.0.0.0 habilita para receber de qq IP
+    missions = ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator10', 'ef_disjuntor6', 'ls_tpc1']
     robots = [
         {'name': 'R1', "channel": "udp:0.0.0.0:14551",  "source_system":1 },
         {'name': 'R2', "channel": "udp:0.0.0.0:14561",  "source_system":2 }
     ]
 
-    G_mapa = SegmentUtils.load_graph_json(file_path)
+    robot_names = [r["name"] for r in robots]
+    mission_execution_config = {m: robot_names[:] for m in missions}
+
+    # mission_execution_config = {
+    #     "b_busip4": ["R1", "R2"],
+    #     "ef_reator1": ["R1", "R2"],
+    #     "ls_pr4": ["R1", "R2"],
+    # }
+
+
+    # 0.0.0.0 habilita para receber de qq IP
+
+
+    G_mapa = SegmentUtils.load_graph_json(graph_path)
 
     # pegue a referência de conversão (como já faz no seu código)
     ref = MissionManager.read_parametros_conversao_lat_lon(file_path_parametros)
@@ -62,7 +67,7 @@ if __name__ == "__main__":
 
 
     saida = run_planner(
-        file_path,
+        graph_path,
         observation_points_json_path,
         file_path_parametros,
         missions,
@@ -109,36 +114,6 @@ if __name__ == "__main__":
 
 
 
-    # label2gps = load_label2gps(observation_points_json_path)
-    #
-    # missoes_por_robo = {}
-    #
-    # for robo, tarefas in saida["missoes_completas"].items():
-    #     missoes_por_robo[robo] = {}
-    #     for t_idx, tarefa in enumerate(tarefas):
-    #         path_gps = extract_path_gps_from_obp(
-    #             tarefa,
-    #             label2gps,
-    #             rota_labels_fallback=saida.get("rotas_otimas_por_robo", {}).get(robo)
-    #         )
-    #         mission_points = build_mission_points_from_path_gps(
-    #             path_gps,
-    #             holds=0.0,
-    #             default_hold=2.0,
-    #             duplicate_first=True,
-    #             start_id=0
-    #         )
-    #         missoes_por_robo[robo] = mission_points
-    #
-    #
-    #
-    #
-    #
-    #
-    # mission_1 = missoes_por_robo['R1']
-    # mission_2 = missoes_por_robo['R2']
-    #
-    # managers = []
 
     # Configuração das missões
     for robot in robots:

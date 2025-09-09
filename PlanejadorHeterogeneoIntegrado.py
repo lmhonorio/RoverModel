@@ -189,8 +189,8 @@ def build_mission_points_from_path_gps(
             "lat": float(lat),
             "lon": float(lon),
             "hold": float(holds if holds is not None else default_hold),
-            "param2":float(1.0),
-            "param3": float(1.0)
+            "param2":float(0.5),
+            "param3": float(0.5)
         })
     return mp
 

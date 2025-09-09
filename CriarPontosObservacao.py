@@ -31,12 +31,12 @@ def main():
 
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
 
-    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 4.0)
+    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 5.0)
 
     PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 
     print("🔹 criando o generate_perimeter_segments_and_labeled_points ...")
-    segments, observation_points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=3.0)
+    segments, observation_points = SegmentUtils.generate_perimeter_segments_and_labeled_points(segments, aabbs, obstacles, threshold=5.0)
 
 
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)

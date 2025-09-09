@@ -127,8 +127,13 @@ def retorna_rotas_completas(G_robot, rotas_por_robo, pontos_vistoria, xlsx_param
 
 if __name__ == "__main__":
     # Leitura do grafo do ambiente
-    file_path = "./jsons/graph9_new.json"
-    observation_points_json_path = "./jsons/obp_6.json"
+    # file_path = "./jsons/graph9_new.json"
+    # observation_points_json_path = "./jsons/obp_6.json"
+
+    graph_file_path = "./jsons/graph9d_new.json"
+    observation_points_json_path = "./jsons/obpc_7.json"
+
+
     file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
 
 
@@ -150,7 +155,7 @@ if __name__ == "__main__":
         print(f"{k} -> {v}")
 
     # Carrega o grafo do ambiente e reduzido para inspeção
-    G_mapa = SegmentUtils.load_graph_json(file_path)
+    G_mapa = SegmentUtils.load_graph_json(graph_file_path)
 
 
     # Define posições iniciais reais dos robôs com base em coordenadas (x, y)
