@@ -744,13 +744,32 @@ class SegmentUtils:
 
 
     @staticmethod
-    def save_graph_json(G, filename):
+    def save_graph_json(G, filename, filename_geo, xlsx_path):
+        from ajusteplanilha import AjustePlanilha
+
         graph_data = {
             "nodes": {str(node): G.nodes[node] for node in G.nodes()},
             "edges": [(str(u), str(v), G.edges[u, v]["weight"]) for u, v in G.edges()]
         }
         with open(filename, "w") as f:
             json.dump(graph_data, f, indent=4)
+
+        pontos_para_converter = [
+            (px, py) 
+            for node in G.nodes() if "pos" in G.nodes[node]
+            for px, py in [G.nodes[node]["pos"]]
+        ]
+        gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_para_converter, xlsx_path)
+
+        geo_nodes = []
+        for node, coord in zip(G.nodes(), gps_coords):
+            geo_nodes.append({
+                "label": str(node),
+                "coord": coord
+            })
+
+        with open(filename_geo, "w") as f:
+            json.dump(geo_nodes, f, indent=4)
 
     @staticmethod
     def load_graph_json(filename):

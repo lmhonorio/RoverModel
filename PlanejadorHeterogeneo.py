@@ -71,6 +71,7 @@ AABB_POR_EQUIPAMENTO_JSON = "./jsons/aabb_por_equipamento.json"
 EQUIPAMENTOS_FILTRADOS_JSON = "./jsons/equipamentos_filtrados.json"
 AABB_INFO_JSON = "./jsons/aabb_info.json"
 CACHE_ASTAR_PATH = "./cache_astar.json"
+GRAPH_GEO_LABELS_JSON = "./jsons/graph_equipment_geo.json" # grafo com coordenadas geograficas
 
 file_path = "./planilhas/equipment_processado.xlsx"
 
@@ -202,8 +203,8 @@ MISSION_PRESET_KEY = "default" #"example_22"  # escolha aqui
 # --- Execução ---
 RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
-SEND_MISSIONS = True
-DO_PLOTS = True
+SEND_MISSIONS = False
+DO_PLOTS = False
 SEND_TO_SERVER = False
 
 # --- MOVNS ---
@@ -279,6 +280,7 @@ def load_data_and_graphs():
     ensure_file(AABB_INFO_JSON, "AABB_INFO_JSON")
 
     observacao_por_obstaculo = SegmentUtils.load_observation_points_from_json(OBS_POINTS_JSON)
+    graph_geo_label = SegmentUtils.load_observation_points_from_json(GRAPH_GEO_LABELS_JSON)
 
     G_mapa = SegmentUtils.load_graph_json(GRAPH_JSON)
     if G_mapa is None or len(G_mapa) == 0:
@@ -298,7 +300,7 @@ def load_data_and_graphs():
     cache_astar = PersistentAStarCache(planner_grafo, CACHE_ASTAR_PATH)
 
     print("✅ Dados carregados.")
-    return observacao_por_obstaculo, G_mapa, G_p, equipamento_aabb, equipamento_data, aabb_info_data, planner_grafo, cache_astar
+    return observacao_por_obstaculo, G_mapa, G_p, equipamento_aabb, equipamento_data, aabb_info_data, planner_grafo, cache_astar, graph_geo_label
 
 
 def build_robots(G_mapa: nx.Graph, selected_ids: List[str]) -> Tuple[List[Robot], Dict[str, str], List[int]]:
@@ -368,11 +370,23 @@ def build_label_to_coord_map(observacao_por_obstaculo: dict) -> Dict[str, Tuple[
                 label_to_coord[label] = coord
     return label_to_coord
 
+def build_label_to_coord_map_graph(graph_geo: dict) -> Dict[str, Tuple[float, float]]:
+    """Cria índice label -> coord_gps (com checagem)."""
+    
+    label_to_coord = {}
+    for item in graph_geo:  # iterando sobre cada dicionário da lista
+        label = item.get("label")
+        coord = item.get("coord")
+        if label and coord:
+            label_to_coord[label] = coord  
+    return label_to_coord
+
 def convert_labels_to_gps(rotas_por_robo: Dict[str, List[str]],
-                           observacao_por_obstaculo: dict) -> Dict[str, List[Tuple[float, float]]]:
+                           graph_geo: dict) -> Dict[str, List[Tuple[float, float]]]:
     """Converte rótulos de rota para coordenadas GPS."""
     
-    label_to_coord = build_label_to_coord_map(observacao_por_obstaculo)
+    # label_to_coord = build_label_to_coord_map(observacao_por_obstaculo)
+    label_to_coord = build_label_to_coord_map_graph(graph_geo)
     coords_by_robot: Dict[str, List[Tuple[float, float]]] = {}
 
     for robot_id, labels in rotas_por_robo.items():
@@ -558,7 +572,7 @@ def calcula_rota_completa(G_robot: nx.Graph,
     """Dado um grafo e rotas (rótulos), calcula a rota completa"""
     rotas_completas = {}
 
-    for robo, rota in rotas_por_robo.items():
+    for i, (robo, rota) in enumerate(rotas_por_robo.items()):
         caminho_completo = []
 
         for j in range(len(rota) - 1):
@@ -584,7 +598,7 @@ def mrta(missions, selected_robots):
     # 1) Carregar dados
     (observacao_por_obstaculo, G_mapa, G_p,
      equipamento_aabb, equipamento_data, aabb_info_data,
-     planner_grafo, cache_astar) = load_data_and_graphs()
+     planner_grafo, cache_astar, graph_geo) = load_data_and_graphs()
 
     # 2) Missões
     # missions = MISSION_PRESETS[MISSION_PRESET_KEY]
@@ -640,21 +654,26 @@ def mrta(missions, selected_robots):
         if rotas_otimas_por_robo:
             try:
                 # Calcular rotas completas no grafo original
-                rotas_otimas_por_robo_baseline = calcula_rota_completa(Greduced_map, rotas_otimas_por_robo)
+                rotas_otimas_por_robo_baseline = calcula_rota_completa(G_mapa, rotas_otimas_por_robo)
                 # Converter rotas do baseline para GPS
-                coords_by_robot_baseline = convert_labels_to_gps(rotas_otimas_por_robo_baseline, observacao_por_obstaculo)
+                coords_by_robot_baseline = convert_labels_to_gps(rotas_otimas_por_robo_baseline, graph_geo)
 
-                tempo, distancia, balances, qtde_pontos = solution_priority_argo.calcular_custos_totais_solucao(
-                    rotas_otimas_por_robo_baseline, cache_astar
-                )
-                print(f"📊 Baseline — Tempo: {tempo:.2f}, Distância: {distancia:.2f}, Balance: {balances}, Pontos: {qtde_pontos}")
+                # tempo, distancia, balances, qtde_pontos = solution_priority_argo.calcular_custos_totais_solucao(
+                #     rotas_otimas_por_robo_baseline, cache_astar
+                # )
+                # print(f"📊 Baseline — Tempo: {tempo:.2f}, Distância: {distancia:.2f}, Balance: {balances}, Pontos: {qtde_pontos}")
 
             except Exception as e:
                 print(f"⚠️ calcular_custos_totais_solucao falhou: {e}")
 
+            # Salva rotas ótimas do baseline em JSON
+            with open("rotas_otimas_baseline.json", "w") as f:
+                json.dump(coords_by_robot_baseline, f, indent=4)
+
             # Envio de missões para o Baseline
             if SEND_MISSIONS and coords_by_robot_baseline:
                 send_gps_routes_to_vehicles(coords_by_robot_baseline)
+
             if SEND_TO_SERVER and coords_by_robot_baseline:
                 SERVER_URL = "http://127.0.0.1:5000"
                 send_gps_routes_to_server(coords_by_robot_baseline, SERVER_URL )

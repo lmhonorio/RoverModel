@@ -3,32 +3,27 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76544855332144,-3.123485893449796,0</coordinates>
+        <coordinates>-41.765448548502,-3.1235028046347306,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.765378260036506,-3.1234583353749343,0</coordinates>
+        <coordinates>-41.765448548502,-3.12346354605334,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76544855332144,-3.1234583353749343,0</coordinates>
+        <coordinates>-41.765378255343705,-3.12346354605334,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76545429588945,-3.1234107989491435,0</coordinates>
+        <coordinates>-41.76547116928418,-3.123448552172196,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76541830999646,-3.1234107989491435,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76545429588945,-3.1234467921824156,0</coordinates>
+        <coordinates>-41.7654295536985,-3.123412558938924,0</coordinates>
       </Point>
     </Placemark>
   </Document>

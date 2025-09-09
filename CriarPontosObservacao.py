@@ -20,6 +20,7 @@ def main():
     sheet_name = "Parnaiba3_Transformado"
     # grafo_path = "./jsons/graph9c_new.json"
     grafo_path = "./jsons/graph_equipment.json"
+    grafo_path_geo = "./jsons/graph_equipment_geo.json" # grafo com coordenadas geograficas
     # observation_path ="./jsons/obpc_6.json"
     observation_path ="./jsons/obs_equipment.json"
     # observation_folter = "./pontos_observacao"
@@ -48,7 +49,7 @@ def main():
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
     SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
-    # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=0.0, offset_lon_meters=0.0)
+    SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=0.0, offset_lon_meters=0.0)
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
@@ -87,8 +88,8 @@ def main():
 
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
-    print(f"🔹 Salvando grafo em: {grafo_path}")
-    SegmentUtils.save_graph_json(G_corrigido, grafo_path)
+    print(f"🔹 Salvando grafo em: {grafo_path} e {grafo_path_geo}")
+    SegmentUtils.save_graph_json(G_corrigido, grafo_path, grafo_path_geo, file_path)
 
     print("✅ Fim do processo ---")
 
