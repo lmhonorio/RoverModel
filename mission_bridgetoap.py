@@ -17,7 +17,11 @@ if __name__ == "__main__":
     file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
     graph_path = "./jsons/graph9_new.json"
     observation_points_json_path = "./jsons/obp_6.json"
-    missions = ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator10', 'ef_disjuntor6', 'ls_tpc1']
+    # missions = ['b_busip4',  'ls_tpc1']
+
+    missions = ['b_busip37', 'b_busip36', 'b_busip35', 'b_busip4', 'b_busip3', 'b_busip2', 'b_busip1', 'ls_pr3', 'ls_pr2', 'ls_pr1' ]
+
+    # missions = ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator10', 'ef_disjuntor6', 'ls_tpc1']
     robots = [
         {'name': 'R1', "channel": "udp:0.0.0.0:14551",  "source_system":1 },
         {'name': 'R2', "channel": "udp:0.0.0.0:14561",  "source_system":2 }
@@ -107,7 +111,7 @@ if __name__ == "__main__":
         observation_points_json_path=observation_points_json_path,
         lat_ref=lat_ref, lon_ref=lon_ref,
         duplicate_first=True,  # se quiser repetir o 1º ponto
-        hold_vistoria=5.0,
+        hold_vistoria=2.0,
         hold_passagem=0.0,
         MissionManager=MissionManager
     )
