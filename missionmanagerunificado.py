@@ -118,6 +118,82 @@ class MissionManager:
         y = MissionManager.posicao_em_metros_lat(lat, lat_ref)  # Norte (+)
         return x, y
 
+    @staticmethod
+    def _hav_m(p, q):
+        (lat1, lon1), (lat2, lon2) = p, q
+        R = 6378137.0
+        dphi = math.radians(lat2 - lat1)
+        dlmb = math.radians(lon2 - lon1)
+        a = math.sin(dphi / 2) ** 2 + math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) * math.sin(
+            dlmb / 2) ** 2
+        return 2 * R * math.asin(math.sqrt(a))
+
+    def set_home_to_current(self, robot: str | None = None, timeout: float = 5.0, tol_m: float = 2.0):
+        """
+        Define o HOME (launch) do autopiloto como a posição atual (GPS) e valida.
+        Retorna dict {'lat','lon','alt'} do HOME confirmado, ou None se falhar.
+        """
+        # 1) força stream
+        try:
+            self.force_gps_stream(rate_hz=5.0, robot=robot)
+        except Exception:
+            pass
+
+        # 2) posição fresca
+        st = self.wait_for_position(robot=robot, timeout=timeout, require_all=False)  # use sua versão "fresh_only"
+        if not st:
+            print("❌ Não consegui posição fresca para setar HOME")
+            return None
+
+        master = self._require_master(robot)
+        # 3) pedir HOME = posição atual
+        master.mav.command_long_send(
+            master.target_system, master.target_component,
+            mavutil.mavlink.MAV_CMD_DO_SET_HOME, 0,
+            1, 0, 0, 0, 0, 0, 0  # param1=1 => usar posição atual
+        )
+
+        # Solicita explicitamente HOME_POSITION
+        try:
+            master.mav.command_long_send(
+                master.target_system, master.target_component,
+                mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE, 0,
+                mavutil.mavlink.MAVLINK_MSG_ID_HOME_POSITION, 0, 0, 0, 0, 0, 0
+            )
+        except Exception:
+            pass
+
+        t0 = time.time()
+        got = None
+        while time.time() - t0 < 3.0:
+            msg = master.recv_match(type='HOME_POSITION', blocking=True, timeout=0.5)
+            if not msg:
+                continue
+            home_lat = msg.latitude * 1e-7
+            home_lon = msg.longitude * 1e-7
+            # alt do HOME_POSITION é em milímetros acima do MSL
+            home_alt = getattr(msg, 'altitude', 0) / 1000.0
+            if MissionManager._hav_m((home_lat, home_lon), (st['lat'], st['lon'])) <= tol_m:
+                got = {'lat': home_lat, 'lon': home_lon, 'alt': home_alt}
+                break
+        if got:
+            print(f"🏠 HOME atualizado: {got['lat']:.7f}, {got['lon']:.7f} (±{tol_m} m)")
+        else:
+            print("⚠️ HOME não confirmou dentro da tolerância/tempo")
+        return got
+
+    def get_home_position(self, robot: str | None = None, timeout: float = 2.0):
+        """Consulta o HOME atual via REQUEST_MESSAGE -> HOME_POSITION."""
+        master = self._require_master(robot)
+        master.mav.command_long_send(
+            master.target_system, master.target_component,
+            mavutil.mavlink.MAV_CMD_REQUEST_MESSAGE, 0,
+            mavutil.mavlink.MAVLINK_MSG_ID_HOME_POSITION, 0, 0, 0, 0, 0, 0
+        )
+        msg = master.recv_match(type='HOME_POSITION', blocking=True, timeout=timeout)
+        if not msg:
+            return None
+        return {'lat': msg.latitude * 1e-7, 'lon': msg.longitude * 1e-7, 'alt': getattr(msg, 'altitude', 0) / 1000.0}
 
     # ------------------------------ Helpers ------------------------------
     def _iter_target_names(self, robot: Optional[str] = None):
@@ -269,6 +345,73 @@ class MissionManager:
                 )
             except Exception:
                 pass
+
+    def new_wait_for_position(self,
+                              robot: Optional[str] = None,
+                              timeout: float = 5.0,
+                              require_all: bool = False,
+                              fresh_only: bool = True):
+        """
+        fresh_only=True -> só aceita posições com st['ts'] >= t0 (frescas).
+        min_move_m     -> se >0, exige que tenha havido deslocamento >= min_move_m
+                          em relação ao snapshot do início da chamada.
+        """
+        t0 = time.time()
+
+        # Garante telemetria fluindo (IDs principais: GLOBAL_POSITION_INT, GPS_RAW_INT, ATTITUDE, VFR_HUD)
+        try:
+            self.force_gps_stream(rate_hz=5.0, robot=robot)
+        except Exception:
+            pass
+
+        # snapshot de partida para (opcional) checar movimento mínimo
+        baseline = {}
+        for name in (self.masters.keys() if (robot is None and not self.single_mode) else [
+            ("R1" if (self.single_mode and robot is None) else robot)]):
+            st0 = self.last_states.get(name, {}).copy()
+            baseline[name] = st0 if st0 else None
+
+        def _is_valid(name: str, st: dict) -> bool:
+            if not st or st.get('lat') is None or st.get('lon') is None:
+                return False
+            if fresh_only:
+                ts = st.get('ts')
+                if ts is None or ts < t0:
+                    return False
+            return True
+
+        # loops
+        if robot is None and not self.single_mode:
+            if require_all:
+                needed = set(self.masters.keys())
+                have = set()
+                while (time.time() - t0) < timeout:
+                    self.poll_once(per_robot_reads=60)
+                    for name in list(needed - have):
+                        st = self.last_states.get(name, {})
+                        if _is_valid(name, st):
+                            have.add(name)
+                    if have == needed:
+                        return {name: self.last_states[name] for name in sorted(have)}
+                    time.sleep(0.03)
+                return None
+            else:
+                while (time.time() - t0) < timeout:
+                    self.poll_once(per_robot_reads=60)
+                    for name, st in list(self.last_states.items()):
+                        if _is_valid(name, st):
+                            return (name, st)
+                    time.sleep(0.03)
+                return None
+        else:
+            name = 'R1' if (self.single_mode and robot is None) else robot
+            while (time.time() - t0) < timeout:
+                self.poll_once(per_robot_reads=60)
+                st = self.last_states.get(name or 'R1')
+                if _is_valid(name or 'R1', st or {}):
+                    return st
+                time.sleep(0.03)
+            return None
 
     def wait_for_position(self, robot: Optional[str] = None, timeout: float = 5.0, require_all: bool = False):
         t0 = time.time()

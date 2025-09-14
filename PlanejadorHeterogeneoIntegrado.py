@@ -8,8 +8,48 @@ from collections import OrderedDict, defaultdict
 import math
 import networkx as nx
 import json
+import time
+from copy import deepcopy
 import numpy as np
 
+
+
+
+def ajustar_missoes_deltas(missoes_por_robo: Dict[str, List[Dict[str, Any]]],
+                           dx_m: float, dy_m: float) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Aplica um deslocamento em metros (dx_m para Leste/Oeste, dy_m para Norte/Sul)
+    a todos os waypoints (lat, lon) de cada robô em missoes_por_robo.
+
+    - dx_m > 0 desloca para Leste (aumenta lon);  dx_m < 0 para Oeste.
+    - dy_m > 0 desloca para Norte (aumenta lat);  dy_m < 0 para Sul.
+
+    Retorna uma cópia ajustada, sem modificar a entrada.
+    """
+    R = 6378137.0  # raio WGS84 em metros
+    out = {}
+
+    for robo, wps in missoes_por_robo.items():
+        novos = []
+        for wp in wps:
+            # preserva quaisquer campos adicionais
+            wp2 = dict(wp)
+
+            lat = float(wp.get("lat"))
+            lon = float(wp.get("lon"))
+
+            # variação em graus (aproximação local por ponto)
+            dlat_deg = (dy_m / R) * (180.0 / math.pi)
+            # cuidado: usa a latitude do próprio ponto p/ converter dx->graus
+            dlon_deg = (dx_m / (R * math.cos(math.radians(lat)))) * (180.0 / math.pi)
+
+            wp2["lat"] = lat + dlat_deg
+            wp2["lon"] = lon + dlon_deg
+
+            novos.append(wp2)
+        out[robo] = novos
+
+    return out
 
 
 def _load_label_to_gps_map(observation_points_json_path):

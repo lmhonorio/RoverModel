@@ -1,5 +1,5 @@
 from missionmanagerunificado import MissionManager
-from PlanejadorHeterogeneoIntegrado import run_planner, montar_missoes_por_robo, retorna_pontos_passagem, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
+from PlanejadorHeterogeneoIntegrado import run_planner, montar_missoes_por_robo, retorna_pontos_passagem, ajustar_missoes_deltas, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
 from segmentutils import SegmentUtils  # para carregar o grafo, se precisar
 
 
@@ -19,7 +19,7 @@ if __name__ == "__main__":
     observation_points_json_path = "./jsons/obp_6.json"
     # missions = ['b_busip4',  'ls_tpc1']
 
-    missions = ['b_busip37', 'b_busip36', 'b_busip35', 'b_busip4', 'b_busip3', 'b_busip2', 'b_busip1', 'ls_pr3', 'ls_pr2', 'ls_pr1' ]
+    missions = ['b_busip20', 'b_busip21', 'b_busip25', 'b_busip33', 'cd_reator3', 'cd_reator4' ]
 
     # missions = ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator10', 'ef_disjuntor6', 'ls_tpc1']
     robots = [
@@ -52,10 +52,13 @@ if __name__ == "__main__":
     # mm.force_gps_stream(rate_hz=5.0, robot='R1')
 
     # Ou exigir de todos:
-    all_states = mm.wait_for_position(timeout=5.0, require_all=True)
+    all_states = mm.new_wait_for_position(timeout=25.0, require_all=True)
 
     # Configuração das missões
+    Ipos = {}
     for robot in robots:
+        st = mm.new_wait_for_position(robot=robot["name"], timeout=5.0)
+        home = mm.set_home_to_current(robot=robot["name"])
         print(all_states[robot['name']])
 
     lat1, lon1 = get_latlon(all_states, "R1")
@@ -68,6 +71,8 @@ if __name__ == "__main__":
 
     print((tx1,ty1))
     print((tx2, ty2))
+
+
 
 
     saida = run_planner(
@@ -116,6 +121,8 @@ if __name__ == "__main__":
         MissionManager=MissionManager
     )
 
+    missoes_por_robo_aj = ajustar_missoes_deltas(missoes_por_robo, dx_m=-2, dy_m=-12.0)
+
 
 
 
@@ -124,7 +131,7 @@ if __name__ == "__main__":
         print(f"\n🛠 enviando missao ao robô em {robot['channel']}")
 
         if mm.connected:
-            mm.upload_mission(missoes_por_robo[robot['name']], robot = robot['name'])
+            mm.upload_mission(missoes_por_robo_aj[robot['name']], robot = robot['name'])
 
 
 
