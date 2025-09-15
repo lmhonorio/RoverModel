@@ -14,6 +14,109 @@ import numpy as np
 
 
 
+R = 6378137.0  # raio WGS84
+
+def _to_xy_m(lat: float, lon: float, lat0: float, lon0: float):
+    """Converte (lat,lon) para coords locais (x,y) em metros, referenciadas em (lat0,lon0)."""
+    x = (lon - lon0) * (math.pi/180.0) * R * math.cos(math.radians(lat0))
+    y = (lat - lat0) * (math.pi/180.0) * R
+    return x, y
+
+def _get_hold_value(wp: dict) -> float:
+    """Descobre o campo de 'hold' mais provável no waypoint."""
+    for k in ('hold', 'holding', 'hold_time', 'delay', 'loiter', 'hold_vistoria'):
+        if k in wp and wp[k] is not None:
+            try:
+                return float(wp[k])
+            except Exception:
+                pass
+    return 0.0
+
+def _eq_m(p: dict, q: dict, thr_m: float = 0.05) -> bool:
+    """Compara se p e q são praticamente o mesmo ponto (em metros)."""
+    x, y = _to_xy_m(q['lat'], q['lon'], p['lat'], p['lon'])
+    return math.hypot(x, y) <= thr_m
+
+def _is_collinear_and_between(a: dict, b: dict, c: dict, tol_ct_m: float) -> bool:
+    """
+    Retorna True se B está colinear com A-C e ENTRE A e C.
+    Usa distância ortogonal de B à reta AC (cross-track).
+    """
+    # A é a origem
+    bx, by = _to_xy_m(b['lat'], b['lon'], a['lat'], a['lon'])
+    cx, cy = _to_xy_m(c['lat'], c['lon'], a['lat'], a['lon'])
+    ACx, ACy = cx, cy
+    ABx, ABy = bx, by
+    ACn2 = ACx*ACx + ACy*ACy
+    ACn = math.sqrt(ACn2)
+    if ACn < 1e-9:
+        # A e C coincidem: não removemos para não “colar” pontos
+        return False
+
+    # Distância ortogonal de B até a linha de A->C
+    cross = abs(ABx*ACy - ABy*ACx)
+    d = cross / ACn
+    if d > tol_ct_m:
+        return False
+
+    # Verifica se B projeta ENTRE A e C (0 <= t <= 1)
+    t = (ABx*ACx + ABy*ACy) / ACn2
+    return 0.0 <= t <= 1.0
+
+def otimizarpontos(missoes_por_robo: Dict[str, List[Dict[str, Any]]],
+                   tol_ct_m: float = 0.10,
+                   preserve_loop_closure: bool = True,
+                   renumber_ids: bool = False) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Remove waypoints de passagem (hold==0) que estejam em linha reta entre vizinhos.
+    - tol_ct_m: tolerância da distância ortogonal para considerar "em linha" (m).
+    - preserve_loop_closure: mantém o último se ele repete o primeiro (fecho).
+    - renumber_ids: se True, reenumera 'id' sequencialmente após a limpeza.
+    """
+    out: Dict[str, List[Dict[str, Any]]] = {}
+
+    for robo, wps in missoes_por_robo.items():
+        if len(wps) <= 2:
+            out[robo] = list(wps)
+            continue
+
+        # Detecta fecho (último ~= primeiro) para não quebrar o circuito
+        has_loop = preserve_loop_closure and _eq_m(wps[0], wps[-1], thr_m=0.05)
+        last_index = (len(wps) - 2) if has_loop else (len(wps) - 1)
+
+        kept: List[Dict[str, Any]] = []
+        for i, wp in enumerate(wps):
+            # Sempre mantém primeiro e último "útil"
+            if i == 0 or i == last_index or not (0 < i < last_index):
+                kept.append(wp)
+                continue
+
+            # Mantém pontos com hold > 0 (vistoria)
+            if _get_hold_value(wp) > 0.0:
+                kept.append(wp)
+                continue
+
+            a, b, c = wps[i-1], wp, wps[i+1]
+            if _is_collinear_and_between(a, b, c, tol_ct_m=tol_ct_m):
+                # descarta b (ponto de passagem em reta)
+                continue
+            else:
+                kept.append(wp)
+
+        # Reanexa o fecho, se existia
+        if has_loop:
+            kept.append(wps[-1])
+
+        # Renumera IDs, se desejado
+        if renumber_ids and any('id' in k for k in kept):
+            for j in range(len(kept)):
+                if 'id' in kept[j]:
+                    kept[j] = dict(kept[j])
+                    kept[j]['id'] = j
+
+        out[robo] = kept
+
+    return out
 
 def ajustar_missoes_deltas(missoes_por_robo: Dict[str, List[Dict[str, Any]]],
                            dx_m: float, dy_m: float) -> Dict[str, List[Dict[str, Any]]]:

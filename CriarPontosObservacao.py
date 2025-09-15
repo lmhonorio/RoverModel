@@ -17,11 +17,11 @@ def main():
     # Config
     file_path = "./planilhas/obstaculos_processado6.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph9d_new.json"
-    observation_path ="./jsons/obpc_7.json"
+    grafo_path = "./jsons/graph9F_new.json"
+    observation_path ="./jsons/obpc_8.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 2.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 3  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
@@ -31,7 +31,7 @@ def main():
 
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
 
-    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 5.0)
+    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 6.0)
 
     PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 
@@ -41,7 +41,7 @@ def main():
 
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
-    SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
+    SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 8, observation_path, file_path)
    # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
@@ -70,16 +70,16 @@ def main():
 
     print("🔹 plotando grafo...")
     PlotUtils.plot_subgraphs(G_corrigido, scale_x=15.0, scale_y= 10.0)
-
-
-    print("🔹 SANITY CHECK... voltando para o GRAFO - Extraindo segmentos do grafo final...")
-    new_segments = SegmentUtils.graph_to_segments(G_corrigido)
-
-    print("🔹 SANITY CHECK... Plotando novos segmentos finais segmentos com AABBs preenchidas...")
-    PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
-
-
-    PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
+    #
+    #
+    # print("🔹 SANITY CHECK... voltando para o GRAFO - Extraindo segmentos do grafo final...")
+    # new_segments = SegmentUtils.graph_to_segments(G_corrigido)
+    #
+    # print("🔹 SANITY CHECK... Plotando novos segmentos finais segmentos com AABBs preenchidas...")
+    # PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
+    #
+    #
+    # PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
 
 

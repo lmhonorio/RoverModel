@@ -1,5 +1,5 @@
 from missionmanagerunificado import MissionManager
-from PlanejadorHeterogeneoIntegrado import run_planner, montar_missoes_por_robo, retorna_pontos_passagem, ajustar_missoes_deltas, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
+from PlanejadorHeterogeneoIntegrado import run_planner, montar_missoes_por_robo, otimizarpontos, retorna_pontos_passagem, ajustar_missoes_deltas, build_mission_points_from_path_gps, extract_path_gps, load_label2gps, extract_path_gps_from_obp
 from segmentutils import SegmentUtils  # para carregar o grafo, se precisar
 
 
@@ -15,8 +15,13 @@ def get_latlon(all_states, robot):
 if __name__ == "__main__":
     # Coordenadas GPS da missão
     file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
-    graph_path = "./jsons/graph9_new.json"
-    observation_points_json_path = "./jsons/obp_6.json"
+    # graph_path = "./jsons/graph9_new.json"
+    # observation_points_json_path = "./jsons/obp_6.json"
+    deltax_m = -2
+    deltay_m = -12.0
+
+    graph_path = "./jsons/graph9d_new.json"
+    observation_points_json_path = "./jsons/obpc_7.json"
     # missions = ['b_busip4',  'ls_tpc1']
 
     missions = ['b_busip20', 'b_busip21', 'b_busip25', 'b_busip33', 'cd_reator3', 'cd_reator4' ]
@@ -121,17 +126,17 @@ if __name__ == "__main__":
         MissionManager=MissionManager
     )
 
-    missoes_por_robo_aj = ajustar_missoes_deltas(missoes_por_robo, dx_m=-2, dy_m=-12.0)
+    missoes_por_robo_aj = ajustar_missoes_deltas(missoes_por_robo, dx_m=-deltax_m, dy_m=deltay_m)
 
-
-
+    missoes_otimizadas = otimizarpontos(missoes_por_robo_aj, tol_ct_m=0.10, preserve_loop_closure=True,
+                                        renumber_ids=True)
 
     # Configuração das missões
     for robot in robots:
         print(f"\n🛠 enviando missao ao robô em {robot['channel']}")
 
         if mm.connected:
-            mm.upload_mission(missoes_por_robo_aj[robot['name']], robot = robot['name'])
+            mm.upload_mission(missoes_otimizadas[robot['name']], robot = robot['name'])
 
 
 
