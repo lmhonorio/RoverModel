@@ -203,9 +203,9 @@ MISSION_PRESET_KEY = "default" #"example_22"  # escolha aqui
 # --- Execução ---
 RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
-SEND_MISSIONS = False
+SEND_MISSIONS = True
 DO_PLOTS = False
-SEND_TO_SERVER = False
+SEND_TO_SERVER = True
 
 # --- MOVNS ---
 MOVNS_TIME_LIMIT = 5  # segundos

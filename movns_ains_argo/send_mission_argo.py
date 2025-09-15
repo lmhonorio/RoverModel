@@ -71,7 +71,7 @@ def start_mission(the_connection):
 # Gerar a missão com base em pontos de missão
 def generate_mission(mission_points, robo):
     robo = int(robo)-1
-    porta_base = 14550
+    porta_base = 14555
     porta_robo = porta_base + (robo) * 10
     print(porta_robo)
 

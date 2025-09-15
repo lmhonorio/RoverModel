@@ -15,6 +15,8 @@ class ObstacleLoader:
     def load_obstacles(self):
         df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
 
+        # Filtrar apenas linhas onde 'Model name' começa com 'cd', pega apenas Charlie e Delta
+        df = df[df["Model Name"].str.startswith("cd", na=False)]
 
         self.obstacles = [
             {

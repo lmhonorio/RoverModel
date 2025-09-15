@@ -12,10 +12,10 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Diretório do ArduPilot
-ARDUPILOT_DIR="/home/viki/ardupilot/ardupilot"
+ARDUPILOT_DIR="/home/gabrielle/ardupilot/ardupilot"
 
 # Diretório do ROS workspace
-ROS_WS_DIR="/home/viki/catkin_ws"
+ROS_WS_DIR="/home/gabrielle/catkin_ws"
 
 # Verificar se o diretório existe
 if [ ! -d "$ARDUPILOT_DIR" ]; then
