@@ -243,7 +243,20 @@ def continuous_robot_monitoring():
                                 "original_identifier": robot_connection_status[robot_name]['original_identifier']
                             }
                             
+                            # ANTES de armazenar: LOG DETALHADO DA POSIÇÃO ORIGINAL
+                            print(f"🔍 [CANAL CONTÍNUO] {robot_name} - POSIÇÃO ORIGINAL:")
+                            print(f"    📍 Fonte: all_states_dict[{robot_name}]")
+                            print(f"    📍 Lat/Lon extraídos: lat={lat:.8f}, lon={lon:.8f}")
+                            print(f"    📍 Timestamp: {current_time}")
+                            print(f"    📍 Estado completo: {all_states_dict.get(robot_name, {})}")
+                            
                             all_robot_positions[robot_name] = position_data
+                            
+                            # APÓS armazenar: LOG DETALHADO DA POSIÇÃO ARMAZENADA
+                            stored_position = all_robot_positions[robot_name]
+                            print(f"🔍 [CANAL CONTÍNUO] {robot_name} - POSIÇÃO ARMAZENADA:")
+                            print(f"    📍 Lat/Lon armazenados: lat={stored_position['latitude']:.8f}, lon={stored_position['longitude']:.8f}")
+                            print(f"    📍 Timestamp armazenado: {stored_position['timestamp']}")
                             
                             # Log posição a cada 20 ciclos
                             if telemetry_counter % 20 == 0:
@@ -264,8 +277,16 @@ def continuous_robot_monitoring():
                                 )
                                 
                                 if should_emit:
-                                    print(f"📡 Enviando posição (alta frequência) para {robot_name}")
+                                    # LOG DETALHADO ANTES DO ENVIO VIA WEBSOCKET
+                                    print(f"🔍 [CANAL CONTÍNUO] {robot_name} - ENVIANDO VIA WEBSOCKET:")
+                                    print(f"    📡 Evento: 'robot_position_continuous'")
+                                    print(f"    📡 Dados enviados: lat={position_data['latitude']:.8f}, lon={position_data['longitude']:.8f}")
+                                    print(f"    📡 Timestamp enviado: {position_data['timestamp']}")
+                                    print(f"    📡 Robot_id: {position_data['robot_id']}")
+                                    
                                     socketio.emit('robot_position_continuous', position_data)
+                                    
+                                    print(f"✅ [CANAL CONTÍNUO] {robot_name} - WEBSOCKET ENVIADO COM SUCESSO")
                             except Exception as e:
                                 if telemetry_counter % 50 == 0:
                                     print(f"⚠️ Erro ao emitir posição contínua via WebSocket: {e}")
@@ -808,7 +829,20 @@ def monitor_robot_positions():
                                 "mission_count": robot_telemetry.get("mission_count", 0)
                             })
                         
+                        # ANTES de armazenar: LOG DETALHADO DA POSIÇÃO ORIGINAL (CANAL MISSÃO)
+                        print(f"🔍 [CANAL MISSÃO] {robot_name} - POSIÇÃO ORIGINAL:")
+                        print(f"    📍 Fonte: all_states_dict[{robot_name}]")
+                        print(f"    📍 Lat/Lon extraídos: lat={lat:.8f}, lon={lon:.8f}")
+                        print(f"    📍 Timestamp: {current_time}")
+                        print(f"    📍 Estado completo: {all_states_dict.get(robot_name, {})}")
+                        
                         robot_positions[robot_name] = position_data
+                        
+                        # APÓS armazenar: LOG DETALHADO DA POSIÇÃO ARMAZENADA (CANAL MISSÃO)
+                        stored_position = robot_positions[robot_name]
+                        print(f"🔍 [CANAL MISSÃO] {robot_name} - POSIÇÃO ARMAZENADA:")
+                        print(f"    📍 Lat/Lon armazenados: lat={stored_position['latitude']:.8f}, lon={stored_position['longitude']:.8f}")
+                        print(f"    📍 Timestamp armazenado: {stored_position['timestamp']}")
                         
                         # Log posição a cada 20 ciclos (menos spam)
                         if telemetry_counter % 20 == 0:
@@ -829,14 +863,24 @@ def monitor_robot_positions():
                             )
                             
                             if should_emit:
-                                socketio.emit('robot_position_update', {
+                                # LOG DETALHADO ANTES DO ENVIO VIA WEBSOCKET (CANAL MISSÃO)
+                                mission_data_to_send = {
                                     "robot_id": robot_name,
                                     **position_data
-                                })
+                                }
+                                print(f"🔍 [CANAL MISSÃO] {robot_name} - ENVIANDO VIA WEBSOCKET:")
+                                print(f"    📡 Evento: 'robot_position_update'")
+                                print(f"    📡 Dados enviados: lat={mission_data_to_send['latitude']:.8f}, lon={mission_data_to_send['longitude']:.8f}")
+                                print(f"    📡 Timestamp enviado: {mission_data_to_send['timestamp']}")
+                                print(f"    📡 Robot_id: {mission_data_to_send['robot_id']}")
+                                
+                                socketio.emit('robot_position_update', mission_data_to_send)
+                                
+                                print(f"✅ [CANAL MISSÃO] {robot_name} - WEBSOCKET ENVIADO COM SUCESSO")
                                 
                                 # Debug: log de emissão para múltiplos robôs
                                 if telemetry_counter % 10 == 0 and is_multi_robot:
-                                    print(f"📡 Enviando posição (alta frequência) para {robot_name}")
+                                    print(f"📡 Enviando posição (missão) para {robot_name}: lat={lat:.6f}, lon={lon:.6f}")
                         except Exception as e:
                             if telemetry_counter % 50 == 0:  # Log erro menos frequente
                                 print(f"⚠️ Erro ao emitir posição via WebSocket: {e}")
@@ -1765,8 +1809,19 @@ def execute_mission():
         print(f"\n🚀 ENVIANDO MISSÕES PARA OS ROBÔS...")
         
         # PARAR COMPLETAMENTE o monitoramento contínuo para evitar conflito de comunicação MAVLink
-        print(f"🛑 Parando canal de monitoramento COMPLETAMENTE para evitar conflitos MAVLink...")
+        print(f"🛑 [CRITICAL] PARANDO CANAL DE MONITORAMENTO CONTÍNUO PARA ENVIO DE MISSÃO")
+        print(f"🔍 Estado ANTES da parada:")
+        print(f"    • Canal contínuo ativo: {robot_monitoring_thread is not None and robot_monitoring_thread.is_alive()}")
+        print(f"    • Posições contínuas armazenadas: {len(all_robot_positions)}")
+        print(f"    • Última posição contínua: {list(all_robot_positions.keys())}")
+        
         stop_continuous_robot_monitoring()  # Parar completamente em vez de apenas pausar
+        
+        print(f"🔍 Estado APÓS a parada:")
+        print(f"    • Canal contínuo ativo: {robot_monitoring_thread is not None and robot_monitoring_thread.is_alive()}")
+        print(f"    • robot_monitoring_manager: {robot_monitoring_manager is not None}")
+        print(f"    • Posições contínuas mantidas: {len(all_robot_positions)}")
+        
         time.sleep(3)  # Aguardar desconexão completa
         
         try:
@@ -1878,8 +1933,21 @@ def execute_mission():
             print(f"⚠️ Erro ao emitir waypoints via WebSocket: {e}")
         
         # Reiniciar monitoramento contínuo APÓS todo o processo estar completo
-        print(f"\n🔄 Reiniciando canal de monitoramento contínuo...")
+        print(f"\n🔄 [CRITICAL] REINICIANDO CANAL DE MONITORAMENTO CONTÍNUO APÓS ENVIO DE MISSÃO")
+        print(f"🔍 Estado ANTES da reinicialização:")
+        print(f"    • Canal contínuo ativo: {robot_monitoring_thread is not None and robot_monitoring_thread.is_alive()}")
+        print(f"    • robot_monitoring_manager: {robot_monitoring_manager is not None}")
+        print(f"    • Posições contínuas armazenadas: {len(all_robot_positions)}")
+        
         start_continuous_robot_monitoring()
+        
+        # Aguardar um pouco para o canal estabilizar
+        time.sleep(2)
+        
+        print(f"🔍 Estado APÓS a reinicialização:")
+        print(f"    • Canal contínuo ativo: {robot_monitoring_thread is not None and robot_monitoring_thread.is_alive()}")
+        print(f"    • robot_monitoring_manager: {robot_monitoring_manager is not None}")
+        print(f"    • Posições contínuas disponíveis: {len(all_robot_positions)}")
         
         # Iniciar monitoramento de posições usando o canal de missão
         print(f"\n🔄 Iniciando monitoramento de posições dos robôs...")
