@@ -46,10 +46,10 @@ OBSERVATION_POINTS_JSON_PATH = "./jsons/obp_6.json"
 PARAMETERS_FILE_PATH = "./planilhas/obstaculos_processado6.xlsx"
 
 # Configurações de frequência de atualização (em segundos)
-MONITORING_UPDATE_RATE = 0.2  # Frequência base de monitoramento (200ms - mais responsivo)
-WEBSOCKET_THROTTLE_STATIONARY = 50  # Emitir a cada 50 ciclos para robôs parados (10 segundos)
-WEBSOCKET_THROTTLE_MISSION = 50  # Emitir a cada 50 ciclos durante missões (10 segundos)
-MISSION_PROGRESS_UPDATE_RATE = 2  # Progresso de missão a cada 2 segundos
+MONITORING_UPDATE_RATE = 2  # Frequência base de monitoramento (500ms - mais controlado)
+WEBSOCKET_THROTTLE_STATIONARY = 2  # Emitir a cada 2 ciclos para robôs parados (1 segundo)
+WEBSOCKET_THROTTLE_MISSION = 2  # Emitir a cada 2 ciclos durante missões (1 segundo)
+MISSION_PROGRESS_UPDATE_RATE = 5  # Progresso de missão a cada 5 segundos
 
 # Estados globais
 mission_manager = None
@@ -262,15 +262,16 @@ def continuous_robot_monitoring():
                                 )
                                 
                                 if should_emit:
-                                    # Log simples apenas quando envia
-                                    print(f"📡 Enviando posição {robot_name}: lat={position_data['latitude']:.6f}, lon={position_data['longitude']:.6f}")
+                                    # Log reduzido - apenas a cada 10 envios para reduzir spam
+                                    if telemetry_counter % 20 == 0:  # Log a cada 10 segundos (20 ciclos * 0.5s)
+                                        print(f"📡 Enviando posição {robot_name}: lat={position_data['latitude']:.6f}, lon={position_data['longitude']:.6f}")
                                     socketio.emit('robot_position_continuous', position_data)
                             except Exception as e:
                                 if telemetry_counter % 50 == 0:
                                     print(f"⚠️ Erro ao emitir posição contínua via WebSocket: {e}")
                     
-                    # Log resumo a cada 250 ciclos (50 segundos)
-                    if telemetry_counter % 250 == 0:
+                    # Log resumo a cada 120 ciclos (60 segundos) - menos frequente
+                    if telemetry_counter % 120 == 0:
                         total_known = len(ROVER_ID_MAPPING)
                         connected_count = len(robot_monitoring_manager.connected)
                         active_count = robots_updated
@@ -296,7 +297,7 @@ def continuous_robot_monitoring():
             
             telemetry_counter += 1
             reconnection_counter += 1
-            time.sleep(MONITORING_UPDATE_RATE)  # Monitoramento configurável
+            time.sleep(MONITORING_UPDATE_RATE)  # Monitoramento configurável (0.5s)
             
         except Exception as e:
             print(f"⚠️ Erro no monitoramento contínuo de robôs: {e}")
@@ -824,8 +825,9 @@ def monitor_robot_positions():
                             )
                             
                             if should_emit:
-                                # Log simples apenas quando envia
-                                print(f"📡 Enviando posição missão {robot_name}: lat={position_data['latitude']:.6f}, lon={position_data['longitude']:.6f}")
+                                # Log reduzido - apenas a cada 10 envios para reduzir spam
+                                if telemetry_counter % 20 == 0:  # Log a cada 10 segundos (20 ciclos * 0.5s)
+                                    print(f"📡 Enviando posição missão {robot_name}: lat={position_data['latitude']:.6f}, lon={position_data['longitude']:.6f}")
                                 socketio.emit('robot_position_update', {
                                     "robot_id": robot_name,
                                     **position_data
@@ -838,8 +840,8 @@ def monitor_robot_positions():
                         if telemetry_counter % 100 == 0:  # A cada 100 ciclos (20 segundos)
                             print(f"⚠️ {robot_name}: Sem posição GPS válida")
                 
-                # Log resumo detalhado a cada 250 ciclos (50 segundos)
-                if telemetry_counter % 250 == 0:
+                # Log resumo detalhado a cada 120 ciclos (60 segundos) - menos frequente
+                if telemetry_counter % 120 == 0:
                     print(f"📊 Monitoramento missão: {robots_with_position}/{len(mission_manager.connected)} robôs com posição")
                 
                 # Verificar progresso da missão com base no waypoint atual
@@ -885,7 +887,7 @@ def monitor_robot_positions():
                     print(f"⚠️ Nenhum estado recebido dos robôs conectados: {list(mission_manager.connected)}")
             
             telemetry_counter += 1
-            time.sleep(0.1)  # Sempre usar alta frequência (100ms) como no canal contínuo
+            time.sleep(MONITORING_UPDATE_RATE)  # Usar frequência configurável (0.5s)
             
         except Exception as e:
             print(f"⚠️ Erro no monitoramento de posições: {e}")
@@ -1061,16 +1063,16 @@ def optimize_monitoring_frequencies():
     global MONITORING_UPDATE_RATE, WEBSOCKET_THROTTLE_STATIONARY, WEBSOCKET_THROTTLE_MISSION, MISSION_PROGRESS_UPDATE_RATE
     
     try:
-        # Configurações otimizadas para alta responsividade
-        MONITORING_UPDATE_RATE = 0.1  # 100ms - muito responsivo
-        WEBSOCKET_THROTTLE_STATIONARY = 1  # Emitir a cada ciclo (100ms)
-        WEBSOCKET_THROTTLE_MISSION = 1  # Emitir a cada ciclo (100ms)
-        MISSION_PROGRESS_UPDATE_RATE = 1  # Progresso a cada 1 segundo
+        # Configurações otimizadas para responsividade controlada
+        MONITORING_UPDATE_RATE = 0.5  # 500ms - responsivo mas controlado
+        WEBSOCKET_THROTTLE_STATIONARY = 2  # Emitir a cada 2 ciclos (1 segundo)
+        WEBSOCKET_THROTTLE_MISSION = 2  # Emitir a cada 2 ciclos (1 segundo)
+        MISSION_PROGRESS_UPDATE_RATE = 5  # Progresso a cada 5 segundos
         
         print(f"🚀 Frequências otimizadas aplicadas:")
-        print(f"   • Taxa de monitoramento: {MONITORING_UPDATE_RATE}s (100ms)")
-        print(f"   • Throttle robôs parados: {WEBSOCKET_THROTTLE_STATIONARY} ciclo (100ms)")
-        print(f"   • Throttle durante missões: {WEBSOCKET_THROTTLE_MISSION} ciclo (100ms)")
+        print(f"   • Taxa de monitoramento: {MONITORING_UPDATE_RATE}s (500ms)")
+        print(f"   • Throttle robôs parados: {WEBSOCKET_THROTTLE_STATIONARY} ciclo (1 segundo)")
+        print(f"   • Throttle durante missões: {WEBSOCKET_THROTTLE_MISSION} ciclo (1 segundo)")
         print(f"   • Progresso de missão: {MISSION_PROGRESS_UPDATE_RATE}s")
         
         return jsonify({
@@ -1081,8 +1083,8 @@ def optimize_monitoring_frequencies():
                 "websocket_throttle_stationary": WEBSOCKET_THROTTLE_STATIONARY,
                 "websocket_throttle_mission": WEBSOCKET_THROTTLE_MISSION,
                 "mission_progress_rate": MISSION_PROGRESS_UPDATE_RATE,
-                "expected_websocket_frequency": "~100ms (10 Hz)",
-                "performance_impact": "Alto CPU, Alta responsividade"
+                "expected_websocket_frequency": "~1 segundo (1 Hz)",
+                "performance_impact": "CPU moderado, Responsividade controlada"
             }
         })
         
@@ -2076,7 +2078,7 @@ if __name__ == '__main__':
     print(f"   POST /robot-monitoring/start - Iniciar monitoramento contínuo")
     print(f"   POST /robot-monitoring/stop - Parar monitoramento contínuo")
     print(f"   GET  /robot-positions - Posições de todos os robôs")
-    print(f"   POST /optimize-frequencies - Aplicar configurações otimizadas (100ms)")
+    print(f"   POST /optimize-frequencies - Aplicar configurações otimizadas (1 segundo)")
     print(f"   POST /update-frequency - Ajustar frequência personalizada")
     print(f"\n🌐 Servidor rodando em: http://localhost:5001")
     print(f"🔄 CORS habilitado para requisições da interface web")
