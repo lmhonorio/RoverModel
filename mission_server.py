@@ -41,8 +41,12 @@ socketio = SocketIO(
 )
 
 # Configurações globais
-GRAPH_PATH = "./jsons/graph9_new.json"
-OBSERVATION_POINTS_JSON_PATH = "./jsons/obp_6.json"
+# GRAPH_PATH = "./jsons/graph9_new.json"
+# OBSERVATION_POINTS_JSON_PATH = "./jsons/obp_6.json"
+
+graph_path = "./jsons/graph9d_new.json"
+observation_points_json_path = "./jsons/obpc_7.json"
+
 PARAMETERS_FILE_PATH = "./planilhas/obstaculos_processado6.xlsx"
 
 # Configurações de frequência de atualização (em segundos)
