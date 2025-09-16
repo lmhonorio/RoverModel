@@ -575,7 +575,111 @@ class MissionManager:
         except Exception as e:
             print(f"❌ [MIS][{robot or 'R1'}] Falha ao desarmar: {e}")
             return False
+        def download_mission(self, robot: Optional[str] = None) -> Optional[List[Dict]]:
+        """
+        Baixa a missão atual do ArduPilot
+        
+        Args:
+            robot: Nome do robô (opcional para modo single)
+            
+        Returns:
+            Lista de waypoints ou None em caso de erro
+        """
+        try:
+            master = self._require_master(robot)
+            
+            # Solicitar lista de waypoints
+            master.mav.mission_request_list_send(
+                master.target_system,
+                master.target_component
+            )
+            
+            # Aguardar resposta com contagem de waypoints
+            msg = master.recv_match(
+                type='MISSION_COUNT',
+                blocking=True,
+                timeout=5
+            )
+            
+            if not msg:
+                print(f"❌ [MIS][{robot or 'R1'}] Timeout esperando MISSION_COUNT")
+                return None
+            
+            wp_count = msg.count
+            print(f"📋 [MIS][{robot or 'R1'}] Baixando {wp_count} waypoints...")
+            
+            waypoints = []
+            for i in range(wp_count):
+                # Solicitar waypoint específico
+                master.mav.mission_request_int_send(
+                    master.target_system,
+                    master.target_component,
+                    i
+                )
+                
+                # Aguardar waypoint
+                wp_msg = master.recv_match(
+                    type=['MISSION_ITEM_INT', 'MISSION_ITEM'],
+                    blocking=True,
+                    timeout=3
+                )
+                
+                if wp_msg:
+                    # Converter para formato padrão
+                    if wp_msg.get_type() == 'MISSION_ITEM_INT':
+                        lat = wp_msg.x / 1e7
+                        lon = wp_msg.y / 1e7
+                    else:
+                        lat = wp_msg.x
+                        lon = wp_msg.y
+                    
+                    waypoint = {
+                        'seq': wp_msg.seq,
+                        'lat': lat,
+                        'lon': lon,
+                        'alt': wp_msg.z,
+                        'command': wp_msg.command,
+                        'param1': wp_msg.param1,
+                        'param2': wp_msg.param2,
+                        'param3': wp_msg.param3,
+                        'param4': wp_msg.param4,
+                        'frame': wp_msg.frame,
+                        'current': wp_msg.current,
+                        'autocontinue': wp_msg.autocontinue
+                    }
+                    waypoints.append(waypoint)
+                    
+                    # Log apenas para waypoints de navegação
+                    if wp_msg.command == mavutil.mavlink.MAV_CMD_NAV_WAYPOINT:
+                        print(f"   📍 WP {wp_msg.seq}: lat={lat:.6f}, lon={lon:.6f}, alt={wp_msg.z:.1f}")
+                else:
+                    print(f"❌ [MIS][{robot or 'R1'}] Timeout no waypoint {i}")
+                    return None
+            
+            print(f"✅ [MIS][{robot or 'R1'}] {len(waypoints)} waypoints baixados com sucesso")
+            return waypoints
+            
+        except Exception as e:
+            print(f"❌ [MIS][{robot or 'R1'}] Erro ao baixar missão: {e}")
+            return None
 
+    def verify_mission_and_return_waypoints(self, robot: Optional[str] = None) -> Optional[List[Dict]]:
+        """
+        Verifica e retorna waypoints da missão atual (fallback para download_mission)
+        
+        Args:
+            robot: Nome do robô (opcional para modo single)
+            
+        Returns:
+            Lista de waypoints ou None em caso de erro
+        """
+        return self.download_mission(robot)
+
+    @property
+    def is_connected(self) -> bool:
+        """Verifica se há pelo menos um robô conectado"""
+        return len(self.connected) > 0
+        
     def close(self):
         for name, master in list(self.masters.items()):
             try:
