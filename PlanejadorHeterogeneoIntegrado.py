@@ -653,7 +653,7 @@ def run_planner(
 
     robots_positions = {}
     for rname, (x, y) in robot_positions_xy.items():
-        lbl, _, _ = MultiGraphPlanner.find_nearest_node(G_mapa, x, y)
+        lbl, _, _ = MultiGraphPlanner.find_nearest_node(G_mapa, x, y, metric="L1")
         robots_positions[rname] = lbl
 
     # 3) Grafo reduzido de inspeção
@@ -698,4 +698,5 @@ def run_planner(
         "pontos_por_robo": pontos_por_robo,
         "rotas_otimas_por_robo": rotas_otimas_por_robo,
         "missoes_completas": missoes_completas,
+        "point_mission_positions":point_mission_positions
     }

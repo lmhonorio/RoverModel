@@ -86,7 +86,8 @@ if __name__ == "__main__":
         file_path_parametros,
         missions,
         mission_execution_config,
-        robot_positions_xy={"R1":(tx1,ty1), "R2":(tx2,ty2)},   # ou {"R1":(x1,y1), "R2":(x2,y2)}
+        # robot_positions_xy={"R1":(tx1-deltax_m,ty1-deltay_m), "R2":(tx2-deltax_m,ty2-deltay_m)},   # ou {"R1":(x1,y1), "R2":(x2,y2)}
+        robot_positions_xy={"R1": (tx1 - deltax_m, ty1 - deltay_m), "R2": (tx2 - deltax_m, ty2 - deltay_m)},
         do_plots=False
     )
 

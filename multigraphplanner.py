@@ -1002,7 +1002,7 @@ class MultiGraphPlanner:
         return G
 
     @staticmethod
-    def find_nearest_node(G_loaded, tx, ty):
+    def find_nearest_node(G_loaded, tx, ty, metric: str = "L2"):
         import math
         """
         Encontra o nó mais próximo de (tx, ty) com base em G.nodes[n]['pos'] = (x, y).
@@ -1033,10 +1033,26 @@ class MultiGraphPlanner:
                 continue  # Ignora nós sem atributo pos
 
             x_node, y_node = G.nodes[node]["pos"]
-            dist = math.hypot(x_node - tx, y_node - ty)
-            if dist < min_dist:
-                min_dist = dist
+            dx = x_node - tx
+            dy = y_node - ty
+
+            if metric == "L1":
+                d = abs(dx) + abs(dy)
+            elif metric == "L2":
+                d = math.hypot(dx, dy)
+            elif metric == "Linf":
+                d = max(abs(dx), abs(dy))
+            else:
+                raise ValueError(f"Métrica desconhecida: {metric}")
+
+            if d < min_dist:
+                min_dist = d
                 nearest = node
+                # best_pos = (nx, ny)
+            # dist = math.hypot(x_node - tx, y_node - ty)
+            # if dist < min_dist:
+            #     min_dist = dist
+            #     nearest = node
 
         label = G.nodes[nearest].get("label", str(nearest))
         return label, nearest, min_dist
