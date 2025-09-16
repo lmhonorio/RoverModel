@@ -685,7 +685,12 @@ def format_ardupilot_waypoints_for_frontend(ardupilot_waypoints, robot_name):
     return formatted_waypoints
 
 def monitor_robot_positions():
-    """Thread para monitorar posições dos robôs continuamente com telemetria aprimorada"""
+    """
+    Thread para monitorar posições dos robôs durante missões ativas
+    
+    IMPORTANTE: Este canal usa o mesmo formato de emissão do canal contínuo
+    (evento 'robot_position_continuous') para manter consistência no frontend
+    """
     global stop_monitoring, mission_manager, robot_positions, mission_status
     
     print("🔄 Iniciando monitoramento de posições dos robôs...")
@@ -828,10 +833,28 @@ def monitor_robot_positions():
                                 # Log reduzido - apenas a cada 10 envios para reduzir spam
                                 if telemetry_counter % 20 == 0:  # Log a cada 10 segundos (20 ciclos * 0.5s)
                                     print(f"📡 Enviando posição missão {robot_name}: lat={position_data['latitude']:.6f}, lon={position_data['longitude']:.6f}")
-                                socketio.emit('robot_position_update', {
+                                
+                                # USAR O MESMO FORMATO DO CANAL CONTÍNUO para manter consistência
+                                mission_position_data = {
                                     "robot_id": robot_name,
-                                    **position_data
-                                })
+                                    "latitude": position_data["latitude"],
+                                    "longitude": position_data["longitude"],
+                                    "timestamp": position_data["timestamp"],
+                                    "status": position_data["status"],
+                                    "altitude": position_data.get("altitude", 0),
+                                    "heading": position_data.get("heading", 0),
+                                    "ground_speed": position_data.get("ground_speed", 0),
+                                    "battery_voltage": position_data.get("battery_voltage", 0),
+                                    "battery_remaining": position_data.get("battery_remaining", 0),
+                                    "mode": position_data.get("mode", "UNKNOWN"),
+                                    "armed": position_data.get("armed", False),
+                                    "mission_current": position_data.get("mission_current", 0),
+                                    "mission_count": position_data.get("mission_count", 0),
+                                    "original_identifier": robot_connection_status.get(robot_name, {}).get('original_identifier', robot_name)
+                                }
+                                
+                                # Emitir usando o mesmo evento do canal contínuo
+                                socketio.emit('robot_position_continuous', mission_position_data)
                         except Exception as e:
                             if telemetry_counter % 50 == 0:  # Log erro menos frequente
                                 print(f"⚠️ Erro ao emitir posição via WebSocket: {e}")
@@ -1758,10 +1781,9 @@ def execute_mission():
         # Enviar missões para os robôs
         print(f"\n🚀 ENVIANDO MISSÕES PARA OS ROBÔS...")
         
-        # PARAR COMPLETAMENTE o monitoramento contínuo para evitar conflito de comunicação MAVLink
-        print(f"🛑 Parando canal de monitoramento COMPLETAMENTE para evitar conflitos MAVLink...")
-        stop_continuous_robot_monitoring()  # Parar completamente em vez de apenas pausar
-        time.sleep(3)  # Aguardar desconexão completa
+        # PAUSAR o monitoramento contínuo durante a missão para evitar duplicação de dados
+        print(f"⏸️ Pausando canal de monitoramento contínuo durante a missão...")
+        pause_continuous_monitoring()  # Pausar em vez de parar completamente
         
         try:
             upload_results = {}
@@ -1877,9 +1899,9 @@ def execute_mission():
         except Exception as e:
             print(f"⚠️ Erro ao emitir waypoints via WebSocket: {e}")
         
-        # Reiniciar monitoramento contínuo APÓS todo o processo estar completo
-        print(f"\n🔄 Reiniciando canal de monitoramento contínuo...")
-        start_continuous_robot_monitoring()
+        # Retomar monitoramento contínuo APÓS todo o processo estar completo
+        print(f"\n▶️ Retomando canal de monitoramento contínuo...")
+        resume_continuous_monitoring()
         
         # Iniciar monitoramento de posições usando o canal de missão
         print(f"\n🔄 Iniciando monitoramento de posições dos robôs...")
