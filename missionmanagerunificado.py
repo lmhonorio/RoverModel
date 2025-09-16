@@ -575,7 +575,8 @@ class MissionManager:
         except Exception as e:
             print(f"❌ [MIS][{robot or 'R1'}] Falha ao desarmar: {e}")
             return False
-        def download_mission(self, robot: Optional[str] = None) -> Optional[List[Dict]]:
+            
+    def download_mission(self, robot: Optional[str] = None) -> Optional[List[Dict]]:
         """
         Baixa a missão atual do ArduPilot
         
