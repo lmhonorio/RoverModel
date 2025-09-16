@@ -187,32 +187,65 @@ class MissionService:
                 print(f"   ❌ Chave 'missoes_otimizadas' não encontrada no resultado!")
                 print(f"   • Chaves disponíveis: {list(resultado.keys())}")
             
+            # Organizar waypoints por robô para o frontend (formato esperado pelo useWebSocket.js)
+            waypoints_by_robot = {}
+            for robot_name, mission_points in resultado["missoes_otimizadas"].items():
+                waypoints_by_robot[robot_name] = []
+                for point in mission_points:
+                    waypoint = {
+                        'id': point['id'],
+                        'lat': point['lat'],
+                        'lon': point['lon'],
+                        'latitude': point['lat'],  # Duplicar para compatibilidade
+                        'longitude': point['lon'],  # Duplicar para compatibilidade
+                        'hold': point.get('hold', 0.0),
+                        'accept_radius': point.get('accept_radius', 0.0),
+                        'pass_radius': point.get('pass_radius', 0.0),
+                        'yaw_deg': point.get('yaw_deg', 0.0),
+                        'robot': robot_name,
+                        'original_identifier': REVERSE_ROVER_MAPPING.get(robot_name, robot_name)
+                    }
+                    waypoints_by_robot[robot_name].append(waypoint)
+            
             # Emitir via WebSocket
             try:
                 print(f"\n📡 [WEBSOCKET] Enviando waypoints da missão:")
                 print(f"   🎯 Total de waypoints: {total_waypoints}")
                 print(f"   🤖 Robôs: {list(resultado['missoes_otimizadas'].keys())}")
-                print(f"   📋 Primeiros 3 waypoints para debug:")
-                for i, wp in enumerate(waypoints_for_frontend[:3]):
-                    print(f"     {i+1}. {wp}")
+                print(f"   📋 Waypoints por robô:")
+                for robot_name, robot_waypoints in waypoints_by_robot.items():
+                    print(f"     • {robot_name}: {len(robot_waypoints)} waypoints")
+                    if robot_waypoints:
+                        first_wp = robot_waypoints[0]
+                        last_wp = robot_waypoints[-1]
+                        print(f"       - Primeiro: lat={first_wp['lat']:.6f}, lon={first_wp['lon']:.6f}")
+                        print(f"       - Último: lat={last_wp['lat']:.6f}, lon={last_wp['lon']:.6f}")
+                        print(f"       - Estrutura completa do primeiro waypoint: {first_wp}")
                 
                 websocket_data = {
-                    "waypoints": waypoints_for_frontend,
+                    "waypoints": waypoints_for_frontend,  # Array de todos os waypoints (formato antigo)
+                    "waypoints_by_robot": waypoints_by_robot,  # Formato esperado pelo frontend
                     "mission_active": True,
                     "robots": [r['name'] for r in robots],
                     "timestamp": time.time()
                 }
                 
-                print(f"   📤 Dados do WebSocket: {len(websocket_data['waypoints'])} waypoints")
+                print(f"   📤 Dados do WebSocket: {len(websocket_data['waypoints'])} waypoints totais")
+                print(f"   📤 Formato waypoints_by_robot: {len(waypoints_by_robot)} robôs")
                 print(f"   📤 Evento: mission_waypoints_update")
                 print(f"   📤 SocketIO disponível: {self.socketio is not None}")
                 
                 # Debug: verificar se há clientes conectados
-                print(f"   📤 Clientes conectados: {len(self.socketio.server.manager.rooms.get('/', {}).get('', set()))}")
+                try:
+                    connected_clients = len(self.socketio.server.manager.rooms.get('/', {}).get('', set()))
+                    print(f"   📤 Clientes conectados: {connected_clients}")
+                except:
+                    print(f"   📤 Clientes conectados: Não foi possível determinar")
                 
                 self.socketio.emit('mission_waypoints_update', websocket_data)
                 print(f"   ✅ WebSocket emitido com sucesso!")
                 print(f"   📊 Dados enviados: {len(websocket_data['waypoints'])} waypoints para {len(websocket_data['robots'])} robôs")
+                print(f"   📊 Formato waypoints_by_robot enviado com {len(waypoints_by_robot)} robôs")
                 
             except Exception as e:
                 print(f"⚠️ Erro ao emitir waypoints via WebSocket: {e}")
