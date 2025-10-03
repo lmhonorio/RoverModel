@@ -104,6 +104,27 @@ class MissionManager:
         return {'lat_ref':lat_ref, 'lon_ref':lon_ref}
 
 
+    # ------------ INVERSA ------------
+    @staticmethod
+    def posicao_em_graus_lat(y_m, lat_ref):
+        """Converte deslocamento norte (m) para latitude (graus)."""
+        return y_m / 111132.0 + lat_ref
+
+    @staticmethod
+    def posicao_em_graus_lon(x_m, lon_ref, lat_ref):
+        """Converte deslocamento leste (m) para longitude (graus)."""
+        return x_m / (111320.0 * math.cos(math.radians(lat_ref))) + lon_ref
+
+    @staticmethod
+    def xy_to_gps(x, y, lat_ref, lon_ref):
+        """
+        Converte (x,y) em metros (Leste,Norte) para (lat, lon) em graus,
+        usando a mesma aproximação e referências da ida.
+        """
+        lat = MissionManager.posicao_em_graus_lat(y, lat_ref)
+        lon = MissionManager.posicao_em_graus_lon(x, lon_ref, lat_ref)
+        return lat, lon
+
     @staticmethod
     def posicao_em_metros_lat(lat, lat_ref):
         return (lat - lat_ref) * 111132.0

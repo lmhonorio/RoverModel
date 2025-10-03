@@ -21,7 +21,7 @@ def main():
     observation_path ="./jsons/obpc_8.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 3  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 1.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
@@ -31,7 +31,7 @@ def main():
 
     aabbs = AABBUtils.get_aabbs(obstacles, margin)
 
-    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 6.0)
+    segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 3.0)
 
     PlotUtils.plot_segments_aabbs_vertices(segments, aabbs, 0.5)
 

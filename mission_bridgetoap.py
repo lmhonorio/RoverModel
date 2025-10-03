@@ -169,8 +169,11 @@ if __name__ == "__main__":
     file_path_parametros = "./planilhas/obstaculos_processado6.xlsx"  # Ajuste se precisar
     # graph_path = "./jsons/graph9_new.json"
     # observation_points_json_path = "./jsons/obp_6.json"
-    deltax_m = -2
-    deltay_m = -12.0
+    # deltax_m = -2
+    # deltay_m = -12.0
+
+    deltax_m = -4
+    deltay_m = -4.0
 
     graph_path = "./jsons/graph9d_new.json"
     observation_points_json_path = "./jsons/obpc_7.json"
@@ -193,6 +196,16 @@ if __name__ == "__main__":
         deltax_m=deltax_m,
         deltay_m=deltay_m,
     )
+
+
+    mm = res["mission_manager"]
+
+
+    # 5) Seta modo AUTO, arma e inicia a missão
+    if not mm.arm_and_start():
+        print("❌ Falha ao armar/iniciar a missão.")
+
+    print("✅ Missão iniciada com sucesso!")
 
 
 
