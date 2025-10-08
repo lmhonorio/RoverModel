@@ -17,8 +17,8 @@ from collections import defaultdict
 from scipy.spatial import distance
 import itertools
 import matplotlib.colors as mcolors
-
-
+from shapely.geometry import LineString, Point
+from math import dist
 
 
 class SegmentUtils:
@@ -238,8 +238,31 @@ class SegmentUtils:
         y_min = min(y for (_, y), _, _ in aabbs)
         y_max = max(y + h for (_, y), _, h in aabbs)
 
+        # Gera ponto de varredura
         ys = np.arange(y_min, y_max + step, step)
         xs = np.arange(x_min, x_max + step, step)
+
+        def is_inside_any_aabb(x1, y1, x2, y2):
+            for (ax, ay), w, h in aabbs:
+
+                aabb_x1 = ax
+                aabb_x2 = ax + w
+                aabb_y1 = ay
+                aabb_y2 = ay + h
+
+                # Caso horizontal (y1 == y2)
+                if y1 == y2:
+                    y = y1
+                    if aabb_y1 <= y <= aabb_y2 and not (x2 <= aabb_x1 or x1 >= aabb_x2):
+                        return True
+
+                # Caso vertical (x1 == x2)
+                elif x1 == x2:
+                    x = x1
+                    if aabb_x1 <= x <= aabb_x2 and not (y2 <= aabb_y1 or y1 >= aabb_y2):
+                        return True
+
+            return False
 
         # Horizontais: varrendo de y_min a y_max
         for y in ys:
@@ -250,9 +273,9 @@ class SegmentUtils:
             cut_ranges.sort()
 
             for i in range(len(cut_ranges) - 1):
-                x1 = cut_ranges[i][1]
-                x2 = cut_ranges[i + 1][0]
-                if x2 > x1:
+                x1 = cut_ranges[i][1] # ponto final do AABB atual
+                x2 = cut_ranges[i + 1][0] # ponto inicial do próximo AABB
+                if x2 > x1 and not is_inside_any_aabb(x1, y, x2, y):
                     segments.append((x1, y, x2, y))
 
         # Verticais: varrendo de x_min a x_max
@@ -266,7 +289,7 @@ class SegmentUtils:
             for i in range(len(cut_ranges) - 1):
                 y1 = cut_ranges[i][1]
                 y2 = cut_ranges[i + 1][0]
-                if y2 > y1:
+                if y2 > y1 and not is_inside_any_aabb(x, y1, x, y2):
                     segments.append((x, y1, x, y2))
 
         return segments
@@ -277,10 +300,16 @@ class SegmentUtils:
         import random
         from collections import defaultdict
 
+        def is_inside_aabb(px, py, aabb):
+            (ax, ay), w, h = aabb
+            return ax < px < ax + w and ay < py < ay + h
+
         def point_distance(p1, p2):
+            """Calcula a distância entre dois pontos."""
             return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
         def nearest_obstacle_label(x, y):
+            """Encontra o rótulo do obstáculo mais próximo de um ponto (x, y)."""
             best_label = None
             best_dist = float("inf")
             for obs in obstacles:
@@ -293,6 +322,7 @@ class SegmentUtils:
             return best_label
 
         def is_colinear(p, a, b, tol=1e-6):
+            """ Verifica se três pontos estão alinhados."""
             x0, y0 = p
             x1, y1 = a
             x2, y2 = b
@@ -300,6 +330,7 @@ class SegmentUtils:
             return area < tol
 
         def segment_intersects_inside(x1, y1, x2, y2, aabb):
+            """Verifica se o segmento (x1, y1) a (x2, y2) intersecta o interior de um AABB."""
             (ax, ay), w, h = aabb
             ax2 = ax + w
             ay2 = ay + h
@@ -319,12 +350,78 @@ class SegmentUtils:
                 return False
 
             return True
+        
+        def segment_inside_aabb(x1, y1, x2, y2, aabb):
+            (ax, ay), w, h = aabb
+            ax2, ay2 = ax + w, ay + h
+
+            # Função auxiliar: ponto dentro do retângulo
+            def point_inside(px, py):
+                return ax <= px <= ax2 and ay <= py <= ay2  # estritamente dentro (sem borda)
+
+            # 1) Se ambos os pontos estão dentro -> passa pelo interior
+            if point_inside(x1, y1) and point_inside(x2, y2):
+                return True
+
+            # Definir lados do retângulo
+            sides = [
+                ((ax, ay), (ax2, ay)),   # inferior
+                ((ax2, ay), (ax2, ay2)), # direita
+                ((ax2, ay2), (ax, ay2)), # superior
+                ((ax, ay2), (ax, ay)),   # esquerda
+            ]
+
+            # Função para checar interseção de segmentos
+            def orientation(a, b, c):
+                return (b[0]-a[0])*(c[1]-a[1]) - (b[1]-a[1])*(c[0]-a[0])
+
+            def on_segment(a, b, c):
+                return (min(a[0],c[0]) <= b[0] <= max(a[0],c[0]) and
+                        min(a[1],c[1]) <= b[1] <= max(a[1],c[1]))
+
+            def segments_intersect(p1, p2, q1, q2):
+                o1 = orientation(p1, p2, q1)
+                o2 = orientation(p1, p2, q2)
+                o3 = orientation(q1, q2, p1)
+                o4 = orientation(q1, q2, p2)
+
+                # Interseção geral
+                if o1*o2 < 0 and o3*o4 < 0:
+                    return True
+
+                # Casos colineares (apenas tocar → vamos ignorar como "interior")
+                if o1 == 0 and on_segment(p1, q1, p2): return False
+                if o2 == 0 and on_segment(p1, q2, p2): return False
+                if o3 == 0 and on_segment(q1, p1, q2): return False
+                if o4 == 0 and on_segment(q1, p2, q2): return False
+
+                return False
+
+            # 2) Se cruza algum lado "de verdade"
+            for side in sides:
+                if segments_intersect((x1,y1),(x2,y2), side[0], side[1]):
+                    return True
+
+            # 3) Caso contrário, não passa pelo interior
+            return False
+
+            # (ax, ay), w, h = aabb
+            # ax2, ay2 = ax + w, ay + h
+
+            # # Função auxiliar: verifica se ponto está dentro do retângulo
+            # def point_inside(px, py):
+            #     return ax <= px <= ax2 and ay <= py <= ay2
+
+            # # O segmento está dentro se AMBOS os pontos estão dentro
+            # return point_inside(x1, y1) and point_inside(x2, y2)
 
         # Mapeamento dos pontos por AABB
         points_by_aabb = defaultdict(set)
         final_segments = list(segments)
         labeled_points = []
         label_counter = 1
+        single_connection_points = []
+        distances = []
 
         # Passo 1: Associar pontos dos segmentos aos AABBs
         for x1, y1, x2, y2 in segments:
@@ -348,16 +445,25 @@ class SegmentUtils:
             all_points = points_by_aabb[label]
 
             sides = [((x1, y1), (x2, y1)), ((x2, y1), (x2, y2)),
-                     ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
+                    ((x2, y2), (x1, y2)), ((x1, y2), (x1, y1))]
 
+            # Adiciona os 4 cantos do AABB, se não estiverem dentro de outro AABB
+            corners = [(x1, y1), (x2, y1), (x2, y2), (x1, y2)]
+            for cx, cy in corners:
+                if any(is_inside_aabb(cx, cy, other) for k, other in enumerate(aabbs) if k != i):
+                    continue
+                else:
+                    all_points.add((cx, cy))
+
+            # Amostragem dos lados
             for (sx, sy), (ex, ey) in sides:
-                all_points.add((sx, sy))
-                all_points.add((ex, ey))
-                length = point_distance((sx, sy), (ex, ey))
-                steps = max(2, int(length / (threshold / 2)))
+                steps = max(2, int(point_distance((sx, sy), (ex, ey)) / (threshold / 2)))
                 for j in range(steps + 1):
                     px = sx + j * (ex - sx) / steps
                     py = sy + j * (ey - sy) / steps
+
+                    if any(is_inside_aabb(px, py, other) for k, other in enumerate(aabbs) if k != i):
+                        continue
                     if all(point_distance((px, py), p) >= threshold for p in all_points):
                         all_points.add((px, py))
 
@@ -373,11 +479,16 @@ class SegmentUtils:
 
             for p1 in points:
                 for p2 in points:
+                    # Evitar conexões entre os mesmos pontos
                     if p1 == p2 or p2 in graph[p1]:
                         continue
+                    # Não ultrapassar 2 conexões por ponto
                     if len(graph[p1]) >= 2 or len(graph[p2]) >= 2:
                         continue
-                    if segment_intersects_inside(p1[0], p1[1], p2[0], p2[1], aabb):
+                    if any(
+                        segment_intersects_inside(p1[0], p1[1], p2[0], p2[1], other_aabb)
+                        for j, other_aabb in enumerate(aabbs)
+                    ):
                         continue
                     if any(
                             is_colinear(p, p1, p2) and
@@ -389,17 +500,69 @@ class SegmentUtils:
                     graph[p2].add(p1)
                     final_segments.append((p1[0], p1[1], p2[0], p2[1]))
 
-            # Verificação de ciclo fechado
-            degrees = [len(neigh) for neigh in graph.values()]
-            if not all(deg == 2 for deg in degrees):
-                print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+            # Encontra pontos com menos de duas conexões
+            for point, neighbors in graph.items():
+                # aqui você tem: point = chave, neighbors = set de vizinhos
+                if len(neighbors) < 2:
+                    single_connection_points.append((point, i, neighbors)) # Guarda o ponto e o aabb a que pertence
 
-            # Adicionar rótulos
+            # # Verificação de ciclo fechado
+            # degrees = [len(neigh) for neigh in graph.values()]
+            # if not all(deg == 2 for deg in degrees):
+            #     print(f"[!] AABB {label} NÃO formou ciclo fechado com {len(points)} pontos")
+
+            # Adicionar rótulos nos pontos
             for p in points:
                 label_obs = nearest_obstacle_label(p[0], p[1])
                 labeled_points.append((p[0], p[1], f"{label_obs}.{label_counter}"))
                 inner_label_counter += 1
                 label_counter += 1
+
+        # Passo 4: Conecta pontos com aabbs vizinhos        
+        for point1, label1, connections in single_connection_points:
+            closest_point = None
+            closest_label = None
+            min_distance = float('inf')
+
+            for point2, label2, connections2 in single_connection_points:
+
+                if point1 == point2:
+                    continue  
+
+                if any(
+                        segment_inside_aabb(point1[0], point1[1], point2[0], point2[1], other_aabb)
+                        for j, other_aabb in enumerate(aabbs)
+                    ):
+                        continue
+
+                d = dist(point1, point2)
+                distances.append((d, point2, label2))
+
+                # if d < min_distance:
+                #     min_distance = d
+                #     closest_point = point2
+                #     closest_label = label2
+            
+            # Ordena pelas distâncias e pega os dois menores
+            distances.sort(key=lambda x: x[0])
+            if len(connections) < 1:
+                closest_points = distances[:2]  # Pegando os dois mais próximos
+            else:
+                closest_points = distances[:1]
+
+            distances = []
+            for _, closest_point, closest_label in closest_points:
+                
+                graph[point1].add(closest_point)
+                graph[closest_point].add(point1)
+                print(f"Conectando {point1} com {closest_point}")
+                final_segments.append((point1[0], point1[1], closest_point[0], closest_point[1]))
+
+            # # Adiciona conexão entre os pontos
+            # graph[point1].add(closest_point)
+            # graph[closest_point].add(point1)
+            # print(f"Conectando {point1} com {closest_point}")
+            # final_segments.append((point1[0], point1[1], closest_point[0], closest_point[1]))
 
         return final_segments, labeled_points
 
@@ -682,32 +845,40 @@ class SegmentUtils:
     @staticmethod
     def resolve_segment_intersections(segments, threshold=1.0):
         def is_horizontal(s):
+            """Verifica se o segmento é horizontal"""
             return math.isclose(s[1], s[3], abs_tol=1e-6)
 
         def is_vertical(s):
+            """Verifica se o segmento é vertical"""
             return math.isclose(s[0], s[2], abs_tol=1e-6)
 
         def distance(p1, p2):
+            """Calcula a distância entre dois pontos"""
             return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
+        # Inicializa listas
         horizontal_segments = []
         vertical_segments = []
+        new_segments = []
+        new_points = []
+
+        # Separar segmentos horizontais e verticais
         for seg in segments:
             if is_horizontal(seg):
                 horizontal_segments.append(seg)
             elif is_vertical(seg):
                 vertical_segments.append(seg)
 
-        new_segments = []
-        new_points = []
-
+        # Verifica interseções entre segmentos horizontais e verticais,
+        # quebra os segmentos em novos segmentos
+        # e adiciona os pontos de interseção
         for h in horizontal_segments:
             xh1, yh, xh2, _ = h
-            xh_min, xh_max = sorted([xh1, xh2])
+            xh_min, xh_max = sorted([xh1, xh2]) # Ordena os extremos
 
             for v in vertical_segments:
                 xv, yv1, _, yv2 = v
-                yv_min, yv_max = sorted([yv1, yv2])
+                yv_min, yv_max = sorted([yv1, yv2]) # Ordena os extremos
 
                 # Testa se intersectam
                 if (xh_min < xv < xh_max) and (yv_min < yh < yv_max):

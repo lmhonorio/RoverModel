@@ -1,7 +1,9 @@
 import math
 import numpy as np
 import networkx as nx
-
+from shapely.geometry import box
+from shapely.ops import unary_union
+import matplotlib.pyplot as plt
 
 ###############################################################################
 # CLASSE: AABBUtils
@@ -235,8 +237,43 @@ class AABBUtils:
         return grafo_mapa
 
 
+    # @staticmethod
+    # def merge_overlapping_aabbs(aabbs):
+    #     merged = []
+    #     while aabbs:
+    #         base = aabbs.pop(0)
+    #         bx, by = base[0]
+    #         bw, bh = base[1], base[2]
+    #         merged_flag = False
+
+    #         for i, (other_pos, other_w, other_h) in enumerate(merged):
+    #             ox, oy = other_pos
+    #             # Se sobrepõem
+    #             if not (bx + bw < ox or ox + other_w < bx or by + bh < oy or oy + other_h < by):
+    #                 new_x = min(bx, ox)
+    #                 new_y = min(by, oy)
+    #                 new_w = max(bx + bw, ox + other_w) - new_x
+    #                 new_h = max(by + bh, oy + other_h) - new_y
+    #                 merged[i] = ((new_x, new_y), new_w, new_h)
+    #                 merged_flag = True
+    #                 break
+
+    #         if not merged_flag:
+    #             merged.append(base)
+    #     return merged
     @staticmethod
-    def merge_overlapping_aabbs(aabbs):
+    def plot_union_polygon(union_coords, color='skyblue'):
+        x, y = zip(*union_coords)
+        plt.figure(figsize=(6, 6))
+        plt.fill(x, y, color=color, edgecolor='black', linewidth=1.5)
+        plt.plot(x, y, color='black')  # contorno
+        plt.title("Polígono resultante da união de AABBs")
+        plt.axis('equal')
+        plt.grid(True)
+        plt.show()
+    
+    @staticmethod
+    def merge_overlapping_aabbs(aabbs, threshold):
         merged = []
         while aabbs:
             base = aabbs.pop(0)
@@ -246,12 +283,18 @@ class AABBUtils:
 
             for i, (other_pos, other_w, other_h) in enumerate(merged):
                 ox, oy = other_pos
+
                 # Se sobrepõem
                 if not (bx + bw < ox or ox + other_w < bx or by + bh < oy or oy + other_h < by):
+
                     new_x = min(bx, ox)
                     new_y = min(by, oy)
                     new_w = max(bx + bw, ox + other_w) - new_x
                     new_h = max(by + bh, oy + other_h) - new_y
+
+                    if new_w > threshold or new_h > threshold:
+                        break
+
                     merged[i] = ((new_x, new_y), new_w, new_h)
                     merged_flag = True
                     break
@@ -261,7 +304,7 @@ class AABBUtils:
         return merged
 
     @staticmethod
-    def get_aabbs(obstacles, margin):
+    def get_aabbs(obstacles, margin, threshold=6.0):
         """
         Cria AABBs a partir de obstacles, adicionando 'margin'.
         Retorna lista [((ax, ay), w, h, label), ...].
@@ -270,7 +313,8 @@ class AABBUtils:
         for obs in obstacles:
             x, y = obs["pos"]
             w, h = obs["size"]
-
+            
+            # Canto inferior esquerdo da AABB
             aabb_x = x - (w / 2 + margin)
             aabb_y = y - (h / 2 + margin)
             aabb_w = w + 2 * margin
@@ -281,7 +325,7 @@ class AABBUtils:
 
         # Dupla fusão para garantir, mantendo os labels junto dos AABBs
         merged_aabbs = AABBUtils.merge_overlapping_aabbs(
-            AABBUtils.merge_overlapping_aabbs(aabbs)
+            AABBUtils.merge_overlapping_aabbs(aabbs, threshold), threshold
         )
 
         return merged_aabbs

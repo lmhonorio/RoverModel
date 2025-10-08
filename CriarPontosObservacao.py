@@ -15,13 +15,18 @@ import json
 ###############################################################################
 def main():
     # Config
-    file_path = "./planilhas/obstaculos_processado6.xlsx"
+    # file_path = "./planilhas/obstaculos_processado6.xlsx"
+    file_path = "./planilhas/equipment_processado.xlsx"
     sheet_name = "Parnaiba3_Transformado"
-    grafo_path = "./jsons/graph9F_new.json"
-    observation_path ="./jsons/obpc_8.json"
+    # grafo_path = "./jsons/graph9c_new.json"
+    grafo_path = "./jsons/graph_equipment.json"
+    # observation_path ="./jsons/obpc_6.json"
+    observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 1.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 1  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    # margin = 6.5
+    threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
@@ -29,7 +34,7 @@ def main():
 
     # AABBs
 
-    aabbs = AABBUtils.get_aabbs(obstacles, margin)
+    aabbs = AABBUtils.get_aabbs(obstacles, margin, threshold)
 
     segments = SegmentUtils.generate_segments_between_aabbs(aabbs, 3.0)
 
@@ -50,7 +55,7 @@ def main():
     #PlotUtils.plot_segments_aabbs_vertices(segments,aabbs,0.5)
 
     print("🔹 Quebrando segmentos com interseccao...")
-    broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments,2)
+    broken_segments, passage_points = SegmentUtils.resolve_segment_intersections(segments, 2)
 
 
     PlotUtils.plot_segments_aabbs_vertices(broken_segments, aabbs, 0.5)
@@ -59,32 +64,27 @@ def main():
     print("🔹 criando o grafo ...")
     G_corrigido = SegmentUtils.create_graph_with_passage_points_new(broken_segments, passage_points, observation_points, obstacles)
 
-    print(f"verificando ilhas....")
-    hasislands = SegmentUtils.has_islands(G_corrigido)
-    print(f"ilhas: {hasislands}")
+    # print(f"verificando ilhas....")
+    # hasislands = SegmentUtils.has_islands(G_corrigido)
+    # print(f"ilhas: {hasislands}")
 
-    if hasislands:
-        print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
-        G_corrigido = SegmentUtils.fix_missing_connections_safe_new(G_corrigido, aabbs)
+    # if hasislands:
+    #     print("🔹 Corrigindo conexões faltantes com verificação contra AABBs...")
+    #     G_corrigido = SegmentUtils.fix_missing_connections_safe_new(G_corrigido, aabbs)
 
 
     print("🔹 plotando grafo...")
     PlotUtils.plot_subgraphs(G_corrigido, scale_x=15.0, scale_y= 10.0)
-    #
-    #
-    # print("🔹 SANITY CHECK... voltando para o GRAFO - Extraindo segmentos do grafo final...")
-    # new_segments = SegmentUtils.graph_to_segments(G_corrigido)
-    #
-    # print("🔹 SANITY CHECK... Plotando novos segmentos finais segmentos com AABBs preenchidas...")
-    # PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
-    #
-    #
-    # PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
 
+    print("🔹 SANITY CHECK... voltando para o GRAFO - Extraindo segmentos do grafo final...")
+    new_segments = SegmentUtils.graph_to_segments(G_corrigido)
+
+    print("🔹 SANITY CHECK... Plotando novos segmentos finais segmentos com AABBs preenchidas...")
+    PlotUtils.plot_segments_aabbs_vertices(new_segments, aabbs, raio=0.5)
 
 
-
+    PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
     print(f"🔹 Salvando grafo em: {grafo_path}")
     SegmentUtils.save_graph_json(G_corrigido, grafo_path)
@@ -106,10 +106,6 @@ def main():
     # plt.imshow(img)
     # plt.axis('off')  # Remover eixos
     # plt.show()
-
-
-
-
 
 if __name__ == "__main__":
     main()
