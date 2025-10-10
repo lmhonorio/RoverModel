@@ -1,145 +1,114 @@
-## Descrição Acadêmica do Código MultiGraphPlanner
+# Planejador de Missões Multi-Robô para Inspeção Autônoma
 
-1. Introdução
+## 1. Visão Geral
 
-O código implementa um planejador de missões para robôs autônomos baseado em um modelo de grafo. Ele permite distribuir tarefas entre múltiplos robôs de forma eficiente, considerando custos de deslocamento, tempos de execução de missões e restrições de execução. Além disso, ele minimiza o tempo total de execução e gera um cronograma otimizado das missões.
+Este projeto implementa um sistema completo para o planejamento e execução de missões de inspeção para múltiplos robôs autônomos. A solução utiliza um modelo de grafos para representar o ambiente, otimiza a alocação de tarefas entre os robôs e gera rotas eficientes para a execução.
 
-O algoritmo principal do código é baseado em:
+O sistema é dividido em três componentes principais:
 
-* Modelagem com grafos: Representação do ambiente e missões como um grafo dirigido.
-* Busca heurística (A*): Determinação dos melhores caminhos para os robôs minimizando tempo de deslocamento.
-* Programação combinatória: Geração de permutações de alocações de missões para encontrar a melhor distribuição possível.
-* Ordenação topológica: Respeito às dependências entre missões para garantir execução lógica.
-* Gráficos de Gantt: Visualização do cronograma final das missões alocadas aos robôs.
+1.  **Geração do Grafo do Ambiente**: Cria um mapa navegável a partir de dados de obstáculos, gerando segmentos e pontos de passagem seguros.
+2.  **Planejamento de Missão**: Recebe um conjunto de alvos de inspeção, distribui as tarefas entre os robôs disponíveis e calcula a rota ótima para cada um.
+3.  **Servidor de Missão e Monitoramento**: Um servidor Flask com WebSocket que recebe solicitações de missão via API REST, envia os waypoints para os robôs e monitora sua execução em tempo real.
 
-2. Estrutura do Código
+### Principais Funcionalidades
 
-O código é estruturado na classe MultiGraphPlanner, que implementa todas as funcionalidades necessárias para o planejamento e execução das missões. Ele recebe como entrada um grafo do ambiente, um grafo de missões e informações sobre os robôs e suas restrições de execução.
+*   **Modelagem com Grafos**: Utiliza `NetworkX` para representar o ambiente, as missões e as capacidades dos robôs.
+*   **Geração de Caminhos Seguros**: Cria um grafo de navegação a partir de AABBs (Axis-Aligned Bounding Boxes) que representam obstáculos.
+*   **Alocação de Tarefas Balanceada**: Distribui os pontos de inspeção entre os robôs, considerando a posição inicial e as restrições de cada um para minimizar o tempo total.
+*   **Otimização de Rota (TSP)**: Calcula a ordem de visitação mais eficiente para os pontos de cada robô usando o algoritmo do vizinho mais próximo.
+*   **Execução e Simulação**: Envia as missões geradas para robôs em simulação (SITL) ou reais.
+*   **Servidor Centralizado**: Gerencia e monitora as missões através de endpoints HTTP e eventos WebSocket.
 
-3. Estrutura de Dados
+## 2. Arquitetura do Projeto
 
-O código trabalha com um grafo estruturado a partir da conversão feita pelo método:
+O fluxo de trabalho do sistema é o seguinte:
 
-grafo_mapa = AABBUtils.convert_graph_to_dict(G_p)
+1.  **`CriarPontosObservacao`**: Script inicial que processa uma planilha de obstáculos (`.xlsx`), gera os AABBs e cria um grafo de navegação (`graph.json`) e os pontos de observação (`observation_points.json`).
+2.  **`PlanejadorHeterogeneoIntegrado.py`**: Orquestra o planejamento. Ele carrega o grafo do ambiente, os pontos de inspeção e as posições dos robôs. Em seguida, executa a clusterização de tarefas e o planejamento de rotas (TSP), gerando um plano de missão detalhado em formato JSON.
+3.  **`SITL_planningsimulation.py`**: Exemplo de como consumir o plano de missão gerado, convertê-lo em waypoints GPS e enviá-lo para simuladores de robôs.
+4.  **`mission_server.py`**: O servidor principal que expõe a funcionalidade de planejamento através de uma API REST. Ele integra os módulos de planejamento e monitoramento, permitindo que uma interface de usuário (frontend) inicie e acompanhe as missões.
 
-Esse grafo é armazenado no formato de dicionário contendo:
+### Módulos Principais
 
-* states: Conjunto de nós representando posições do ambiente.
-* transitions: Dicionário contendo as conexões entre os nós, associadas a um peso (tempo de deslocamento).
+*   **`multigraphplanner.py`**: Contém a classe `MultiGraphPlanner` com lógicas para busca de caminho (A*), composição de autômatos e planejamento.
+*   **`segmentutils.py`**: Classe utilitária para manipulação geométrica, criação de segmentos, geração de grafos a partir de AABBs e salvamento/carregamento de dados.
+*   **`tspOptimization.py`**: Implementa o planejamento de alto nível, incluindo a clusterização de tarefas (`FixedTaskPlanner`) e a otimização da ordem de visita (TSP).
+*   **`PlanejadorHeterogeneoIntegrado.py`**: Contém a função `run_planner` que integra todos os passos do planejamento offline.
+*   **`mission_server.py`**: Servidor Flask/SocketIO para interação com o frontend e os robôs.
 
-As missões são armazenadas em:
+## 3. Como Executar
 
-* mission_positions: Dicionário associando missões a nós do grafo.
-* mission_times: Dicionário com tempos de execução de cada missão.
-* mission_execution: Define quais robôs podem executar cada missão.
+Existem duas maneiras principais de usar o projeto: executando o pipeline de planejamento offline ou interagindo com o servidor de missão.
 
-4. Métodos Implementados
+### 3.1. Pré-requisitos
 
-# __init__ (Construtor da Classe)
+Primeiro, configure o ambiente. É recomendado o uso de um ambiente virtual Python.
 
-Este método inicializa a classe MultiGraphPlanner, armazenando os grafos e informações sobre as missões e robôs. Ele recebe como parâmetros:
+1.  **Instalar dependências do sistema (Debian/Ubuntu):**
+    ```bash
+    sudo apt-get update
+    sudo apt-get install -y build-essential python3-dev graphviz graphviz-dev
+    ```
 
-* O grafo do ambiente (grafo_mapa).
-* O grafo de dependências das missões (mission_graph).
-* Os grafos dos robôs (robots_graphs).
-* Informações sobre missões e tempos de execução.
+2.  **Criar e ativar o ambiente virtual:**
+    ```bash
+    python3 -m venv venv
+    source venv/bin/activate
+    ```
 
-# heuristic(a, b)
+3.  **Instalar as dependências Python:**
+    ```bash
+    pip install -r requirements-criar-pontos-observacao.txt
+    ```
+    *(Nota: Este `requirements` contém as bibliotecas principais como `pandas`, `networkx`, `shapely`, etc., usadas em todo o projeto).*
 
-Este método implementa uma função heurística para estimar o custo entre dois nós. Ele retorna o menor tempo de deslocamento entre os nós a e b, utilizando a estrutura de transições do grafo:
+### 3.2. Executando o Planejamento Offline
 
-* transition = self.grafo_mapa['transitions'].get((a, b), float("inf"))
-* return transition[0] if isinstance(transition, tuple) else transition
+Para gerar um plano de missão a partir do zero, você pode adaptar e executar o `PlanejadorHeterogeneoIntegrado.py`.
 
-Se não houver uma conexão direta entre os nós, ele retorna infinito, indicando que não há caminho direto.
+1.  **Gere o Grafo e os Pontos de Observação**:
+    *   Execute o script `CriarPontosObservacao.py` (não fornecido no contexto, mas referenciado) para gerar `graph.json` e `observation_points.json` a partir de uma planilha de obstáculos.
 
-Teoria:
-* A heurística é usada pelo algoritmo A* para guiar a busca de forma mais eficiente, priorizando nós que minimizam o custo estimado.
+2.  **Execute o Planejador**:
+    *   Configure os parâmetros dentro de `PlanejadorHeterogeneoIntegrado.py` (ou um script similar), como os arquivos de entrada, a lista de missões e as posições dos robôs.
+    *   Execute o script. Ele salvará o plano de missão detalhado em um arquivo JSON.
 
-# a_star(start, goal)
+3.  **Simule a Missão**:
+    *   Use o `SITL_planningsimulation.py` para carregar o JSON da missão, converter os caminhos para coordenadas GPS e enviá-los aos robôs simulados.
 
-Este método implementa o algoritmo A* para encontrar o caminho de menor custo entre um nó de início (start) e um nó de destino (goal). Ele funciona da seguinte forma:
+### 3.3. Executando o Servidor de Missão
 
-* Inicializa um conjunto de busca open_set contendo o nó inicial.
-* Mantém um registro dos custos acumulados (g_score) e do caminho percorrido (came_from).
-* Expande nós vizinhos no grafo, atualizando o custo e priorizando os caminhos de menor custo estimado.
-* Retorna o caminho ótimo se o nó de destino for alcançado.
+O servidor é a forma recomendada para integrar o planejador com uma interface de usuário.
 
-O algoritmo usa a equação:
+1.  **Inicie o servidor:**
+    ```bash
+    # Certifique-se de que o ambiente virtual está ativado
+    python mission_server.py
+    ```
 
-f(n)=g(n)+h(n)
+2.  **Interaja via API REST**:
+    O servidor estará rodando em `http://127.0.0.1:5001`. Você pode usar ferramentas como `curl` ou Postman para interagir com os endpoints:
+    *   `POST /execute-mission`: Envia uma configuração de missão (robôs, equipamentos) e recebe de volta os waypoints planejados.
+    *   `POST /stop-mission`: Para a missão em andamento.
+    *   `GET /mission-status`: Verifica o status da missão atual.
+    *   `GET /health`: Verifica a saúde do servidor.
 
-Onde:
+3.  **Monitore via WebSocket**:
+    Conecte-se ao servidor via WebSocket para receber atualizações em tempo real sobre a posição dos robôs e o status da missão.
 
-* g(n) é o custo acumulado do caminho.
-* h(n) é o custo heurístico (estimativa do custo restante).
+## 4. Estruturas de Dados Chave
 
-Se não houver caminho possível, retorna:
+*   **Grafo do Ambiente (`graph.json`)**: Um dicionário JSON representando um grafo `networkx`, onde os nós possuem um atributo `pos` com coordenadas `(x, y)` e as arestas possuem `weight` (distância).
+*   **Pontos de Observação (`observation_points.json`)**: Um dicionário que mapeia cada obstáculo a uma lista de pontos de observação ao seu redor, cada um com um `label` único e coordenadas GPS `[lat, lon]`.
+*   **Plano de Missão (`missao.json`)**: A saída do planejador. É um dicionário que mapeia cada robô a uma lista de missões, e cada missão a uma lista de tarefas (pontos de inspeção). Cada tarefa contém o caminho detalhado em nós do grafo e em coordenadas GPS.
 
-* return None, float("inf")
+## 5. Conclusão Teórica
 
-Teoria:
-* O A* é um algoritmo de busca informada, garantindo encontrar o caminho de menor custo se a heurística for admissível.
+O `MultiGraphPlanner` resolve um problema complexo de planejamento para múltiplos agentes (multi-agent pathfinding and task allocation). Ele combina técnicas de:
 
-# get_mission_execution_order()
+*   **Busca Heurística (A\*)**: Para encontrar caminhos ótimos de baixo nível no grafo do ambiente.
+*   **Clusterização (K-Means implícito)**: Para dividir as tarefas de forma balanceada entre os robôs.
+*   **Problema do Caixeiro Viajante (TSP)**: Para otimizar a sequência de visitação das tarefas atribuídas a cada robô.
+*   **Composição de Autômatos**: A estrutura do `multigraphplanner.py` também inclui métodos para composição paralela de autômatos, permitindo a modelagem de comportamentos complexos e sincronizados, embora o pipeline principal use a abordagem de clusterização e TSP.
 
-Este método ordena as missões respeitando dependências definidas no grafo de missões G_m, utilizando ordenamento topológico:
-
-* return list(nx.topological_sort(self.G_m))
-
-Isso garante que nenhuma missão seja iniciada antes de suas pré-condições serem atendidas.
-
-Teoria:
-* A ordenação topológica é utilizada em planejamento de tarefas onde há restrições de precedência.
-
-# find_minimum_mission_time_plan(robots_positions)
-
-Este é o método principal de planejamento, que determina a melhor alocação de missões minimizando o tempo total. Ele funciona assim:
-
-* Gera todas as possíveis atribuições de missões para os robôs (permutations).
-* Inicializa tempos acumulados para cada robô (robot_time).
-* Aloca missões para o robô disponível mais eficiente:
-
-    * Filtra quais robôs podem executar cada missão (self.mission_execution).
-    * Ordena os robôs pelo tempo acumulado atual (robot_time).
-    * Usa A* para calcular o melhor caminho até a missão.
-    * Atualiza os tempos de deslocamento e execução.
-    * Calcula o tempo total do plano e escolhe a alocação que minimiza o tempo total de missão.
-
-O algoritmo utiliza busca combinatória para encontrar a alocação ótima.
-
-Teoria:
-* Este método pode ser visto como um problema de job scheduling (escalonamento de tarefas com múltiplos agentes), resolvido por uma abordagem combinatória exata.
-
-# execute_plan(planned_paths, total_time, schedule)
-
-Este método exibe e executa o plano encontrado. Ele:
-
-* Exibe os caminhos e tempos de cada robô.
-* Gera um gráfico de Gantt com a distribuição das missões.
-
-Teoria:
-* A execução baseada em cronograma permite a visualização da sequência ótima e a análise da alocação eficiente de recursos.
-
-# plot_gantt(schedule)
-
-Este método gera um gráfico de Gantt representando a execução das missões. Ele:
-
-* Plota barras horizontais para cada robô, indicando tempo de deslocamento e execução.
-* Adiciona rótulos para cada missão.
-* ax.barh(task["robot"], task["end"] - task["start"], left=task["start"], color='skyblue')
-* ax.text(task["start"] + (task["end"] - task["start"]) / 2, i, task["mission"], ...)
-
-Teoria:
-* Os gráficos de Gantt são usados em gerenciamento de projetos para visualizar dependências e tempos de execução.
-
-5. Conclusão
-
-O código resolve um problema de planejamento de múltiplos robôs, utilizando tecnologias de otimização combinatória e grafos. Ele aplica:
-
-* A* para busca de caminhos ótimos.
-* Ordenação topológica para dependências de missões.
-* Alocação combinatória para minimizar tempo total.
-* Visualização em Gantt para análise do cronograma.
-
-Esse sistema pode ser aplicado em robótica autônoma, logística, manufatura e operações inteligentes para otimizar tarefas distribuídas.
+Este sistema é aplicável a cenários de robótica autônoma, logística, manufatura e operações inteligentes onde tarefas distribuídas precisam ser otimizadas.
