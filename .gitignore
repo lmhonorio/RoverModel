@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+
+# Arquivos de configuração de IDE (JetBrains)
+.idea/
+
+# Arquivo temporário do VS Code (Code Runner)
+tempCodeRunnerFile.py
