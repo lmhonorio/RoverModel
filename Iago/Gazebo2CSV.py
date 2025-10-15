@@ -69,6 +69,12 @@ class GazeboObjectExtractor:
                 # Converte para GPS
                 latitude, longitude = self.gazebo_to_gps_coords(x, y)
                 
+                # Define tamanhos Px e Py baseado no tipo de objeto
+                if 'REATOR' in model_name:
+                    px, py = 3.0, 3.0  # Reatores: tamanho 3
+                else:
+                    px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                
                 # Armazena os dados
                 self.objects_data[model_name] = {
                     'id': len(self.objects_data) + 1,
@@ -78,7 +84,9 @@ class GazeboObjectExtractor:
                     'y_cartesiano': y,
                     'z_cartesiano': z,
                     'latitude': latitude,
-                    'longitude': longitude
+                    'longitude': longitude,
+                    'Px': px,
+                    'Py': py
                 }
     
     def get_objects_from_tf(self) -> Dict[str, Dict]:
@@ -111,6 +119,12 @@ class GazeboObjectExtractor:
                         # Converte para GPS
                         latitude, longitude = self.gazebo_to_gps_coords(x, y)
                         
+                        # Define tamanhos Px e Py baseado no tipo de objeto
+                        if 'REATOR' in frame_id:
+                            px, py = 3.0, 3.0  # Reatores: tamanho 3
+                        else:
+                            px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                        
                         objects_tf[frame_id] = {
                             'id': len(objects_tf) + 1,
                             'label': frame_id,
@@ -119,7 +133,9 @@ class GazeboObjectExtractor:
                             'y_cartesiano': y,
                             'z_cartesiano': z,
                             'latitude': latitude,
-                            'longitude': longitude
+                            'longitude': longitude,
+                            'Px': px,
+                            'Py': py
                         }
                         
                     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, 
@@ -204,6 +220,12 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
+                                    # Define tamanhos Px e Py baseado no tipo de objeto
+                                    if 'REATOR' in link_name:
+                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
+                                    else:
+                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    
                                     objects_data.append({
                                         'id': object_id,
                                         'label': link_name,
@@ -212,7 +234,9 @@ class GazeboObjectExtractor:
                                         'y_cartesiano': y,
                                         'z_cartesiano': z,
                                         'latitude': latitude,
-                                        'longitude': longitude
+                                        'longitude': longitude,
+                                        'Px': px,
+                                        'Py': py
                                     })
                                     object_id += 1
                                     print(f"  ✅ {link_name}: ({x:.2f}, {y:.2f})")
@@ -253,6 +277,12 @@ class GazeboObjectExtractor:
                                         # Converte para GPS
                                         latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                         
+                                        # Define tamanhos Px e Py baseado no tipo de objeto
+                                        if 'REATOR' in model_name:
+                                            px, py = 3.0, 3.0  # Reatores: tamanho 3
+                                        else:
+                                            px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                        
                                         objects_data.append({
                                             'id': object_id,
                                             'label': model_name,
@@ -261,7 +291,9 @@ class GazeboObjectExtractor:
                                             'y_cartesiano': y,
                                             'z_cartesiano': z,
                                             'latitude': latitude,
-                                            'longitude': longitude
+                                            'longitude': longitude,
+                                            'Px': px,
+                                            'Py': py
                                         })
                                         object_id += 1
                                         print(f"  ✅ {model_name}: ({x:.2f}, {y:.2f})")
@@ -282,6 +314,12 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
+                                    # Define tamanhos Px e Py baseado no tipo de objeto
+                                    if 'REATOR' in name:
+                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
+                                    else:
+                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    
                                     objects_data.append({
                                         'id': object_id,
                                         'label': name,
@@ -290,7 +328,9 @@ class GazeboObjectExtractor:
                                         'y_cartesiano': y,
                                         'z_cartesiano': z,
                                         'latitude': latitude,
-                                        'longitude': longitude
+                                        'longitude': longitude,
+                                        'Px': px,
+                                        'Py': py
                                     })
                                     object_id += 1
                                     print(f"  ✅ {name}: ({x:.2f}, {y:.2f})")
@@ -312,6 +352,12 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
+                                    # Define tamanhos Px e Py baseado no tipo de objeto
+                                    if 'REATOR' in name:
+                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
+                                    else:
+                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    
                                     objects_data.append({
                                         'id': object_id,
                                         'label': name,
@@ -320,7 +366,9 @@ class GazeboObjectExtractor:
                                         'y_cartesiano': y,
                                         'z_cartesiano': z,
                                         'latitude': latitude,
-                                        'longitude': longitude
+                                        'longitude': longitude,
+                                        'Px': px,
+                                        'Py': py
                                     })
                                     object_id += 1
             
@@ -408,8 +456,11 @@ class GazeboObjectExtractor:
                 'tipo': data['tipo'],
                 'x_cartesiano': data['x_cartesiano'],
                 'y_cartesiano': data['y_cartesiano'],
+                'z_cartesiano': data.get('z_cartesiano', 0.0),
                 'latitude': data['latitude'],
-                'longitude': data['longitude']
+                'longitude': data['longitude'],
+                'Px': data.get('Px', 1.0),
+                'Py': data.get('Py', 1.0)
             })
         
         df = pd.DataFrame(df_data)
@@ -440,6 +491,12 @@ class GazeboObjectExtractor:
         print(f"  - Coordenadas Y: {df['y_cartesiano'].min():.2f} a {df['y_cartesiano'].max():.2f}")
         print(f"  - Latitude: {df['latitude'].min():.6f} a {df['latitude'].max():.6f}")
         print(f"  - Longitude: {df['longitude'].min():.6f} a {df['longitude'].max():.6f}")
+        
+        # Estatísticas dos tamanhos
+        reatores = df[df['label'].str.contains('REATOR', case=False, na=False)]
+        outros = df[~df['label'].str.contains('REATOR', case=False, na=False)]
+        print(f"  - Reatores: {len(reatores)} objetos (Px=Py=3.0)")
+        print(f"  - Outros objetos: {len(outros)} objetos (Px=Py=1.0)")
 
 def main():
     """Função principal"""
