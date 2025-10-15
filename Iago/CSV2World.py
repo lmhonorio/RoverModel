@@ -160,10 +160,14 @@ def criar_mundo_modificado():
     
     print("🚀 Iniciando criação de mundo Gazebo modificado...")
     
-    # Arquivos
-    csv_file = "todos_pontos_gps.csv"
-    json_file = "../jsons/graph_equipment.json"
-    world_file_original = "parnaibaiii_simple_v3.world"
+    # Obtém o diretório do script atual
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(script_dir)  # Sobe um nível para o diretório do projeto
+    
+    # Arquivos com caminhos absolutos
+    csv_file = os.path.join(script_dir, "todos_pontos_gps.csv")
+    json_file = os.path.join(project_root, "jsons", "graph_equipment.json")
+    world_file_original = os.path.join(script_dir, "parnaibaiii_simple_v3.world")
     
     # Verifica se os arquivos existem
     if not os.path.exists(csv_file):
@@ -185,7 +189,7 @@ def criar_mundo_modificado():
         return None
     
     # Define o nome do arquivo de saída
-    output_file = "parnaibaiii_simple_v3_modificado.world"
+    output_file = os.path.join(script_dir, "parnaibaiii_simple_v3_modificado.world")
     
     # Carrega os dados
     pontos_csv = []
