@@ -16,8 +16,8 @@ import json
 def main():
     # Config
     # file_path = "./planilhas/obstaculos_processado6.xlsx"
-    file_path = "./planilhas/equipment_processado.xlsx"
-    sheet_name = "Parnaiba3_Transformado"
+    file_path = "./planilhas/todos.xlsx"
+    sheet_name = "Sheet1"
     # grafo_path = "./jsons/graph9F_new.json"
     grafo_path = "./jsons/graph_equipment.json"
     # observation_path ="./jsons/obpc_8.json"

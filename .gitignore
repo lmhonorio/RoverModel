@@ -6,3 +6,6 @@ __pycache__/
 
 # Arquivo temporário do VS Code (Code Runner)
 tempCodeRunnerFile.py
+
+# Script para iniciar mundo ROS Gazebo
+world.sh
