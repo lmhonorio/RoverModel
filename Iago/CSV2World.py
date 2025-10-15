@@ -123,7 +123,7 @@ def perguntar_tipo_bolas():
             print(f"❌ Erro na entrada: {e}")
 
 def criar_mundo_modificado():
-    """Cria um mundo Gazebo modificado com bolas basseriuneado no CSV do Gazebo2CSV.py"""
+    """Cria um mundo Gazebo modificado com bolas basseriuniundeado no CSV do Gazebo2CSV.py"""
     
     print("🚀 Iniciando criação de mundo Gazebo modificado...")
     
