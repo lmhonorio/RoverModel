@@ -36,6 +36,27 @@ class GazeboObjectExtractor:
         # Lista de objetos para monitorar
         self.objects_to_monitor = []
         
+        # Dimensões dos objetos (baseado no treat_spreadsheet2.py)
+        self.DIMENSIONS = {
+            "reator": (2*1.534546, 2*3.054527),
+            "pr": (2*0.6871033, 2*0.6181564),
+            "tpc": (2*0.864502, 2*0.7777786),
+            "ip": (2*0.7239075, 2*0.5235214),
+            "sech": (2*3.303741, 2*0.5302429),
+            "tc": (2*0.8567124, 2*0.7042313),
+            "secv": (2*1.088993, 2*0.54982),
+            "disjuntor": (2*2.458675, 2*0.7382889),
+            "buscsb": (2*0.7805481, 2*0.54982),
+            "busip": (2*0.7805519, 2*0.54982),
+            "bombeiro": (1, 1),
+            "caixa": (1,1),
+            "estrutura": (5.48, 2.6),
+            "torre": (5.48, 2.6),
+            "transformador": (2*1.534546, 2*3.054527),
+            "obstaculo": (1,1),
+            "cercado": (11.41, 6.8),
+        }
+        
         print("🚀 Inicializando extrator de objetos do Gazebo...")
         print(f"🌍 Coordenadas de referência: lat={self.lat_ref}, lon={self.lon_ref}")
     
@@ -55,13 +76,56 @@ class GazeboObjectExtractor:
         lon = x / (111320.0 * math.cos(math.radians(self.lat_ref))) + self.lon_ref
         return lat, lon
     
+    def get_object_dimensions(self, object_name: str) -> Tuple[float, float]:
+        """Determina as dimensões do objeto baseado no nome"""
+        name_lower = object_name.lower()
+        
+        # Procura por padrões no nome do objeto
+        for key, dimensions in self.DIMENSIONS.items():
+            if key in name_lower:
+                return dimensions
+        
+        # Se não encontrou, usa dimensão padrão
+        return (1.0, 1.0)
+    
+    def generate_vertex_coordinates(self, x: float, y: float, width: float, height: float) -> Tuple[List, List]:
+        """Gera coordenadas dos vértices do objeto"""
+        # Calcula os vértices do retângulo
+        half_width = width / 2
+        half_height = height / 2
+        
+        # Vértices em coordenadas cartesianas
+        vertices_x = [
+            x - half_width,  # Vértice inferior esquerdo
+            x + half_width   # Vértice inferior direito
+        ]
+        
+        vertices_y = [
+            y - half_height,  # Vértice inferior esquerdo
+            y + half_height   # Vértice superior esquerdo
+        ]
+        
+        # Converte para GPS
+        vx_gps = []
+        vy_gps = []
+        
+        for vx, vy in zip(vertices_x, vertices_y):
+            lat, lon = self.gazebo_to_gps_coords(vx, vy)
+            vx_gps.append((lat, lon))
+        
+        for vx, vy in zip([x - half_width, x + half_width], [y - half_height, y + half_height]):
+            lat, lon = self.gazebo_to_gps_coords(vx, vy)
+            vy_gps.append((lat, lon))
+        
+        return vx_gps, vy_gps
+    
     def model_states_callback(self, msg: ModelStates):
         """Callback para receber estados dos modelos"""
         for i, model_name in enumerate(msg.name):
             if model_name in self.objects_to_monitor:
                 pose = msg.pose[i]
                 
-                # Extrai posição x, y
+                # Extrai posição x, y, z
                 x = pose.position.x
                 y = pose.position.y
                 z = pose.position.z
@@ -69,24 +133,28 @@ class GazeboObjectExtractor:
                 # Converte para GPS
                 latitude, longitude = self.gazebo_to_gps_coords(x, y)
                 
-                # Define tamanhos Px e Py baseado no tipo de objeto
-                if 'REATOR' in model_name:
-                    px, py = 3.0, 3.0  # Reatores: tamanho 3
-                else:
-                    px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                # Obtém dimensões do objeto
+                width, height = self.get_object_dimensions(model_name)
                 
-                # Armazena os dados
+                # Gera coordenadas dos vértices
+                vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                
+                # Gera ID único
+                object_id = f"ef_{model_name.lower().replace(' ', '_')}"
+                
+                # Armazena os dados no formato do obstaculos_processado6.xlsx
                 self.objects_data[model_name] = {
-                    'id': len(self.objects_data) + 1,
-                    'label': model_name,
-                    'tipo': 'objeto',
-                    'x_cartesiano': x,
-                    'y_cartesiano': y,
-                    'z_cartesiano': z,
-                    'latitude': latitude,
-                    'longitude': longitude,
-                    'Px': px,
-                    'Py': py
+                    'Model Name': model_name,
+                    'Latitude': latitude,
+                    'Longitude': longitude,
+                    'Altitude': int(z + 77),  # z + 77 como solicitado
+                    'Vx': vx_coords,
+                    'Vy': vy_coords,
+                    'Py': y,  # Coordenada Y cartesiana
+                    'Px': x,  # Coordenada X cartesiana
+                    'Vx_largura': width,
+                    'Vy_altura': height,
+                    'ID': object_id
                 }
     
     def get_objects_from_tf(self) -> Dict[str, Dict]:
@@ -119,23 +187,27 @@ class GazeboObjectExtractor:
                         # Converte para GPS
                         latitude, longitude = self.gazebo_to_gps_coords(x, y)
                         
-                        # Define tamanhos Px e Py baseado no tipo de objeto
-                        if 'REATOR' in frame_id:
-                            px, py = 3.0, 3.0  # Reatores: tamanho 3
-                        else:
-                            px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                        # Obtém dimensões do objeto
+                        width, height = self.get_object_dimensions(frame_id)
+                        
+                        # Gera coordenadas dos vértices
+                        vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                        
+                        # Gera ID único
+                        object_id = f"ef_{frame_id.lower().replace(' ', '_')}"
                         
                         objects_tf[frame_id] = {
-                            'id': len(objects_tf) + 1,
-                            'label': frame_id,
-                            'tipo': 'objeto_tf',
-                            'x_cartesiano': x,
-                            'y_cartesiano': y,
-                            'z_cartesiano': z,
-                            'latitude': latitude,
-                            'longitude': longitude,
-                            'Px': px,
-                            'Py': py
+                            'Model Name': frame_id,
+                            'Latitude': latitude,
+                            'Longitude': longitude,
+                            'Altitude': int(z + 77),
+                            'Vx': vx_coords,
+                            'Vy': vy_coords,
+                            'Py': y,
+                            'Px': x,
+                            'Vx_largura': width,
+                            'Vy_altura': height,
+                            'ID': object_id
                         }
                         
                     except (tf2_ros.LookupException, tf2_ros.ConnectivityException, 
@@ -220,23 +292,27 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
-                                    # Define tamanhos Px e Py baseado no tipo de objeto
-                                    if 'REATOR' in link_name:
-                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
-                                    else:
-                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    # Obtém dimensões do objeto
+                                    width, height = self.get_object_dimensions(link_name)
+                                    
+                                    # Gera coordenadas dos vértices
+                                    vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                                    
+                                    # Gera ID único
+                                    object_id_str = f"ef_{link_name.lower().replace(' ', '_')}"
                                     
                                     objects_data.append({
-                                        'id': object_id,
-                                        'label': link_name,
-                                        'tipo': 'equipamento',
-                                        'x_cartesiano': x,
-                                        'y_cartesiano': y,
-                                        'z_cartesiano': z,
-                                        'latitude': latitude,
-                                        'longitude': longitude,
-                                        'Px': px,
-                                        'Py': py
+                                        'Model Name': link_name,
+                                        'Latitude': latitude,
+                                        'Longitude': longitude,
+                                        'Altitude': int(z + 77),
+                                        'Vx': vx_coords,
+                                        'Vy': vy_coords,
+                                        'Py': y,
+                                        'Px': x,
+                                        'Vx_largura': width,
+                                        'Vy_altura': height,
+                                        'ID': object_id_str
                                     })
                                     object_id += 1
                                     print(f"  ✅ {link_name}: ({x:.2f}, {y:.2f})")
@@ -277,23 +353,27 @@ class GazeboObjectExtractor:
                                         # Converte para GPS
                                         latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                         
-                                        # Define tamanhos Px e Py baseado no tipo de objeto
-                                        if 'REATOR' in model_name:
-                                            px, py = 3.0, 3.0  # Reatores: tamanho 3
-                                        else:
-                                            px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                        # Obtém dimensões do objeto
+                                        width, height = self.get_object_dimensions(model_name)
+                                        
+                                        # Gera coordenadas dos vértices
+                                        vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                                        
+                                        # Gera ID único
+                                        object_id_str = f"ef_{model_name.lower().replace(' ', '_')}"
                                         
                                         objects_data.append({
-                                            'id': object_id,
-                                            'label': model_name,
-                                            'tipo': 'equipamento',
-                                            'x_cartesiano': x,
-                                            'y_cartesiano': y,
-                                            'z_cartesiano': z,
-                                            'latitude': latitude,
-                                            'longitude': longitude,
-                                            'Px': px,
-                                            'Py': py
+                                            'Model Name': model_name,
+                                            'Latitude': latitude,
+                                            'Longitude': longitude,
+                                            'Altitude': int(z + 77),
+                                            'Vx': vx_coords,
+                                            'Vy': vy_coords,
+                                            'Py': y,
+                                            'Px': x,
+                                            'Vx_largura': width,
+                                            'Vy_altura': height,
+                                            'ID': object_id_str
                                         })
                                         object_id += 1
                                         print(f"  ✅ {model_name}: ({x:.2f}, {y:.2f})")
@@ -314,23 +394,27 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
-                                    # Define tamanhos Px e Py baseado no tipo de objeto
-                                    if 'REATOR' in name:
-                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
-                                    else:
-                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    # Obtém dimensões do objeto
+                                    width, height = self.get_object_dimensions(name)
+                                    
+                                    # Gera coordenadas dos vértices
+                                    vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                                    
+                                    # Gera ID único
+                                    object_id_str = f"ef_{name.lower().replace(' ', '_')}"
                                     
                                     objects_data.append({
-                                        'id': object_id,
-                                        'label': name,
-                                        'tipo': 'equipamento',
-                                        'x_cartesiano': x,
-                                        'y_cartesiano': y,
-                                        'z_cartesiano': z,
-                                        'latitude': latitude,
-                                        'longitude': longitude,
-                                        'Px': px,
-                                        'Py': py
+                                        'Model Name': name,
+                                        'Latitude': latitude,
+                                        'Longitude': longitude,
+                                        'Altitude': int(z + 77),
+                                        'Vx': vx_coords,
+                                        'Vy': vy_coords,
+                                        'Py': y,
+                                        'Px': x,
+                                        'Vx_largura': width,
+                                        'Vy_altura': height,
+                                        'ID': object_id_str
                                     })
                                     object_id += 1
                                     print(f"  ✅ {name}: ({x:.2f}, {y:.2f})")
@@ -352,23 +436,27 @@ class GazeboObjectExtractor:
                                     # Converte para GPS
                                     latitude, longitude = self.gazebo_to_gps_coords(x, y)
                                     
-                                    # Define tamanhos Px e Py baseado no tipo de objeto
-                                    if 'REATOR' in name:
-                                        px, py = 3.0, 3.0  # Reatores: tamanho 3
-                                    else:
-                                        px, py = 1.0, 1.0  # Outros objetos: tamanho 1
+                                    # Obtém dimensões do objeto
+                                    width, height = self.get_object_dimensions(name)
+                                    
+                                    # Gera coordenadas dos vértices
+                                    vx_coords, vy_coords = self.generate_vertex_coordinates(x, y, width, height)
+                                    
+                                    # Gera ID único
+                                    object_id_str = f"ef_{name.lower().replace(' ', '_')}"
                                     
                                     objects_data.append({
-                                        'id': object_id,
-                                        'label': name,
-                                        'tipo': 'objeto_mundo',
-                                        'x_cartesiano': x,
-                                        'y_cartesiano': y,
-                                        'z_cartesiano': z,
-                                        'latitude': latitude,
-                                        'longitude': longitude,
-                                        'Px': px,
-                                        'Py': py
+                                        'Model Name': name,
+                                        'Latitude': latitude,
+                                        'Longitude': longitude,
+                                        'Altitude': int(z + 77),
+                                        'Vx': vx_coords,
+                                        'Vy': vy_coords,
+                                        'Py': y,
+                                        'Px': x,
+                                        'Vx_largura': width,
+                                        'Vy_altura': height,
+                                        'ID': object_id_str
                                     })
                                     object_id += 1
             
@@ -447,21 +535,8 @@ class GazeboObjectExtractor:
             print("❌ Nenhum objeto encontrado!")
             return pd.DataFrame()
         
-        # Converte para DataFrame
-        df_data = []
-        for i, (name, data) in enumerate(all_objects.items(), 1):
-            df_data.append({
-                'id': i,
-                'label': data['label'],
-                'tipo': data['tipo'],
-                'x_cartesiano': data['x_cartesiano'],
-                'y_cartesiano': data['y_cartesiano'],
-                'z_cartesiano': data.get('z_cartesiano', 0.0),
-                'latitude': data['latitude'],
-                'longitude': data['longitude'],
-                'Px': data.get('Px', 1.0),
-                'Py': data.get('Py', 1.0)
-            })
+        # Converte para DataFrame (já está no formato correto)
+        df_data = list(all_objects.values())
         
         df = pd.DataFrame(df_data)
         print(f"✅ Extraídos {len(df)} objetos com sucesso!")
@@ -487,16 +562,19 @@ class GazeboObjectExtractor:
         # Mostra estatísticas
         print(f"\n📊 Estatísticas:")
         print(f"  - Total de objetos: {len(df)}")
-        print(f"  - Coordenadas X: {df['x_cartesiano'].min():.2f} a {df['x_cartesiano'].max():.2f}")
-        print(f"  - Coordenadas Y: {df['y_cartesiano'].min():.2f} a {df['y_cartesiano'].max():.2f}")
-        print(f"  - Latitude: {df['latitude'].min():.6f} a {df['latitude'].max():.6f}")
-        print(f"  - Longitude: {df['longitude'].min():.6f} a {df['longitude'].max():.6f}")
+        print(f"  - Coordenadas Px: {df['Px'].min():.2f} a {df['Px'].max():.2f}")
+        print(f"  - Coordenadas Py: {df['Py'].min():.2f} a {df['Py'].max():.2f}")
+        print(f"  - Latitude: {df['Latitude'].min():.6f} a {df['Latitude'].max():.6f}")
+        print(f"  - Longitude: {df['Longitude'].min():.6f} a {df['Longitude'].max():.6f}")
+        print(f"  - Altitude: {df['Altitude'].min()} a {df['Altitude'].max()}")
+        print(f"  - Vx_largura: {df['Vx_largura'].min():.3f} a {df['Vx_largura'].max():.3f}")
+        print(f"  - Vy_altura: {df['Vy_altura'].min():.3f} a {df['Vy_altura'].max():.3f}")
         
-        # Estatísticas dos tamanhos
-        reatores = df[df['label'].str.contains('REATOR', case=False, na=False)]
-        outros = df[~df['label'].str.contains('REATOR', case=False, na=False)]
-        print(f"  - Reatores: {len(reatores)} objetos (Px=Py=3.0)")
-        print(f"  - Outros objetos: {len(outros)} objetos (Px=Py=1.0)")
+        # Estatísticas por tipo de objeto
+        reatores = df[df['Model Name'].str.contains('REATOR', case=False, na=False)]
+        outros = df[~df['Model Name'].str.contains('REATOR', case=False, na=False)]
+        print(f"  - Reatores: {len(reatores)} objetos")
+        print(f"  - Outros objetos: {len(outros)} objetos")
 
 def main():
     """Função principal"""
