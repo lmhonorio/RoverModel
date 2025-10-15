@@ -6,6 +6,7 @@ Combina funcionalidades dos scripts adicionar_bolas_gazebo.py e adicionar_bolas_
 
 import pandas as pd
 import xml.etree.ElementTree as ET
+import json
 import math
 import os
 import sys
@@ -15,6 +16,38 @@ def gps_to_gazebo_coords(lat, lon, lat_ref, lon_ref):
     x = (lon - lon_ref) * 111320.0 * math.cos(math.radians(lat_ref))
     y = (lat - lat_ref) * 111132.0
     return x, y
+
+def carregar_pontos_json(json_file):
+    """Carrega pontos do arquivo JSON graph_equipment.json"""
+    try:
+        with open(json_file, 'r') as f:
+            data = json.load(f)
+        
+        pontos = []
+        if 'nodes' in data:
+            for node_id, node_data in data['nodes'].items():
+                if 'pos' in node_data and len(node_data['pos']) >= 2:
+                    x, y = node_data['pos'][0], node_data['pos'][1]
+                    pontos.append({
+                        'id': node_id,
+                        'label': node_data.get('label', node_id),
+                        'x': x,
+                        'y': y,
+                        'z': 1.0  # Altura padrão
+                    })
+        
+        print(f"✅ Carregados {len(pontos)} pontos do arquivo JSON")
+        return pontos
+        
+    except FileNotFoundError:
+        print(f"❌ Arquivo JSON não encontrado: {json_file}")
+        return []
+    except json.JSONDecodeError as e:
+        print(f"❌ Erro ao decodificar JSON: {e}")
+        return []
+    except Exception as e:
+        print(f"❌ Erro ao carregar JSON: {e}")
+        return []
 
 def criar_bola_verde(node_id, x, y, z=1.0):
     """Cria o XML para uma bola verde no Gazebo"""
@@ -123,18 +156,23 @@ def perguntar_tipo_bolas():
             print(f"❌ Erro na entrada: {e}")
 
 def criar_mundo_modificado():
-    """Cria um mundo Gazebo modificado com bolas basseriuniundeado no CSV do Gazebo2CSV.py"""
+    """Cria um mundo Gazebo modificado com bolas baseado no CSV do Gazebo2CSV.py e JSON graph_equipment.json"""
     
     print("🚀 Iniciando criação de mundo Gazebo modificado...")
     
     # Arquivos
     csv_file = "todos_pontos_gps.csv"
+    json_file = "../jsons/graph_equipment.json"
     world_file_original = "parnaibaiii_simple_v3.world"
     
     # Verifica se os arquivos existem
     if not os.path.exists(csv_file):
         print(f"❌ Erro: Arquivo {csv_file} não encontrado!")
         print("💡 Execute primeiro o Gazebo2CSV.py para gerar o arquivo CSV.")
+        return None
+    
+    if not os.path.exists(json_file):
+        print(f"❌ Erro: Arquivo {json_file} não encontrado!")
         return None
     
     if not os.path.exists(world_file_original):
@@ -149,45 +187,72 @@ def criar_mundo_modificado():
     # Define o nome do arquivo de saída
     output_file = "parnaibaiii_simple_v3_modificado.world"
     
-    # Carrega o CSV
-    print("📊 Carregando dados do CSV...")
-    df = pd.read_csv(csv_file)
-    print(f"✅ {len(df)} objetos carregados do CSV")
+    # Carrega os dados
+    pontos_csv = []
+    pontos_json = []
     
-    # Coordenadas de referência do mundo Gazebo
-    lat_ref = -3.123199
-    lon_ref = -41.764537
+    # Carrega dados do CSV (para pontos azuis)
+    if tipo_bolas in ['azuis', 'ambas']:
+        print("📊 Carregando dados do CSV...")
+        df = pd.read_csv(csv_file)
+        print(f"✅ {len(df)} objetos carregados do CSV")
+        
+        # Coordenadas de referência do mundo Gazebo
+        lat_ref = -3.123199
+        lon_ref = -41.764537
+        
+        # Aplica rotação do modelo ARGO_PARNAIBAIII_V3 (-90 graus) às coordenadas do CSV
+        print("🌍 Aplicando rotação do modelo às coordenadas do CSV...")
+        angle = -1.570796  # -90 graus em radianos
+        
+        for _, row in df.iterrows():
+            # Coordenadas locais do modelo
+            x_local = row['Px']  # Usa Px e Py do novo formato
+            y_local = row['Py']
+            
+            # Aplica rotação para obter coordenadas no mundo
+            x_world = x_local * math.cos(angle) - y_local * math.sin(angle)
+            y_world = x_local * math.sin(angle) + y_local * math.cos(angle)
+            
+            # Ajusta altura Z baseado no tipo de objeto
+            z_base = 1.0  # Altura padrão
+            if 'REATOR' in row['Model Name']:
+                z_base += 2.0  # +2m adicional para reatores
+            
+            pontos_csv.append({
+                'id': row['ID'],
+                'label': row['Model Name'],
+                'x': x_world,  # Coordenada X após rotação
+                'y': y_world,  # Coordenada Y após rotação
+                'z': z_base,  # Altura ajustada
+                'tipo': 'azul'
+            })
+        
+        print(f"✅ {len(pontos_csv)} pontos do CSV convertidos")
     
-    # Aplica rotação do modelo ARGO_PARNAIBAIII_V3 (-90 graus) às coordenadas do CSV
-    print("🌍 Aplicando rotação do modelo às coordenadas do CSV...")
-    angle = -1.570796  # -90 graus em radianos
-    pontos_gazebo = []
-    for _, row in df.iterrows():
-        # Coordenadas locais do modelo
-        x_local = row['x_cartesiano']
-        y_local = row['y_cartesiano']
+    # Carrega dados do JSON (para pontos verdes)
+    if tipo_bolas in ['verdes', 'ambas']:
+        print("📊 Carregando dados do JSON...")
+        pontos_json_raw = carregar_pontos_json(json_file)
         
-        # Aplica rotação para obter coordenadas no mundo
-        x_world = x_local * math.cos(angle) - y_local * math.sin(angle)
-        y_world = x_local * math.sin(angle) + y_local * math.cos(angle)
-        
-        # Ajusta altura Z baseado no tipo de objeto
-        z_base = row['z_cartesiano'] + 1.0  # Altura padrão + 1m
-        if 'REATOR' in row['label']:
-            z_base += 2.0  # +2m adicional para reatores
-        
-        pontos_gazebo.append({
-            'id': row['id'],
-            'label': row['label'],
-            'tipo': row['tipo'],
-            'x': x_world,  # Coordenada X após rotação
-            'y': y_world,  # Coordenada Y após rotação
-            'z': z_base,  # Altura ajustada
-            'latitude': row['latitude'],
-            'longitude': row['longitude']
-        })
-    
-    print(f"✅ {len(pontos_gazebo)} pontos convertidos")
+        if pontos_json_raw:
+            # Aplica a mesma transformação de coordenadas para pontos verdes
+            print("🌍 Aplicando transformação de coordenadas aos pontos do JSON...")
+            for ponto in pontos_json_raw:
+                # Aplica a mesma transformação: X_verde = yJSON, Y_verde = -xJSON
+                x_verde = ponto['y']
+                y_verde = -ponto['x']
+                
+                pontos_json.append({
+                    'id': ponto['id'],
+                    'label': ponto['label'],
+                    'x': x_verde,
+                    'y': y_verde,
+                    'z': ponto['z'],
+                    'tipo': 'verde'
+                })
+            
+            print(f"✅ {len(pontos_json)} pontos do JSON convertidos")
     
     # Carrega o arquivo do mundo original (cria uma cópia)
     print("📖 Carregando arquivo do mundo original...")
@@ -208,7 +273,7 @@ def criar_mundo_modificado():
     
     if tipo_bolas in ['verdes', 'ambas']:
         print("🟢 Adicionando bolas verdes...")
-        for i, ponto in enumerate(pontos_gazebo):
+        for i, ponto in enumerate(pontos_json):
             # Cria o XML da bola verde
             bola_xml = criar_bola_verde(ponto['label'], ponto['x'], ponto['y'], ponto['z'])
             
@@ -218,11 +283,11 @@ def criar_mundo_modificado():
             bolas_adicionadas += 1
             
             if (i + 1) % 100 == 0:
-                print(f"  Processados: {i + 1}/{len(pontos_gazebo)} pontos verdes")
+                print(f"  Processados: {i + 1}/{len(pontos_json)} pontos verdes")
     
     if tipo_bolas in ['azuis', 'ambas']:
         print("🔵 Adicionando bolas azuis...")
-        for i, ponto in enumerate(pontos_gazebo):
+        for i, ponto in enumerate(pontos_csv):
             # Cria o XML da bola azul
             bola_xml = criar_bola_azul(ponto['label'], ponto['x'], ponto['y'], ponto['z'])
             
@@ -232,7 +297,7 @@ def criar_mundo_modificado():
             bolas_adicionadas += 1
             
             if (i + 1) % 100 == 0:
-                print(f"  Processados: {i + 1}/{len(pontos_gazebo)} pontos azuis")
+                print(f"  Processados: {i + 1}/{len(pontos_csv)} pontos azuis")
     
     # Salva a cópia modificada do mundo (sem alterar o original)
     print(f"💾 Salvando cópia modificada: {output_file}")
@@ -241,28 +306,43 @@ def criar_mundo_modificado():
     # Estatísticas
     print("\n📊 ESTATÍSTICAS:")
     print(f"Total de bolas adicionadas: {bolas_adicionadas}")
-    x_coords = [p['x'] for p in pontos_gazebo]
-    y_coords = [p['y'] for p in pontos_gazebo]
-    z_coords = [p['z'] for p in pontos_gazebo]
-    print(f"Coordenadas Gazebo:")
-    print(f"  X: {min(x_coords):.2f} a {max(x_coords):.2f}m")
-    print(f"  Y: {min(y_coords):.2f} a {max(y_coords):.2f}m")
-    print(f"  Z: {min(z_coords):.2f} a {max(z_coords):.2f}m")
     
-    # Análise por tipo de equipamento
-    tipos_equipamentos = {}
-    for ponto in pontos_gazebo:
-        nome = ponto['label']
-        # Extrai o tipo do nome (ex: TPC9 -> TPC, REATOR1 -> REATOR)
-        tipo = ''.join([c for c in nome if not c.isdigit() and c not in ['.', '_', '-']])
-        if tipo and len(tipo) > 1:
-            if tipo not in tipos_equipamentos:
-                tipos_equipamentos[tipo] = 0
-            tipos_equipamentos[tipo] += 1
+    # Combina todos os pontos para estatísticas
+    todos_pontos = pontos_csv + pontos_json
     
-    print(f"\n🏷️ Tipos de equipamentos:")
-    for tipo, count in sorted(tipos_equipamentos.items()):
-        print(f"  {tipo}: {count} equipamentos")
+    if todos_pontos:
+        x_coords = [p['x'] for p in todos_pontos]
+        y_coords = [p['y'] for p in todos_pontos]
+        z_coords = [p['z'] for p in todos_pontos]
+        print(f"Coordenadas Gazebo:")
+        print(f"  X: {min(x_coords):.2f} a {max(x_coords):.2f}m")
+        print(f"  Y: {min(y_coords):.2f} a {max(y_coords):.2f}m")
+        print(f"  Z: {min(z_coords):.2f} a {max(z_coords):.2f}m")
+        
+        # Estatísticas por tipo de bola
+        verdes_count = len(pontos_json)
+        azuis_count = len(pontos_csv)
+        print(f"\n🎨 Tipos de bolas:")
+        if verdes_count > 0:
+            print(f"  🟢 Verdes: {verdes_count} bolas (do JSON)")
+        if azuis_count > 0:
+            print(f"  🔵 Azuis: {azuis_count} bolas (do CSV)")
+    
+    # Análise por tipo de equipamento (apenas para pontos azuis do CSV)
+    if pontos_csv:
+        tipos_equipamentos = {}
+        for ponto in pontos_csv:
+            nome = ponto['label']
+            # Extrai o tipo do nome (ex: TPC9 -> TPC, REATOR1 -> REATOR)
+            tipo = ''.join([c for c in nome if not c.isdigit() and c not in ['.', '_', '-']])
+            if tipo and len(tipo) > 1:
+                if tipo not in tipos_equipamentos:
+                    tipos_equipamentos[tipo] = 0
+                tipos_equipamentos[tipo] += 1
+        
+        print(f"\n🏷️ Tipos de equipamentos (bolas azuis):")
+        for tipo, count in sorted(tipos_equipamentos.items()):
+            print(f"  {tipo}: {count} equipamentos")
     
     print(f"\n✅ Cópia modificada salva em: {output_file}")
     print(f"📁 Tamanho do arquivo: {os.path.getsize(output_file):,} bytes")
@@ -283,7 +363,8 @@ def main():
         print(f"   gazebo {arquivo_gerado}")
         print("🔒 O arquivo original permanece inalterado!")
         print("\n💡 Dicas:")
-        print("  - As bolas verdes/azuis representam os equipamentos industriais")
+        print("  - 🟢 Bolas verdes: pontos do arquivo JSON graph_equipment.json")
+        print("  - 🔵 Bolas azuis: equipamentos do arquivo CSV todos_pontos_gps.csv")
         print("  - Use o mundo modificado para visualização e planejamento")
         print("  - O arquivo original parnaibaiii_simple_v3.world não foi alterado")
     else:
