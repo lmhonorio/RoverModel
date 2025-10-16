@@ -438,14 +438,8 @@ def deletar_todas_bolas(usar_ros=True):
     if len(bolas) > 10:
         print(f"  ... e mais {len(bolas) - 10} bolas")
     
-    # Confirmação
-    confirmacao = input(f"\nConfirma deletar {len(bolas)} bolas? (s/N): ").strip().lower()
-    if confirmacao not in ['s', 'sim', 'y', 'yes']:
-        print("❌ Operação cancelada.")
-        return False
-    
-    # Deleta as bolas
-    print("🗑️  Deletando bolas...")
+    # Prossegue automaticamente sem confirmação
+    print(f"🗑️ Deletando {len(bolas)} bolas automaticamente...")
     deletadas = 0
     erros = 0
     
@@ -583,10 +577,8 @@ def gerenciar_bolas_tempo_real():
     if pontos_json:
         print(f"🟢 Bolas verdes: {len(pontos_json)} pontos")
     
-    confirmacao = input(f"\nConfirma adicionar {total_bolas} bolas ao mundo? (s/N): ").strip().lower()
-    if confirmacao not in ['s', 'sim', 'y', 'yes']:
-        print("❌ Operação cancelada.")
-        return False
+    # Prossegue automaticamente sem confirmação
+    print(f"🚀 Adicionando {total_bolas} bolas ao mundo automaticamente...")
     
     # Adiciona bolas
     print(f"\n🎯 Adicionando bolas ao mundo Gazebo...")
