@@ -16,7 +16,7 @@ import json
 def main():
     # Config
     # file_path = "./planilhas/obstaculos_processado6.xlsx"
-    file_path = "./planilhas/todos.xlsx"
+    file_path = "./Iago/todos_pontos_gps.xlsx"
     sheet_name = "Sheet1"
     # grafo_path = "./jsons/graph9F_new.json"
     grafo_path = "./jsons/graph_equipment.json"
