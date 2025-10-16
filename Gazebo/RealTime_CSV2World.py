@@ -550,16 +550,14 @@ def gerenciar_bolas_tempo_real():
     
     if tipo_bolas in ['verdes', 'ambas']:
         pontos_json_raw = carregar_pontos_json(json_file)
-        # Aplica transformação para pontos verdes
+        # Usa coordenadas diretas do JSON (primeira posição é x, segunda é y)
         for ponto in pontos_json_raw:
-            x_verde = ponto['y']
-            y_verde = -ponto['x']
             pontos_json.append({
                 'id': ponto['id'],
                 'label': ponto['label'],
-                'x': x_verde,
-                'y': y_verde,
-                'z': ponto['z'],
+                'x': ponto['x'],  # Primeira posição do JSON é x
+                'y': ponto['y'],  # Segunda posição do JSON é y
+                'z': 4.0,         # Z sempre 4.0m
                 'tipo': 'verde'
             })
     
