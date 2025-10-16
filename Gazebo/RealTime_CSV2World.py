@@ -24,12 +24,15 @@ def gps_to_gazebo_coords(lat, lon, lat_ref, lon_ref):
     return x, y
 
 def carregar_pontos_json(json_file):
-    """Carrega pontos do arquivo JSON graph_equipment.json de forma otimizada"""
+    """Carrega pontos e conexões do arquivo JSON graph_equipment.json"""
     try:
         with open(json_file, 'r') as f:
             data = json.load(f)
         
         pontos = []
+        conexoes = []
+        
+        # Carrega nós
         if 'nodes' in data:
             for node_id, node_data in data['nodes'].items():
                 if 'pos' in node_data and len(node_data['pos']) >= 2:
@@ -39,15 +42,26 @@ def carregar_pontos_json(json_file):
                         'label': node_data.get('label', node_id),
                         'x': x,
                         'y': y,
-                        'z': 0.5  # Altura reduzida para melhor visualização
+                        'z': 4.0  # Altura para bolas verdes
                     })
         
-        print(f"✅ Carregados {len(pontos)} pontos do JSON")
-        return pontos
+        # Carrega conexões (edges)
+        if 'edges' in data:
+            for edge in data['edges']:
+                if len(edge) >= 3:
+                    node1, node2, distancia = edge[0], edge[1], edge[2]
+                    conexoes.append({
+                        'node1': node1,
+                        'node2': node2,
+                        'distancia': distancia
+                    })
+        
+        print(f"✅ Carregados {len(pontos)} pontos e {len(conexoes)} conexões do JSON")
+        return pontos, conexoes
         
     except Exception as e:
         print(f"❌ Erro ao carregar JSON: {e}")
-        return []
+        return [], []
 
 def carregar_pontos_csv(csv_file):
     """Carrega pontos do CSV de forma otimizada (coordenadas já corrigidas)"""
@@ -129,6 +143,48 @@ def criar_bola_leve_azul(node_id, x, y, z=0.5):
           <ambient>0 0 0.8 1</ambient>
           <diffuse>0 0 0.8 1</diffuse>
           <emissive>0 0 0.3 1</emissive>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>'''
+
+def criar_linha_conexao(node1_id, node2_id, x1, y1, x2, y2, z=4.0):
+    """Cria modelo SDF para linha de conexão entre duas bolas verdes"""
+    # Sanitiza os nomes
+    safe_name1 = node1_id.replace(".", "_").replace("::", "_").replace("-", "_")
+    safe_name2 = node2_id.replace(".", "_").replace("::", "_").replace("-", "_")
+    line_name = f"linha_{safe_name1}_{safe_name2}"
+    
+    # Calcula ponto médio e distância
+    x_medio = (x1 + x2) / 2
+    y_medio = (y1 + y2) / 2
+    distancia = math.sqrt((x2 - x1)**2 + (y2 - y1)**2)
+    
+    # Calcula ângulo de rotação no plano XY (yaw)
+    angulo_yaw = math.atan2(y2 - y1, x2 - x1)
+    
+    # Para conectar horizontalmente, o cilindro deve estar rotacionado
+    # Rotação: pitch = 90 graus para deitar o cilindro
+    pitch_rad = math.pi / 2  # 90 graus em radianos
+    
+    return f'''<?xml version="1.0"?>
+<sdf version="1.4">
+  <model name="{line_name}">
+    <static>1</static>
+    <pose frame="world">{x_medio:.3f} {y_medio:.3f} {z:.1f} 0 {pitch_rad:.3f} {angulo_yaw:.3f}</pose>
+    <link name="link">
+      <visual name="visual">
+        <geometry>
+          <cylinder>
+            <radius>0.05</radius>
+            <length>{distancia:.3f}</length>
+          </cylinder>
+        </geometry>
+        <material>
+          <ambient>0 0.8 0 1</ambient>
+          <diffuse>0 0.8 0 1</diffuse>
+          <emissive>0 0.3 0 1</emissive>
         </material>
       </visual>
     </link>
@@ -384,7 +440,7 @@ def listar_modelos_bolas():
                     continue
                 elif in_name_section and line.strip().startswith('- '):
                     name = line.strip()[2:].strip()  # Remove "- " do início
-                    if 'bola_' in name:
+                    if 'bola_' in name or 'linha_' in name:
                         bolas.append(name)
                 elif in_name_section and not line.strip().startswith('- '):
                     break  # Sai da seção de nomes
@@ -549,7 +605,7 @@ def gerenciar_bolas_tempo_real():
                 print(f"✅ Filtrados {len(pontos_csv)} equipamentos dos grupos selecionados")
     
     if tipo_bolas in ['verdes', 'ambas']:
-        pontos_json_raw = carregar_pontos_json(json_file)
+        pontos_json_raw, conexoes_json = carregar_pontos_json(json_file)
         # Usa coordenadas diretas do JSON (primeira posição é x, segunda é y)
         for ponto in pontos_json_raw:
             pontos_json.append({
@@ -584,9 +640,11 @@ def gerenciar_bolas_tempo_real():
     bolas_adicionadas = 0
     erros = 0
     
-    # Adiciona bolas verdes
+    # Adiciona bolas verdes e linhas de conexão
     if tipo_bolas in ['verdes', 'ambas'] and pontos_json:
         print("🟢 Adicionando bolas verdes...")
+        
+        # Primeiro adiciona as bolas
         for i, ponto in enumerate(pontos_json):
             sdf_content = criar_bola_leve_verde(ponto['label'], ponto['x'], ponto['y'], ponto['z'])
             model_name = f"bola_verde_{ponto['id'].replace('.', '_').replace('::', '_').replace('-', '_')}"
@@ -601,12 +659,55 @@ def gerenciar_bolas_tempo_real():
             else:
                 erros += 1
             
-            # Progresso a cada 25 bolas (mais frequente)
+            # Progresso a cada 25 bolas
             if (i + 1) % 25 == 0:
                 print(f"  Progresso: {i + 1}/{len(pontos_json)} bolas verdes")
             
             # Pausa menor para acelerar
             time.sleep(0.005)
+        
+        # Depois adiciona as linhas de conexão
+        if conexoes_json:
+            print("🔗 Adicionando linhas de conexão...")
+            
+            # Cria dicionário para buscar coordenadas dos pontos
+            pontos_dict = {ponto['id']: ponto for ponto in pontos_json}
+            
+            for i, conexao in enumerate(conexoes_json):
+                node1_id = conexao['node1']
+                node2_id = conexao['node2']
+                
+                # Busca coordenadas dos pontos
+                if node1_id in pontos_dict and node2_id in pontos_dict:
+                    ponto1 = pontos_dict[node1_id]
+                    ponto2 = pontos_dict[node2_id]
+                    
+                    # Cria linha de conexão
+                    sdf_content = criar_linha_conexao(
+                        node1_id, node2_id,
+                        ponto1['x'], ponto1['y'],
+                        ponto2['x'], ponto2['y'],
+                        ponto1['z']  # Mesma altura das bolas
+                    )
+                    
+                    model_name = f"linha_{node1_id.replace('.', '_').replace('::', '_').replace('-', '_')}_{node2_id.replace('.', '_').replace('::', '_').replace('-', '_')}"
+                    
+                    if usar_ros:
+                        sucesso = adicionar_modelo_ros_gazebo(sdf_content, model_name)
+                    else:
+                        sucesso = adicionar_modelo_gazebo_standalone(sdf_content)
+                    
+                    if sucesso:
+                        bolas_adicionadas += 1  # Conta linhas como "objetos adicionados"
+                    else:
+                        erros += 1
+                    
+                    # Progresso a cada 10 linhas
+                    if (i + 1) % 10 == 0:
+                        print(f"  Progresso: {i + 1}/{len(conexoes_json)} linhas de conexão")
+                    
+                    # Pausa menor para acelerar
+                    time.sleep(0.005)
     
     # Adiciona bolas azuis
     if tipo_bolas in ['azuis', 'ambas'] and pontos_csv:
@@ -641,6 +742,8 @@ def gerenciar_bolas_tempo_real():
     # Estatísticas
     if pontos_json:
         print(f"🟢 Bolas verdes: {len(pontos_json)}")
+        if 'conexoes_json' in locals() and conexoes_json:
+            print(f"🔗 Linhas de conexão: {len(conexoes_json)}")
     if pontos_csv:
         print(f"🔵 Bolas azuis: {len(pontos_csv)}")
     

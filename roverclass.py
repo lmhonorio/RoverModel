@@ -13,7 +13,11 @@ class ObstacleLoader:
         self.load_obstacles()
 
     def load_obstacles(self):
-        df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
+        # Suporta tanto Excel quanto CSV
+        if self.file_path.endswith('.csv'):
+            df = pd.read_csv(self.file_path)
+        else:
+            df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
 
 
         self.obstacles = [

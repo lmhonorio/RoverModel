@@ -16,15 +16,15 @@ import json
 def main():
     # Config
     # file_path = "./planilhas/obstaculos_processado6.xlsx"
-    file_path = "./Gazebo/todos_pontos_gps.xlsx"
-    sheet_name = "Sheet1"
+    file_path = "./Gazebo/todos_pontos_gps.csv"
+    sheet_name = None  # CSV não usa sheet_name
     # grafo_path = "./jsons/graph9F_new.json"
     grafo_path = "./jsons/graph_equipment.json"
     # observation_path ="./jsons/obpc_8.json"
     observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 3  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 1.5
     threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
 
