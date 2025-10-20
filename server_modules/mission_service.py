@@ -15,9 +15,9 @@ class MissionService:
         self.mission_active = False
         
         # Configurações padrão
-        self.graph_path = "./jsons/graph9d_new.json"
-        self.observation_points_json_path = "./jsons/obpc_7.json"
-        self.parameters_file_path = "./planilhas/obstaculos_processado6.xlsx"
+        self.graph_path = "./jsons/graph_equipament.json"
+        # self.observation_points_json_path = "./jsons/obpc_7.json"
+        self.parameters_file_path = "./Gazebo/todos_pontos_gps.xlsx"
         self.deltax_m = -2
         self.deltay_m = -12.0
     
