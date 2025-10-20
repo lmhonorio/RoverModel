@@ -1,0 +1,1684 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Objetos Gazebo - Parnaíba III</name>
+    <description>Objetos extraídos do mundo Gazebo</description>
+    
+    <!-- Estilos -->
+    <Style id="reactor">
+      <IconStyle>
+        <color>ff0000ff</color>
+        <scale>1.5</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <Style id="tpc">
+      <IconStyle>
+        <color>ffff0000</color>
+        <scale>1.2</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/square.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <Style id="other">
+      <IconStyle>
+        <color>ff00ff00</color>
+        <scale>1.0</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <!-- Objetos -->
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc9</name>
+      <description>ID: ef_charlie_delta_cd_tc9
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764374131613714,-3.123038808722358,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc8</name>
+      <description>ID: ef_charlie_delta_cd_tc8
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437401318998,-3.12310772323533,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc7</name>
+      <description>ID: ef_charlie_delta_cd_tc7
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437389919427,-3.123174059185637,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc6</name>
+      <description>ID: ef_charlie_delta_cd_tc6
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469595977331,-3.122786546948429,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc5</name>
+      <description>ID: ef_charlie_delta_cd_tc5
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469584474784,-3.1228534627510727,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc4</name>
+      <description>ID: ef_charlie_delta_cd_tc4
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764695730048444,-3.122920198440019,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc3</name>
+      <description>ID: ef_charlie_delta_cd_tc3
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469552522689,-3.1230393595173243,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc2</name>
+      <description>ID: ef_charlie_delta_cd_tc2
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764695406786,-3.123108273996028,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc12</name>
+      <description>ID: ef_charlie_delta_cd_tc12
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764374566177295,-3.122785996221999,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc11</name>
+      <description>ID: ef_charlie_delta_cd_tc11
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764374451186136,-3.122852912024643,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc10</name>
+      <description>ID: ef_charlie_delta_cd_tc10
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437433643527,-3.1229196477135885,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_tc1</name>
+      <description>ID: ef_charlie_delta_cd_tc1
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764695292773126,-3.123174609963469,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech9</name>
+      <description>ID: ef_charlie_delta_cd_sech9
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431339616882,-3.123036643191712,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech8</name>
+      <description>ID: ef_charlie_delta_cd_sech8
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764313278157,-3.123105319746251,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech7</name>
+      <description>ID: ef_charlie_delta_cd_sech7
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431316385236,-3.1231718340882786,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech6</name>
+      <description>ID: ef_charlie_delta_cd_sech6
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7646373240615,-3.1227851970018023,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech5</name>
+      <description>ID: ef_charlie_delta_cd_sech5
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463720714811,-3.1228532157609683,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech4</name>
+      <description>ID: ef_charlie_delta_cd_sech4
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463709282631,-3.122919727027424,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech3</name>
+      <description>ID: ef_charlie_delta_cd_sech3
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463689092243,-3.123037197585525,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech2</name>
+      <description>ID: ef_charlie_delta_cd_sech2
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463677287629,-3.1231058741057964,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech12</name>
+      <description>ID: ef_charlie_delta_cd_sech12
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764313829359374,-3.1227846427107937,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech11</name>
+      <description>ID: ef_charlie_delta_cd_sech11
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431371244598,-3.122852661469959,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech10</name>
+      <description>ID: ef_charlie_delta_cd_sech10
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764313598141335,-3.1229191725993424,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_sech1</name>
+      <description>ID: ef_charlie_delta_cd_sech1
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463665855449,-3.123172388473525,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator7</name>
+      <description>ID: ef_charlie_delta_cd_reator7
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536925033773,-3.122725998124233,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator6</name>
+      <description>ID: ef_charlie_delta_cd_reator6
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536909477276,-3.122819009954946,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator5</name>
+      <description>ID: ef_charlie_delta_cd_reator5
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536893934589,-3.1229094878573336,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator4</name>
+      <description>ID: ef_charlie_delta_cd_reator4
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.7653687839192,-3.1229994201070546,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator3</name>
+      <description>ID: ef_charlie_delta_cd_reator3
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536863357238,-3.123087429567662,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator2</name>
+      <description>ID: ef_charlie_delta_cd_reator2
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536847553679,-3.1231793239549672,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_reator1</name>
+      <description>ID: ef_charlie_delta_cd_reator1
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536910999988,-3.123270816984719,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR67.001</name>
+      <description>ID: ef_charlie_delta_paredereator67.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.765352972256345,-3.122765505798128,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR56.001</name>
+      <description>ID: ef_charlie_delta_paredereator56.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76535281257309,-3.122858459578496,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR45.001</name>
+      <description>ID: ef_charlie_delta_paredereator45.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76535265700896,-3.12294890084817,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR34.001</name>
+      <description>ID: ef_charlie_delta_paredereator34.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76535250254321,-3.1230388120914805,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR23.001</name>
+      <description>ID: ef_charlie_delta_paredereator23.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76535235096084,-3.123127014799076,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::PAREDEREATOR12.001</name>
+      <description>ID: ef_charlie_delta_paredereator12.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76535219333714,-3.123218732623726,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip1</name>
+      <description>ID: ef_charlie_delta_cd_ip1
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76525436700698,-3.1231653812464675,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip2</name>
+      <description>ID: ef_charlie_delta_cd_ip2
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76525436703704,-3.123073551891601,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip3</name>
+      <description>ID: ef_charlie_delta_cd_ip3
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765254367065886,-3.122985391145376,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip4</name>
+      <description>ID: ef_charlie_delta_cd_ip4
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7652543670953,-3.122895515952169,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip5</name>
+      <description>ID: ef_charlie_delta_cd_ip5
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7652543671247,-3.122805712071102,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip6</name>
+      <description>ID: ef_charlie_delta_cd_ip6
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76525436715527,-3.12271230697839,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip7</name>
+      <description>ID: ef_charlie_delta_cd_ip7
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516187159589,-3.1231631826666213,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip8</name>
+      <description>ID: ef_charlie_delta_cd_ip8
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516187161848,-3.123094179171927,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip9</name>
+      <description>ID: ef_charlie_delta_cd_ip9
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516187164075,-3.123026114767471,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip12</name>
+      <description>ID: ef_charlie_delta_cd_ip12
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765161871723,-3.1227748289156083,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip11</name>
+      <description>ID: ef_charlie_delta_cd_ip11
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516187170088,-3.1228423777548846,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_ip10</name>
+      <description>ID: ef_charlie_delta_cd_ip10
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516187167852,-3.1229107200745023,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr1</name>
+      <description>ID: ef_charlie_delta_cd_pr1
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003844824,-3.1232549762285537,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr2</name>
+      <description>ID: ef_charlie_delta_cd_pr2
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765320038477554,-3.1231653942234208,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr3</name>
+      <description>ID: ef_charlie_delta_cd_pr3
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003850762,-3.1230735248754145,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr4</name>
+      <description>ID: ef_charlie_delta_cd_pr4
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003853644,-3.1229854757407414,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr5</name>
+      <description>ID: ef_charlie_delta_cd_pr5
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003856587,-3.122895546300962,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr6</name>
+      <description>ID: ef_charlie_delta_cd_pr6
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003859522,-3.122805863112521,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_pr7</name>
+      <description>ID: ef_charlie_delta_cd_pr7
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76532003862588,-3.1227121785283103,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::ESTRUTURA3789.001</name>
+      <description>ID: ef_charlie_delta_estrutura3789.001
+Largura: 5.48m
+Altura: 2.60m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7637178841143,-3.122979752581519,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::ESTRUTURA3456.001</name>
+      <description>ID: ef_charlie_delta_estrutura3456.001
+Largura: 5.48m
+Altura: 2.60m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764517739871856,-3.1229811232966687,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::ESTRUTURA3123.001</name>
+      <description>ID: ef_charlie_delta_estrutura3123.001
+Largura: 5.48m
+Altura: 2.60m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511153454416,-3.1229821295535958,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor9</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor9
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764451401320585,-3.1230384124357538,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor8</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor8
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445128392663,-3.1231067025477195,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor7</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor7
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445117140693,-3.1231721733799978,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor6</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor6
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476306101582,-3.122785033000923,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor5</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor5
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764762940841486,-3.122854952034991,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor4</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor4
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476282911127,-3.122919952930208,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor3</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor3
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764762624632965,-3.123038945784884,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor2</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor2
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476250723901,-3.1231072358797154,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor12</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor12
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764451837772086,-3.122784499686061,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor11</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor11
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445171756343,-3.122854418720129,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor10</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor10
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764451605833216,-3.1229194196838823,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_disjuntor1</name>
+      <description>ID: ef_charlie_delta_cd_disjuntor1
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764762394684986,-3.123172706729128,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.6.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.6.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76411798083912,-3.122783967323324,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.5.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.5.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76411786330785,-3.1228523653630083,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.4.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.4.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7641177459139,-3.122920655629181,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.3.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.3.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76411754860968,-3.123035406850821,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.2.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.2.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76411743128436,-3.1231037150564,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO3.1.001</name>
+      <description>ID: ef_charlie_delta_cabeamento3.1.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7641173150575,-3.1231713009909727,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.6.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.6.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7648151511849,-3.1227851583367547,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.5.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.5.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76481476375043,-3.1228535575757386,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.4.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.4.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76481464635648,-3.1229218501378813,96</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.3.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.3.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7648144491209,-3.123036602798786,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.2.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.2.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76481433169262,-3.1231049127006414,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::CABEAMENTO2.1.001</name>
+      <description>ID: ef_charlie_delta_cabeamento2.1.001
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76481420909956,-3.1231724718888763,97</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip9</name>
+      <description>ID: ef_charlie_delta_cd_busip9
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492734059264,-3.1229362553639146,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip8</name>
+      <description>ID: ef_charlie_delta_cd_busip8
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764927266861015,-3.1229791245314966,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip7</name>
+      <description>ID: ef_charlie_delta_cd_busip7
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764927120908055,-3.1230640459297323,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip60</name>
+      <description>ID: ef_charlie_delta_cd_busip60
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382649071134,-3.1226317102245686,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip6</name>
+      <description>ID: ef_charlie_delta_cd_busip6
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492704271408,-3.1231095208004,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip59</name>
+      <description>ID: ef_charlie_delta_cd_busip59
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382966959862,-3.1227230561417367,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip58</name>
+      <description>ID: ef_charlie_delta_cd_busip58
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382959010026,-3.1227693201064146,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip57</name>
+      <description>ID: ef_charlie_delta_cd_busip57
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763829116550255,-3.122811887730776,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip56</name>
+      <description>ID: ef_charlie_delta_cd_busip56
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763829048722585,-3.122851507775412,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip55</name>
+      <description>ID: ef_charlie_delta_cd_busip55
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382917740594,-3.1228929790572115,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip54</name>
+      <description>ID: ef_charlie_delta_cd_busip54
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382930780554,-3.1229335921260257,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip53</name>
+      <description>ID: ef_charlie_delta_cd_busip53
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382923050401,-3.1229786121547765,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip52</name>
+      <description>ID: ef_charlie_delta_cd_busip52
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7638293580889,-3.123020864220546,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip51</name>
+      <description>ID: ef_charlie_delta_cd_busip51
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382908606139,-3.1230626361543323,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip50</name>
+      <description>ID: ef_charlie_delta_cd_busip50
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382877606329,-3.123145882882354,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip49</name>
+      <description>ID: ef_charlie_delta_cd_busip49
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382829666517,-3.123230805715462,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip48</name>
+      <description>ID: ef_charlie_delta_cd_busip48
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382347849346,-3.123332016414593,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip46</name>
+      <description>ID: ef_charlie_delta_cd_busip46
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390152678835,-3.122631999130042,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip45</name>
+      <description>ID: ef_charlie_delta_cd_busip45
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390503623741,-3.1227251632498647,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip44</name>
+      <description>ID: ef_charlie_delta_cd_busip44
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390496044618,-3.122769358819815,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip43</name>
+      <description>ID: ef_charlie_delta_cd_busip43
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639048897352,-3.1228105140458724,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip42</name>
+      <description>ID: ef_charlie_delta_cd_busip42
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390481874963,-3.122851766456566,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip41</name>
+      <description>ID: ef_charlie_delta_cd_busip41
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390474034971,-3.122897327683116,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip40</name>
+      <description>ID: ef_charlie_delta_cd_busip40
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390467664114,-3.12293450282823,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip4</name>
+      <description>ID: ef_charlie_delta_cd_busip4
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492690190999,-3.1231914278214763,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip39</name>
+      <description>ID: ef_charlie_delta_cd_busip39
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390460277223,-3.1229773720300806,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip38</name>
+      <description>ID: ef_charlie_delta_cd_busip38
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390445681928,-3.123062293394048,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip37</name>
+      <description>ID: ef_charlie_delta_cd_busip37
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390437869394,-3.123107768264715,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip36</name>
+      <description>ID: ef_charlie_delta_cd_busip36
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390430715912,-3.123149424457696,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip35</name>
+      <description>ID: ef_charlie_delta_cd_busip35
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390423782121,-3.1231896752900754,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip34</name>
+      <description>ID: ef_charlie_delta_cd_busip34
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763901284642095,-3.1232309381023717,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip32</name>
+      <description>ID: ef_charlie_delta_cd_busip32
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390111067938,-3.1233320872380417,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip31</name>
+      <description>ID: ef_charlie_delta_cd_busip31
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764852640422006,-3.1225463893710868,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip30</name>
+      <description>ID: ef_charlie_delta_cd_busip30
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485248674576,-3.122635828090086,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip3</name>
+      <description>ID: ef_charlie_delta_cd_busip3
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492682934541,-3.1232336549335007,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip29</name>
+      <description>ID: ef_charlie_delta_cd_busip29
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485233379036,-3.1227248087459576,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip28</name>
+      <description>ID: ef_charlie_delta_cd_busip28
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764852254292,-3.122771072642099,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip27</name>
+      <description>ID: ef_charlie_delta_cd_busip27
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485178077631,-3.12281364026646,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip26</name>
+      <description>ID: ef_charlie_delta_cd_busip26
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485171267409,-3.12285326024256,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip25</name>
+      <description>ID: ef_charlie_delta_cd_busip25
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485184159768,-3.12289473152436,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip24</name>
+      <description>ID: ef_charlie_delta_cd_busip24
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485197189432,-3.1229353447302466,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip23</name>
+      <description>ID: ef_charlie_delta_cd_busip23
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485189452415,-3.122980364656193,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip22</name>
+      <description>ID: ef_charlie_delta_cd_busip22
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485202207472,-3.123022616790499,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip21</name>
+      <description>ID: ef_charlie_delta_cd_busip21
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485175011585,-3.1230643886900165,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip20</name>
+      <description>ID: ef_charlie_delta_cd_busip20
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764851345067264,-3.1231059596578565,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip2</name>
+      <description>ID: ef_charlie_delta_cd_busip2
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492674586528,-3.123282217838696,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip19</name>
+      <description>ID: ef_charlie_delta_cd_busip19
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485144674261,-3.123143837952372,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip18</name>
+      <description>ID: ef_charlie_delta_cd_busip18
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485136515037,-3.123191306123274,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip17</name>
+      <description>ID: ef_charlie_delta_cd_busip17
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485196493387,-3.123230561299532,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip16</name>
+      <description>ID: ef_charlie_delta_cd_busip16
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485195566849,-3.123332979455512,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip15</name>
+      <description>ID: ef_charlie_delta_cd_busip15
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492800980684,-3.1225469294626285,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip14</name>
+      <description>ID: ef_charlie_delta_cd_busip14
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492785623358,-3.1226362563987355,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip12</name>
+      <description>ID: ef_charlie_delta_cd_busip12
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764927553686704,-3.1228122666500933,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip11</name>
+      <description>ID: ef_charlie_delta_cd_busip11
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492748276977,-3.1228535190607865,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip10</name>
+      <description>ID: ef_charlie_delta_cd_busip10
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492740443849,-3.122899080287336,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip1</name>
+      <description>ID: ef_charlie_delta_cd_busip1
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492665840333,-3.1233331251883056,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb9</name>
+      <description>ID: ef_charlie_delta_cd_buscsb9
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500196079625,-3.1228120338904404,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb8</name>
+      <description>ID: ef_charlie_delta_cd_buscsb8
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500182115921,-3.1228933106078123,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb7</name>
+      <description>ID: ef_charlie_delta_cd_buscsb7
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500175058553,-3.122934375160193,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb6</name>
+      <description>ID: ef_charlie_delta_cd_buscsb6
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500167410784,-3.1229788396156324,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb5</name>
+      <description>ID: ef_charlie_delta_cd_buscsb5
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500152781164,-3.1230639331602075,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb4</name>
+      <description>ID: ef_charlie_delta_cd_buscsb4
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7650013876254,-3.123145537567312,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb3</name>
+      <description>ID: ef_charlie_delta_cd_buscsb3
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500130970603,-3.1231908368305508,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb25</name>
+      <description>ID: ef_charlie_delta_cd_buscsb25
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397931505803,-3.1226317174707603,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb24</name>
+      <description>ID: ef_charlie_delta_cd_buscsb24
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979156747816,-3.122723818212643,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb23</name>
+      <description>ID: ef_charlie_delta_cd_buscsb23
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397907642565,-3.1227705142651474,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb22</name>
+      <description>ID: ef_charlie_delta_cd_buscsb22
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397900818614,-3.1228101690920145,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb20</name>
+      <description>ID: ef_charlie_delta_cd_buscsb20
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639789363767,-3.1228520458009097,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb2</name>
+      <description>ID: ef_charlie_delta_cd_buscsb2
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765001236454935,-3.1232334864331617,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb19</name>
+      <description>ID: ef_charlie_delta_cd_buscsb19
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397886827451,-3.122891557660815,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb18</name>
+      <description>ID: ef_charlie_delta_cd_buscsb18
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397879770084,-3.1229326221446594,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb17</name>
+      <description>ID: ef_charlie_delta_cd_buscsb17
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397872136042,-3.1229770865658306,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb16</name>
+      <description>ID: ef_charlie_delta_cd_buscsb16
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397857513286,-3.1230621801104057,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb15</name>
+      <description>ID: ef_charlie_delta_cd_buscsb15
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397843480934,-3.1231437845175107,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb14</name>
+      <description>ID: ef_charlie_delta_cd_buscsb14
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763978355310975,-3.1231900235777688,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb13</name>
+      <description>ID: ef_charlie_delta_cd_buscsb13
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397811173564,-3.123331869068924,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb12</name>
+      <description>ID: ef_charlie_delta_cd_buscsb12
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500241890727,-3.122545519898467,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb11</name>
+      <description>ID: ef_charlie_delta_cd_buscsb11
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500226430424,-3.12263546359377,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb10</name>
+      <description>ID: ef_charlie_delta_cd_buscsb10
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500210976986,-3.12272536548186,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_buscsb1</name>
+      <description>ID: ef_charlie_delta_cd_buscsb1
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500106029534,-3.123336011203905,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>CHARLIE_DELTA::cd_busip33</name>
+      <description>ID: ef_charlie_delta_cd_busip33
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639014372085,-3.1232818998121448,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>gravel_plane::link</name>
+      <description>ID: ef_gravel_plane_link
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764537,-3.123199,77</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
