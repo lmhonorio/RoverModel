@@ -7,6 +7,7 @@ import math
 import matplotlib.pyplot as plt
 import pickle
 import json
+from csv_kml_helper import save_observation_points_to_kml_csv
 # from baseclasses import *
 
 
@@ -47,7 +48,7 @@ def main():
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
     SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 8, observation_path, file_path)
-   # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5 )
+    save_observation_points_to_kml_csv(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5)
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)

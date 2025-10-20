@@ -71,9 +71,25 @@ class GazeboObjectExtractor:
             return []
     
     def gazebo_to_gps_coords(self, x: float, y: float) -> Tuple[float, float]:
-        """Converte coordenadas Gazebo para GPS"""
-        lat = y / 111132.0 + self.lat_ref
-        lon = x / (111320.0 * math.cos(math.radians(self.lat_ref))) + self.lon_ref
+        """Converte coordenadas Gazebo para GPS usando constantes do ArduPilot"""
+        # Raio da Terra usado pelo ArduPilot
+        radius_of_earth = 6378100.0  # metros
+        
+        # CORREÇÃO: Considera a rotação do modelo ARGO_PARNAIBAIII_V3 (-90° no eixo Z)
+        # A rotação de -1.570796 radianos (90° negativo) significa:
+        # X_gazebo -> Y_real (coordenada Norte-Sul)
+        # Y_gazebo -> -X_real (coordenada Leste-Oeste, invertida)
+        
+        # Aplica a transformação de rotação
+        x_rotated = y  # X original vira Y após rotação de -90°
+        y_rotated = -x  # Y original vira -X após rotação de -90°
+        
+        # Converte metros para graus usando constantes do ArduPilot
+        # Latitude: variação Norte-Sul (Y após rotação)
+        lat = y_rotated / (radius_of_earth * math.pi / 180.0) + self.lat_ref
+        # Longitude: variação Leste-Oeste (X após rotação)
+        lon = x_rotated / (radius_of_earth * math.cos(math.radians(self.lat_ref)) * math.pi / 180.0) + self.lon_ref
+        
         return lat, lon
     
     def get_object_dimensions(self, object_name: str) -> Tuple[float, float]:
@@ -544,18 +560,21 @@ class GazeboObjectExtractor:
         return df
     
     def save_to_files(self, df: pd.DataFrame, base_name: str = "todos_pontos_gps"):
-        """Salva os dados em arquivos CSV e Excel"""
+        """Salva os dados em arquivos CSV e Excel dentro da pasta Gazebo/"""
         if df.empty:
             print("❌ Nenhum dado para salvar!")
             return
         
+        # Define o diretório da pasta Gazebo
+        gazebo_dir = os.path.dirname(os.path.abspath(__file__))
+        
         # Salva CSV
-        csv_file = f"{base_name}.csv"
+        csv_file = os.path.join(gazebo_dir, f"{base_name}.csv")
         df.to_csv(csv_file, index=False)
         print(f"💾 CSV salvo: {csv_file}")
         
         # Salva Excel
-        excel_file = f"{base_name}.xlsx"
+        excel_file = os.path.join(gazebo_dir, f"{base_name}.xlsx")
         df.to_excel(excel_file, index=False, engine='openpyxl')
         print(f"💾 Excel salvo: {excel_file}")
         

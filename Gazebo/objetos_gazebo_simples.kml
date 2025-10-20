@@ -1,0 +1,4474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Objetos Gazebo - Parnaíba III</name>
+    <description>Objetos extraídos do mundo Gazebo</description>
+    
+    <!-- Estilos -->
+    <Style id="reactor">
+      <IconStyle>
+        <color>ff0000ff</color>
+        <scale>1.5</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <Style id="tpc">
+      <IconStyle>
+        <color>ffff0000</color>
+        <scale>1.2</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/square.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <Style id="other">
+      <IconStyle>
+        <color>ff00ff00</color>
+        <scale>1.0</scale>
+        <Icon><href>http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png</href></Icon>
+      </IconStyle>
+    </Style>
+    
+    <!-- Objetos -->
+    <Placemark>
+      <name>SVC</name>
+      <description>ID: ef_svc
+Largura: 1.00m
+Altura: 1.00m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76454361663532,-3.123209656859918,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC9</name>
+      <description>ID: ef_tpc9
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76303827665784,-3.123586944824211,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC8</name>
+      <description>ID: ef_tpc8
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76303815640343,-3.123657000211515,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC7</name>
+      <description>ID: ef_tpc7
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.7630380432874,-3.1237227062436714,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC6</name>
+      <description>ID: ef_tpc6
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76585691848244,-3.123592177819354,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC5</name>
+      <description>ID: ef_tpc5
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.765856800699005,-3.1236606017315736,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC4</name>
+      <description>ID: ef_tpc4
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76585668566111,-3.123727691274066,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC3</name>
+      <description>ID: ef_tpc3
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76585648194244,-3.1238462073209714,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC2</name>
+      <description>ID: ef_tpc2
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76585636498268,-3.123914314629223,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TPC1</name>
+      <description>ID: ef_tpc1
+Largura: 1.73m
+Altura: 1.56m</description>
+      <styleUrl>#tpc</styleUrl>
+      <Point>
+        <coordinates>-41.76585624857201,-3.1239821026263184,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC9</name>
+      <description>ID: ef_tc9
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437294291642,-3.123843607940369,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC8</name>
+      <description>ID: ef_tc8
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7643728244466,-3.123912522401977,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC7</name>
+      <description>ID: ef_tc7
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437271050692,-3.1239788584551262,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC6</name>
+      <description>ID: ef_tc6
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764694576609614,-3.123591345753011,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC5</name>
+      <description>ID: ef_tc5
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469446162319,-3.12365826158996,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC4</name>
+      <description>ID: ef_tc4
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764694346928486,-3.123724997313212,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC3</name>
+      <description>ID: ef_tc3
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469414216309,-3.123844158150707,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC2</name>
+      <description>ID: ef_tc2
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469402374475,-3.123913072612315,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC15</name>
+      <description>ID: ef_tc15
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76414259634244,-3.1235904001560963,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC14</name>
+      <description>ID: ef_tc14
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76414248137318,-3.123657315993046,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC13</name>
+      <description>ID: ef_tc13
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76414236667847,-3.1237240515792246,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC12</name>
+      <description>ID: ef_tc12
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764373377328624,-3.123590795542673,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC11</name>
+      <description>ID: ef_tc11
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437326232504,-3.123657711311086,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC10</name>
+      <description>ID: ef_tc10
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437314766466,-3.1237244470343377,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC1</name>
+      <description>ID: ef_tc1
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469390973643,-3.123979408802537,83</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV9</name>
+      <description>ID: ef_secv9
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76451987841753,-3.1238413617279126,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV8</name>
+      <description>ID: ef_secv8
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76451976096013,-3.123909715561648,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV7</name>
+      <description>ID: ef_secv7
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76451964480685,-3.1239773087782527,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV6</name>
+      <description>ID: ef_secv6
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765109458677465,-3.1235910209932096,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV5</name>
+      <description>ID: ef_secv5
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765109341305866,-3.12365937472414,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV4</name>
+      <description>ID: ef_secv4
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510922379698,-3.1237277286606804,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV3</name>
+      <description>ID: ef_secv3
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510902680488,-3.1238423711322287,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV2</name>
+      <description>ID: ef_secv2
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765108909296,-3.123910725103037,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV15</name>
+      <description>ID: ef_secv15
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76372145612028,-3.123588642848154,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV14</name>
+      <description>ID: ef_secv14
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7637213386114,-3.123656996579085,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV13</name>
+      <description>ID: ef_secv13
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7637212212398,-3.1237253504470885,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV12</name>
+      <description>ID: ef_secv12
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452031037592,-3.1235900115203568,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV11</name>
+      <description>ID: ef_secv11
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452019290135,-3.1236583653883603,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV10</name>
+      <description>ID: ef_secv10
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764520075443954,-3.1237267191878275,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV1</name>
+      <description>ID: ef_secv1
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510879309125,-3.123978318182569,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH9</name>
+      <description>ID: ef_sech9
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463502053412,-3.12384222926185,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH8</name>
+      <description>ID: ef_sech8
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463490356577,-3.123910293118015,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH7</name>
+      <description>ID: ef_sech7
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764634785053055,-3.123979258090961,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH6</name>
+      <description>ID: ef_sech6
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76528161711281,-3.123592050547232,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH5</name>
+      <description>ID: ef_sech5
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7652815009767,-3.1236595996949217,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH4</name>
+      <description>ID: ef_sech4
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7652813836051,-3.123727941911735,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH3</name>
+      <description>ID: ef_sech3
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76528118510295,-3.1238433362620213,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH24</name>
+      <description>ID: ef_sech24
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76355971921931,-3.1235891003287226,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH23</name>
+      <description>ID: ef_sech23
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7635596030832,-3.1236566494764126,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH22</name>
+      <description>ID: ef_sech22
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76355948557432,-3.123724991761762,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH21</name>
+      <description>ID: ef_sech21
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76421549742324,-3.123590223914706,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH20</name>
+      <description>ID: ef_sech20
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76421538135576,-3.12365777299386,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH2</name>
+      <description>ID: ef_sech2
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76528106828045,-3.123911400255259,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH19</name>
+      <description>ID: ef_sech19
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76421526391552,-3.1237261153477456,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH18</name>
+      <description>ID: ef_sech18
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431320543831,-3.1235903912806307,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH17</name>
+      <description>ID: ef_sech17
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431308940516,-3.1236579403597844,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH16</name>
+      <description>ID: ef_sech16
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431297196492,-3.1237262827136703,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH15</name>
+      <description>ID: ef_sech15
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431277360005,-3.1238416769954203,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH14</name>
+      <description>ID: ef_sech14
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431265664027,-3.123909741125731,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH13</name>
+      <description>ID: ef_sech13
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431253817046,-3.123978705824531,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH12</name>
+      <description>ID: ef_sech12
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764635452363805,-3.123590943409988,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH11</name>
+      <description>ID: ef_sech11
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463533627918,-3.1236584924891413,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH10</name>
+      <description>ID: ef_sech10
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463521883893,-3.123726834843028,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH1</name>
+      <description>ID: ef_sech1
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76528094981064,-3.1239803652282045,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR9</name>
+      <description>ID: ef_reator9
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76332160827361,-3.123630543442013,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR8</name>
+      <description>ID: ef_reator8
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76332145589644,-3.123719350118246,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR7</name>
+      <description>ID: ef_reator7
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76549403012964,-3.1235587698467917,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR6</name>
+      <description>ID: ef_reator6
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76549387006498,-3.123651972585739,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR5</name>
+      <description>ID: ef_reator5
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.765493714805,-3.1237422153397376,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR4</name>
+      <description>ID: ef_reator4
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76549355927047,-3.1238328530005584,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR3</name>
+      <description>ID: ef_reator3
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76549340895245,-3.1239203623509963,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR2</name>
+      <description>ID: ef_reator2
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76549325094693,-3.124012166947083,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR11</name>
+      <description>ID: ef_reator11
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.7633219215391,-3.1234485183491287,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR10</name>
+      <description>ID: ef_reator10
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.7633217622981,-3.1235411957050543,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR1</name>
+      <description>ID: ef_reator1
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.765493089921335,-3.124105972463798,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR9</name>
+      <description>ID: ef_pr9
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540356305012,-3.1239192741983395,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR8</name>
+      <description>ID: ef_pr8
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540340463278,-3.124011451221304,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR7</name>
+      <description>ID: ef_pr7
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540324607816,-3.124103691434842,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR6</name>
+      <description>ID: ef_pr6
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76591083117172,-3.123591743812508,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR5</name>
+      <description>ID: ef_pr5
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765910713113726,-3.1236605220922598,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR4</name>
+      <description>ID: ef_pr4
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76591059642851,-3.123728398912548,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR3</name>
+      <description>ID: ef_pr3
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76591039408261,-3.123846019668268,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR20</name>
+      <description>ID: ef_pr20
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76298178728439,-3.1235877496815974,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR2</name>
+      <description>ID: ef_pr2
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76591027849561,-3.123913238127757,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR19</name>
+      <description>ID: ef_pr19
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76298167114828,-3.1236553892630865,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR18</name>
+      <description>ID: ef_pr18
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.762981553364845,-3.12372369285963,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR17</name>
+      <description>ID: ef_pr17
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76341541124625,-3.1234500591848047,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR16</name>
+      <description>ID: ef_pr16
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7634152646347,-3.123535311339825,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR15</name>
+      <description>ID: ef_pr15
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76341510264817,-3.12362969550949,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR14</name>
+      <description>ID: ef_pr14
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76341494477993,-3.123721371462726,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR13</name>
+      <description>ID: ef_pr13
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540418560008,-3.1235568975347454,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR12</name>
+      <description>ID: ef_pr12
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540402718274,-3.12364908295342,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR11</name>
+      <description>ID: ef_pr11
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540385490045,-3.123749442401868,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR10</name>
+      <description>ID: ef_pr10
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540371583912,-3.123830350804593,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>PR1</name>
+      <description>ID: ef_pr1
+Largura: 1.37m
+Altura: 1.24m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76591015988851,-3.1239824644985883,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP9</name>
+      <description>ID: ef_ip9
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7651672837878,-3.123843141207385,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP8</name>
+      <description>ID: ef_ip8
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516716682803,-3.123911205611841,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP7</name>
+      <description>ID: ef_ip7
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516704828957,-3.123980170242105,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP6</name>
+      <description>ID: ef_ip6
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7653386737137,-3.1235921483486955,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP5</name>
+      <description>ID: ef_ip5
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76533855757759,-3.123659697496385,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP4</name>
+      <description>ID: ef_ip4
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76533844000007,-3.123728039781735,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP3</name>
+      <description>ID: ef_ip3
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76533824184112,-3.123843434132022,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP2</name>
+      <description>ID: ef_ip2
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76533812501862,-3.1239114979881863,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP18</name>
+      <description>ID: ef_ip18
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76348929509115,-3.1235889801158514,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP17</name>
+      <description>ID: ef_ip17
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76348917895504,-3.123656528749518,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP16</name>
+      <description>ID: ef_ip16
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76348906144616,-3.1237248710006,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP15</name>
+      <description>ID: ef_ip15
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76366251470992,-3.123589276878527,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP14</name>
+      <description>ID: ef_ip14
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76366239857381,-3.1236568255807304,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP13</name>
+      <description>ID: ef_ip13
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7636622812022,-3.123725167763275,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP12</name>
+      <description>ID: ef_ip12
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765167715591744,-3.1235918557667413,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP11</name>
+      <description>ID: ef_ip11
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516759945564,-3.123659404468944,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP10</name>
+      <description>ID: ef_ip10
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516748208403,-3.123727746720025,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP1</name>
+      <description>ID: ef_ip1
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76533800641153,-3.123980462824059,78</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR9</name>
+      <description>ID: ef_disjuntor9
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7644500693749,-3.1235897004678383,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR8</name>
+      <description>ID: ef_disjuntor8
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76444994922344,-3.1236596195019457,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR7</name>
+      <description>ID: ef_disjuntor7
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764449837514505,-3.1237246203971987,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR6</name>
+      <description>ID: ef_disjuntor6
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764761677199566,-3.1235902342979727,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR5</name>
+      <description>ID: ef_disjuntor5
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476155701378,-3.1236601534006163,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR4</name>
+      <description>ID: ef_disjuntor4
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476144537349,-3.1237251542958697,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR3</name>
+      <description>ID: ef_disjuntor3
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476124086548,-3.123844147116344,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR2</name>
+      <description>ID: ef_disjuntor2
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476112349389,-3.123912437211214,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR10</name>
+      <description>ID: ef_disjuntor10
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76406629086743,-3.123724325827688,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR1</name>
+      <description>ID: ef_disjuntor1
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764761010995606,-3.1239779081291994,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP9</name>
+      <description>ID: ef_busip9
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492713095373,-3.123617305839115,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP8</name>
+      <description>ID: ef_busip8
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492705984438,-3.1236586714377204,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP7</name>
+      <description>ID: ef_busip7
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492698139074,-3.1237042688515224,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP6</name>
+      <description>ID: ef_busip6
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492691748842,-3.1237415108539306,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP5</name>
+      <description>ID: ef_busip5
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492684404537,-3.1237842096914124,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP47</name>
+      <description>ID: ef_busip47
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763827751412414,-3.1234312095975234,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP46</name>
+      <description>ID: ef_busip46
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382758462119,-3.123528187939023,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP45</name>
+      <description>ID: ef_busip45
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382750486341,-3.123574655696756,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP44</name>
+      <description>ID: ef_busip44
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7638274323813,-3.123616867343133,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP43</name>
+      <description>ID: ef_busip43
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382736388021,-3.1236566908381387,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP42</name>
+      <description>ID: ef_busip42
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382729304542,-3.123697943317392,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP41</name>
+      <description>ID: ef_busip41
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382722330885,-3.123738516429434,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP40</name>
+      <description>ID: ef_busip40
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763827145198384,-3.1237839186172587,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP4</name>
+      <description>ID: ef_busip4
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492669805157,-3.123869170104049,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP39</name>
+      <description>ID: ef_busip39
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382707299083,-3.123825960361864,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP38</name>
+      <description>ID: ef_busip38
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382700092054,-3.123867932267862,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP37</name>
+      <description>ID: ef_busip37
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382692994848,-3.1239091850212617,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP36</name>
+      <description>ID: ef_busip36
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382678306238,-3.123994614222976,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP35</name>
+      <description>ID: ef_busip35
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390412236842,-3.123431224812608,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP34</name>
+      <description>ID: ef_busip34
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390395228256,-3.1235302465673125,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP33</name>
+      <description>ID: ef_busip33
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390387636853,-3.123574373498068,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP32</name>
+      <description>ID: ef_busip32
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390380567101,-3.123615552472016,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP31</name>
+      <description>ID: ef_busip31
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390373469895,-3.123656918070622,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP30</name>
+      <description>ID: ef_busip30
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763903656313936,-3.1237025155529605,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP3</name>
+      <description>ID: ef_busip3
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492661994111,-3.1239146668378583,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP29</name>
+      <description>ID: ef_busip29
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639035922057,-3.1237397575553687,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP28</name>
+      <description>ID: ef_busip28
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390351889993,-3.12378245639285,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP27</name>
+      <description>ID: ef_busip27
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390337283749,-3.12386741694256,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP26</name>
+      <description>ID: ef_busip26
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390329486431,-3.1239129134022234,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP25</name>
+      <description>ID: ef_busip25
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763903223343135,-3.1239544556534384,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP24</name>
+      <description>ID: ef_busip24
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390315415566,-3.1239947452646004,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP23</name>
+      <description>ID: ef_busip23
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485107669513,-3.123432962930354,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP22</name>
+      <description>ID: ef_busip22
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764850910006864,-3.1235299412375848,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP21</name>
+      <description>ID: ef_busip21
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485083014612,-3.123576408995318,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP20</name>
+      <description>ID: ef_busip20
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764850757629695,-3.123618620710232,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP2</name>
+      <description>ID: ef_busip2
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764926548488575,-3.123956209089073,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP19</name>
+      <description>ID: ef_busip19
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764850689197246,-3.123658444136701,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP18</name>
+      <description>ID: ef_busip18
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485061829381,-3.123699696615954,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP17</name>
+      <description>ID: ef_busip17
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485054855724,-3.123740269727996,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP16</name>
+      <description>ID: ef_busip16
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485047054974,-3.123785671915821,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP15</name>
+      <description>ID: ef_busip15
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485039830786,-3.123827713660426,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP14</name>
+      <description>ID: ef_busip14
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485032616894,-3.1238696855664245,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP13</name>
+      <description>ID: ef_busip13
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485025526551,-3.123910938319824,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP12</name>
+      <description>ID: ef_busip12
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485010848237,-3.1239963675215376,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP11</name>
+      <description>ID: ef_busip11
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492744771978,-3.1234329781454377,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP10</name>
+      <description>ID: ef_busip10
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492727749663,-3.1235319998658744,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP1</name>
+      <description>ID: ef_busip1
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7649264793011,-3.1239964984260897,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB9</name>
+      <description>ID: ef_buscsb9
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500072517905,-3.1235309936485014,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB8</name>
+      <description>ID: ef_buscsb8
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7650005762338,-3.1236176620571303,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB7</name>
+      <description>ID: ef_buscsb7
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500043662337,-3.123698938774548,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB6</name>
+      <description>ID: ef_buscsb6
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500036599449,-3.123740003326952,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB5</name>
+      <description>ID: ef_buscsb5
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500028959999,-3.1237844677310136,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB4</name>
+      <description>ID: ef_buscsb4
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500014333164,-3.123869561172832,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB3</name>
+      <description>ID: ef_buscsb3
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500000310346,-3.123951165562848,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB22</name>
+      <description>ID: ef_buscsb22
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763977943477855,-3.1234297320552264,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB21</name>
+      <description>ID: ef_buscsb21
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397777270561,-3.123529084121182,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB20</name>
+      <description>ID: ef_buscsb20
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397769281056,-3.123575598826359,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB2</name>
+      <description>ID: ef_buscsb2
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76499992526755,-3.123996464911783,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB19</name>
+      <description>ID: ef_buscsb19
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397762362309,-3.123615797592504,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB18</name>
+      <description>ID: ef_buscsb18
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397755169008,-3.1236576742671542,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB17</name>
+      <description>ID: ef_buscsb17
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397748387537,-3.1236971861613503,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB16</name>
+      <description>ID: ef_buscsb16
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397741331513,-3.1237382506452174,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB15</name>
+      <description>ID: ef_buscsb15
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763977336852,-3.12378271504928,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB14</name>
+      <description>ID: ef_buscsb14
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397719065229,-3.123867808422561,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB13</name>
+      <description>ID: ef_buscsb13
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397705049274,-3.123949412812578,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB12</name>
+      <description>ID: ef_buscsb12
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763976972519565,-3.123994712298585,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB11</name>
+      <description>ID: ef_buscsb11
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397690127294,-3.124036272917559,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB10</name>
+      <description>ID: ef_buscsb10
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500089588266,-3.1234316834240268,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB1</name>
+      <description>ID: ef_buscsb1
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76499985203042,-3.124039114437314,79</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC9.001</name>
+      <description>ID: ef_tc9.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437413156128,-3.123038808775504,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC8.001</name>
+      <description>ID: ef_tc8.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437401316011,-3.123107723288514,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC7.001</name>
+      <description>ID: ef_tc7.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7643738991861,-3.1231740592388584,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC6.001</name>
+      <description>ID: ef_tc6.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469595963832,-3.1227865468965588,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC5.001</name>
+      <description>ID: ef_tc5.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469584463474,-3.1228534626992404,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC4.001</name>
+      <description>ID: ef_tc4.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7646957299572,-3.1229201983882238,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC3.001</name>
+      <description>ID: ef_tc3.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764695525174645,-3.1230393594655963,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC2.001</name>
+      <description>ID: ef_tc2.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7646954067563,-3.1231082739443385,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC12.001</name>
+      <description>ID: ef_tc12.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437456604213,-3.122785996275003,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC11.001</name>
+      <description>ID: ef_tc11.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437445107287,-3.122852912077684,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC10.001</name>
+      <description>ID: ef_tc10.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437433634384,-3.1229196477666674,80</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC1.001</name>
+      <description>ID: ef_tc1.001
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469529276514,-3.1231746099118167,81</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV9.002</name>
+      <description>ID: ef_secv9.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452126178943,-3.123036368536457,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV8.002</name>
+      <description>ID: ef_secv8.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452114431487,-3.1231047224387285,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV7.002</name>
+      <description>ID: ef_secv7.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7645210281616,-3.1231723156810345,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV6.003</name>
+      <description>ID: ef_secv6.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511084208369,-3.1227860278017534,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV5.003</name>
+      <description>ID: ef_secv5.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511072464345,-3.1228543816697574,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV4.003</name>
+      <description>ID: ef_secv4.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765110607134574,-3.122922735400688,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV3.003</name>
+      <description>ID: ef_secv3.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511041014247,-3.123037377975041,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV2.003</name>
+      <description>ID: ef_secv2.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511029270223,-3.123105731860179,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV12.002</name>
+      <description>ID: ef_secv12.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452169373066,-3.122785018328901,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV11.002</name>
+      <description>ID: ef_secv11.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764521576256094,-3.1228533721969045,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV10.002</name>
+      <description>ID: ef_secv10.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452145878154,-3.122921725996372,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV1.003</name>
+      <description>ID: ef_secv1.003
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511017649747,-3.1231733251196188,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH9.001</name>
+      <description>ID: ef_sech9.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431339611569,-3.1230366432646752,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH8.001</name>
+      <description>ID: ef_sech8.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431327812634,-3.123105319819253,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH7.001</name>
+      <description>ID: ef_sech7.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431316384346,-3.1231718341613184,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH6.001</name>
+      <description>ID: ef_sech6.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463732392608,-3.122785196969066,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH5.001</name>
+      <description>ID: ef_sech5.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764637207034944,-3.1228532157282696,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH4.001</name>
+      <description>ID: ef_sech4.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463709273491,-3.122919726994763,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH3.001</name>
+      <description>ID: ef_sech3.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463689086948,-3.1230371975529296,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH2.001</name>
+      <description>ID: ef_sech2.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463677284581,-3.12310587407324,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH12.001</name>
+      <description>ID: ef_sech12.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431382922376,-3.1227846427836163,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH11.001</name>
+      <description>ID: ef_sech11.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431371233263,-3.12285266154282,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH10.001</name>
+      <description>ID: ef_sech10.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431359804975,-3.1229191726722405,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH1.001</name>
+      <description>ID: ef_sech1.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764636658545776,-3.123172388441006,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR7.001</name>
+      <description>ID: ef_reator7.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536925018293,-3.122725997852662,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR6.001</name>
+      <description>ID: ef_reator6.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536909464839,-3.122819009683426,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR5.001</name>
+      <description>ID: ef_reator5.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536893925114,-3.122909487585864,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR4.001</name>
+      <description>ID: ef_reator4.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536878385388,-3.122999419835636,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR3.001</name>
+      <description>ID: ef_reator3.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536863353586,-3.123087429296292,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR2.001</name>
+      <description>ID: ef_reator2.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76536847553035,-3.1231793236836487,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR1.001</name>
+      <description>ID: ef_reator1.001
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.765369110023386,-3.1232708167131937,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP6.002</name>
+      <description>ID: ef_ip6.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765169216163656,-3.1227865568686077,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP5.002</name>
+      <description>ID: ef_ip5.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516910016482,-3.122854105502274,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP4.002</name>
+      <description>ID: ef_ip4.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516898272458,-3.1229224477533557,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP3.001</name>
+      <description>ID: ef_ip3.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516878442835,-3.1230378423092517,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP2.001</name>
+      <description>ID: ef_ip2.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765168667399934,-3.1231059065937683,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR9.001</name>
+      <description>ID: ef_disjuntor9.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445140126803,-3.1230384124636856,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR8.001</name>
+      <description>ID: ef_disjuntor8.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445128389643,-3.123106702575689,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR7.001</name>
+      <description>ID: ef_disjuntor7.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445117139815,-3.123172173408004,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR6.001</name>
+      <description>ID: ef_disjuntor6.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476306088034,-3.1227850329271574,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR5.001</name>
+      <description>ID: ef_disjuntor5.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764762940728886,-3.1228549519612643,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR4.001</name>
+      <description>ID: ef_disjuntor4.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476282901994,-3.1229199528565177,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR3.001</name>
+      <description>ID: ef_disjuntor3.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476262458058,-3.12303894571126,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR2.001</name>
+      <description>ID: ef_disjuntor2.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476250720898,-3.1231072358061303,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR12.001</name>
+      <description>ID: ef_disjuntor12.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445183763643,-3.1227844997138505,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR11.001</name>
+      <description>ID: ef_disjuntor11.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764451717450655,-3.122854418747957,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR10.001</name>
+      <description>ID: ef_disjuntor10.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445160574172,-3.122919419711748,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR1.001</name>
+      <description>ID: ef_disjuntor1.001
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476239467638,-3.1231727066555792,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP9.001</name>
+      <description>ID: ef_busip9.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492734050665,-3.1229362552365427,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP8.001</name>
+      <description>ID: ef_busip8.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492726678905,-3.122979124404149,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP7.001</name>
+      <description>ID: ef_busip7.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492712086389,-3.1230640458024324,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP60.001</name>
+      <description>ID: ef_busip60.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382649052567,-3.1226317104564147,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP6.001</name>
+      <description>ID: ef_busip6.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7649270426848,-3.123109520673125,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP59.001</name>
+      <description>ID: ef_busip59.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763829669442856,-3.122723056372545,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP58.001</name>
+      <description>ID: ef_busip58.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382958995963,-3.122769320337249,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP57.001</name>
+      <description>ID: ef_busip57.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382911642356,-3.122811887961765,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP56.001</name>
+      <description>ID: ef_busip56.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763829048608855,-3.1228515080064234,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP55.001</name>
+      <description>ID: ef_busip55.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382917730579,-3.1228929792881805,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP54.001</name>
+      <description>ID: ef_busip54.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382930771868,-3.122933592356953,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP53.001</name>
+      <description>ID: ef_busip53.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382923043188,-3.1229786123857286,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP52.001</name>
+      <description>ID: ef_busip52.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7638293580306,-3.1230208644514565,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP51.001</name>
+      <description>ID: ef_busip51.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382908601676,-3.123062636385331,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP50.001</name>
+      <description>ID: ef_busip50.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382877604591,-3.123145883113454,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP5.001</name>
+      <description>ID: ef_busip5.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492697116362,-3.123151176848995,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP49.001</name>
+      <description>ID: ef_busip49.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382829667558,-3.123230805946718,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP48.001</name>
+      <description>ID: ef_busip48.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382347853699,-3.123332016647422,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP46.001</name>
+      <description>ID: ef_busip46.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390152660278,-3.1226319993374028,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP45.001</name>
+      <description>ID: ef_busip45.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390503608233,-3.12272516345608,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP44.001</name>
+      <description>ID: ef_busip44.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390496030557,-3.1227693590260555,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP43.001</name>
+      <description>ID: ef_busip43.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390488960806,-3.122810514252136,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP42.001</name>
+      <description>ID: ef_busip42.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390481863599,-3.1228517666628526,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP41.001</name>
+      <description>ID: ef_busip41.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390474025098,-3.122897327889428,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP40.001</name>
+      <description>ID: ef_busip40.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763904676554574,-3.122934503034563,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP4.001</name>
+      <description>ID: ef_busip4.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492690190751,-3.123191427694248,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP39.001</name>
+      <description>ID: ef_busip39.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639046026997,-3.122977372236438,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP38.001</name>
+      <description>ID: ef_busip38.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390445677453,-3.123062293600453,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP37.001</name>
+      <description>ID: ef_busip37.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390437866408,-3.123107768471145,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP36.003</name>
+      <description>ID: ef_busip36.003
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639043071429,-3.12314942466415,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP35.001</name>
+      <description>ID: ef_busip35.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390423781815,-3.123189675496552,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP34.001</name>
+      <description>ID: ef_busip34.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390128465255,-3.123230938309811,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP33.003</name>
+      <description>ID: ef_busip33.003
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390143723563,-3.123281900019535,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP32.003</name>
+      <description>ID: ef_busip32.003
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390111072293,-3.1233320874455384,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP31.001</name>
+      <description>ID: ef_busip31.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485264020842,-3.12254638926809,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP30.001</name>
+      <description>ID: ef_busip30.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764852486561445,-3.12263582798714,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP3.001</name>
+      <description>ID: ef_busip3.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492682935676,-3.123233654806296,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP29.001</name>
+      <description>ID: ef_busip29.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485233363517,-3.122724808643061,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP28.001</name>
+      <description>ID: ef_busip28.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485225415194,-3.1227710725392286,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP27.001</name>
+      <description>ID: ef_busip27.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485178065019,-3.122813640163744,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP26.001</name>
+      <description>ID: ef_busip26.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485171256093,-3.122853260139866,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP25.001</name>
+      <description>ID: ef_busip25.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7648518414981,-3.122894731421624,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP24.001</name>
+      <description>ID: ef_busip24.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485197180804,-3.122935344627468,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP23.001</name>
+      <description>ID: ef_busip23.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7648518944526,-3.1229803645534395,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP22.001</name>
+      <description>ID: ef_busip22.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764852022017,-3.123022616687704,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP21.001</name>
+      <description>ID: ef_busip21.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7648517500718,-3.1230643885873106,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP20.001</name>
+      <description>ID: ef_busip20.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485134503681,-3.123105959555283,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP2.001</name>
+      <description>ID: ef_busip2.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492674589251,-3.1232822177115183,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP19.001</name>
+      <description>ID: ef_busip19.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485144672455,-3.1231438378497653,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP18.001</name>
+      <description>ID: ef_busip18.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764851365147855,-3.123191306020694,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP17.001</name>
+      <description>ID: ef_busip17.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485196494419,-3.123230561196756,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP16.001</name>
+      <description>ID: ef_busip16.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485195571234,-3.123332979352739,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP15.001</name>
+      <description>ID: ef_busip15.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492800959343,-3.1225469293350385,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP14.001</name>
+      <description>ID: ef_busip14.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492785604941,-3.122636256271196,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP12.001</name>
+      <description>ID: ef_busip12.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764927553560135,-3.122812266522652,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP11.001</name>
+      <description>ID: ef_busip11.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7649274826567,-3.1228535189333684,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP10.001</name>
+      <description>ID: ef_busip10.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764927404340334,-3.122899080159944,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP1.001</name>
+      <description>ID: ef_busip1.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492665844723,-3.1233331250611567,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB9.001</name>
+      <description>ID: ef_buscsb9.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7650019606696,-3.122812033738719,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB8.001</name>
+      <description>ID: ef_buscsb8.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765001821059165,-3.1228933104561367,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB7.001</name>
+      <description>ID: ef_buscsb7.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765001750498925,-3.1229343750085405,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB6.001</name>
+      <description>ID: ef_buscsb6.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765001674035794,-3.122978839464005,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB5.001</name>
+      <description>ID: ef_buscsb5.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500152776744,-3.123063933008628,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB4.001</name>
+      <description>ID: ef_buscsb4.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765001387607896,-3.123145537415778,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB3.001</name>
+      <description>ID: ef_buscsb3.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500130970336,-3.123190836679042,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB25.001</name>
+      <description>ID: ef_buscsb25.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979314872365,-3.1226317176527383,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB24.001</name>
+      <description>ID: ef_buscsb24.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639791565923,-3.1227238183946726,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB23.001</name>
+      <description>ID: ef_buscsb23.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979076285416,-3.1227705144472035,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB22.001</name>
+      <description>ID: ef_buscsb22.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397900805888,-3.1228101692740924,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB20.001</name>
+      <description>ID: ef_buscsb20.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397893626315,-3.122852045983011,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB2.001</name>
+      <description>ID: ef_buscsb2.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500123646622,-3.123233486281677,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB19.001</name>
+      <description>ID: ef_buscsb19.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397886817389,-3.122891557842939,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB18.001</name>
+      <description>ID: ef_buscsb18.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397879761366,-3.122932622326806,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB17.001</name>
+      <description>ID: ef_buscsb17.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7639787212878,-3.1229770867480022,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB16.001</name>
+      <description>ID: ef_buscsb16.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397857508808,-3.1230621802926253,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB15.001</name>
+      <description>ID: ef_buscsb15.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397843479127,-3.123143784699776,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB14.003</name>
+      <description>ID: ef_buscsb14.003
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763978285022354,-3.123230957939069,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB14.001</name>
+      <description>ID: ef_buscsb14.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397835530804,-3.12319002376006,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB13.001</name>
+      <description>ID: ef_buscsb13.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397811177912,-3.123331869251295,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB12.001</name>
+      <description>ID: ef_buscsb12.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7650024186934,-3.122545519746597,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB11.001</name>
+      <description>ID: ef_buscsb11.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500226411981,-3.122635463441949,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB10.001</name>
+      <description>ID: ef_buscsb10.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500210961485,-3.12272536533009,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB1.001</name>
+      <description>ID: ef_buscsb1.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500106034018,-3.1233360110524777,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC6.002</name>
+      <description>ID: ef_tc6.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437547244604,-3.1222585453044345,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC5.002</name>
+      <description>ID: ef_tc5.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764375356344246,-3.122326097056508,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC4.002</name>
+      <description>ID: ef_tc4.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76437524285071,-3.1223921556057137,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC3.002</name>
+      <description>ID: ef_tc3.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7646968660594,-3.1222590959259904,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC2.002</name>
+      <description>ID: ef_tc2.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469675086707,-3.122326117891578,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>TC1.002</name>
+      <description>ID: ef_tc1.002
+Largura: 1.71m
+Altura: 1.41m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76469663622384,-3.1223928322657364,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV6.002</name>
+      <description>ID: ef_secv6.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452259943103,-3.1222579707636697,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV5.002</name>
+      <description>ID: ef_secv5.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452248197363,-3.1223263246659414,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV4.002</name>
+      <description>ID: ef_secv4.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452236451623,-3.122394678499677,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV3.002</name>
+      <description>ID: ef_secv3.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7651117477669,-3.122258980167986,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV2.002</name>
+      <description>ID: ef_secv2.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511163025802,-3.122327334070258,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV1.002</name>
+      <description>ID: ef_secv1.002
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76511151288642,-3.122395688041066,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH6.002</name>
+      <description>ID: ef_sech6.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764315708439206,-3.122257196439256,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH5.002</name>
+      <description>ID: ef_sech5.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431559154808,-3.122325215266996,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH4.002</name>
+      <description>ID: ef_sech4.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76431547729952,-3.122391726567757,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH3.002</name>
+      <description>ID: ef_sech3.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463822891432,-3.1222585657968223,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH2.002</name>
+      <description>ID: ef_sech2.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463811203177,-3.1223265844874897,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH1.002</name>
+      <description>ID: ef_sech1.002
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76463799773173,-3.1223930957882517,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP6.001</name>
+      <description>ID: ef_ip6.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76517012164095,-3.122259689588415,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP5.001</name>
+      <description>ID: ef_ip5.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76517000557348,-3.12232723825635,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP4.001</name>
+      <description>ID: ef_ip4.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7651698880646,-3.122395580575968,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP1.002</name>
+      <description>ID: ef_ip1.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76516854893012,-3.123174871421074,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR6.002</name>
+      <description>ID: ef_disjuntor6.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445257913667,-3.1222579353303432,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR5.002</name>
+      <description>ID: ef_disjuntor5.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445245898522,-3.122327854193109,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR4.002</name>
+      <description>ID: ef_disjuntor4.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445234727628,-3.1223928552254354,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR3.002</name>
+      <description>ID: ef_disjuntor3.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476396580853,-3.1222584686807227,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR2.002</name>
+      <description>ID: ef_disjuntor2.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76476384565707,-3.1223283878176344,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR1.002</name>
+      <description>ID: ef_disjuntor1.002
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764763733948136,-3.122393388712888,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP9.002</name>
+      <description>ID: ef_busip9.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76537750504439,-3.1225346073786406,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP8.002</name>
+      <description>ID: ef_busip8.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76545429290982,-3.1222266345441203,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP7.002</name>
+      <description>ID: ef_busip7.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76545413449248,-3.1223187359028826,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP6.002</name>
+      <description>ID: ef_busip6.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76545398293897,-3.1224069229413893,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP5.002</name>
+      <description>ID: ef_busip5.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76543531639273,-3.122498180479813,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP40.002</name>
+      <description>ID: ef_busip40.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76383029158099,-3.1221992600034887,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP4.002</name>
+      <description>ID: ef_busip4.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76550694649695,-3.122261162161822,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP39.002</name>
+      <description>ID: ef_busip39.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763830141125695,-3.122286818014781,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP38.002</name>
+      <description>ID: ef_busip38.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763829998907,-3.122369657705137,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP37.002</name>
+      <description>ID: ef_busip37.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382985435461,-3.122453707611504,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP36.002</name>
+      <description>ID: ef_busip36.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76382970115378,-3.1225428321596285,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP35.002</name>
+      <description>ID: ef_busip35.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390651276809,-3.1222869487822607,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP34.002</name>
+      <description>ID: ef_busip34.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390637096122,-3.1223694940401785,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP33.002</name>
+      <description>ID: ef_busip33.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763906225997005,-3.122453838378984,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP32.002</name>
+      <description>ID: ef_busip32.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390584992741,-3.1225428462095937,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP31.002</name>
+      <description>ID: ef_busip31.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485328582087,-3.122197846165789,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP30.002</name>
+      <description>ID: ef_busip30.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485320568558,-3.1222444821804203,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP3.002</name>
+      <description>ID: ef_busip3.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765506759663324,-3.1223698904548014,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP29.002</name>
+      <description>ID: ef_busip29.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485313347802,-3.1222864684105294,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP28.002</name>
+      <description>ID: ef_busip28.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485306518285,-3.1223262176120614,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP27.002</name>
+      <description>ID: ef_busip27.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485299386759,-3.122367730666764,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP26.002</name>
+      <description>ID: ef_busip26.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485292440557,-3.122408153170034,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP25.002</name>
+      <description>ID: ef_busip25.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76485284660398,-3.1224534242134294,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP24.002</name>
+      <description>ID: ef_busip24.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492930253429,-3.122200058384184,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP23.002</name>
+      <description>ID: ef_busip23.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492915571682,-3.1222854420091823,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP22.002</name>
+      <description>ID: ef_busip22.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.7649290848134,-3.1223266948311177,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP21.002</name>
+      <description>ID: ef_busip21.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492900697749,-3.1223720249529023,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP20.002</name>
+      <description>ID: ef_busip20.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492894259471,-3.1224094400097573,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP2.002</name>
+      <description>ID: ef_busip2.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76550658010537,-3.122474433571614,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP19.002</name>
+      <description>ID: ef_busip19.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492886942621,-3.122452050949287,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP18.002</name>
+      <description>ID: ef_busip18.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76524002940271,-3.122259200855241,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP17.002</name>
+      <description>ID: ef_busip17.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76524027293162,-3.122328101198348,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP16.002</name>
+      <description>ID: ef_busip16.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76524039709842,-3.1223959016005343,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP15.002</name>
+      <description>ID: ef_busip15.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76530816869702,-3.122259317641292,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP14.002</name>
+      <description>ID: ef_busip14.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76530841236321,-3.122328217847326,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP1.002</name>
+      <description>ID: ef_busip1.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76548708179943,-3.12253479530549,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP13.003</name>
+      <description>ID: ef_busip13.003
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492770030896,-3.122726915726596,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP13.002</name>
+      <description>ID: ef_busip13.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76530853639273,-3.1223960183865853,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP12.002</name>
+      <description>ID: ef_busip12.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76540440716472,-3.1222617673383644,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP11.002</name>
+      <description>ID: ef_busip11.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765403794224135,-3.122329497148044,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP10.002</name>
+      <description>ID: ef_busip10.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765403735057866,-3.1224329126352246,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB8.002</name>
+      <description>ID: ef_buscsb8.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979165240734,-3.122368382653677,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB7.002</name>
+      <description>ID: ef_buscsb7.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979020825616,-3.1224524834140643,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB6.002</name>
+      <description>ID: ef_buscsb6.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76397886817389,-3.122541235603847,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB5.002</name>
+      <description>ID: ef_buscsb5.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500301488623,-3.1221985904027165,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB4.002</name>
+      <description>ID: ef_buscsb4.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765002865254594,-3.122285650839638,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB3.002</name>
+      <description>ID: ef_buscsb3.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500272619327,-3.122366575622566,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB2.002</name>
+      <description>ID: ef_buscsb2.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500265528984,-3.122407821042568,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB1.002</name>
+      <description>ID: ef_buscsb1.002
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76500257910126,-3.1224521991935523,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV9.001</name>
+      <description>ID: ef_secv9.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452043584684,-3.1230371261722536,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV8.001</name>
+      <description>ID: ef_secv8.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452031162856,-3.123105395757601,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV7.001</name>
+      <description>ID: ef_secv7.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452018855998,-3.1231730332230287,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV6.001</name>
+      <description>ID: ef_secv6.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510976703532,-3.122786962432841,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV5.001</name>
+      <description>ID: ef_secv5.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510964328035,-3.1228550499340693,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV4.001</name>
+      <description>ID: ef_secv4.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510951870171,-3.1229235015692685,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV3.001</name>
+      <description>ID: ef_secv3.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510931004109,-3.123038194415082,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV2.001</name>
+      <description>ID: ef_secv2.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510918580565,-3.1231064640004296,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV12.001</name>
+      <description>ID: ef_secv12.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452089294403,-3.122785894224281,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV11.001</name>
+      <description>ID: ef_secv11.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452076906894,-3.1228539816569727,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV10.001</name>
+      <description>ID: ef_secv10.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76452064452462,-3.122922433360708,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECV1.001</name>
+      <description>ID: ef_secv1.001
+Largura: 2.18m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76510906273707,-3.123174101482991,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH18.001</name>
+      <description>ID: ef_sech18.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764308515447546,-3.1227854416783347,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH17.001</name>
+      <description>ID: ef_sech17.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76430839224169,-3.1228531044594003,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH16.001</name>
+      <description>ID: ef_sech16.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76430827088906,-3.1229198568712686,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH15.001</name>
+      <description>ID: ef_sech15.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764308056600086,-3.123037583858431,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH14.001</name>
+      <description>ID: ef_sech14.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76430793209009,-3.123106064107584,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>SECH13.001</name>
+      <description>ID: ef_sech13.001
+Largura: 6.61m
+Altura: 1.06m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76430781087474,-3.1231726479627078,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>REATOR811</name>
+      <description>ID: ef_reator811
+Largura: 3.07m
+Altura: 6.11m</description>
+      <styleUrl>#reactor</styleUrl>
+      <Point>
+        <coordinates>-41.76332279846284,-3.123448417446392,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP3.002</name>
+      <description>ID: ef_ip3.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76517020524248,-3.122260589060322,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP2.002</name>
+      <description>ID: ef_ip2.002
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76517008210526,-3.1223283124961148,72</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>IP1.001</name>
+      <description>ID: ef_ip1.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.765168539801216,-3.123175957046451,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR13</name>
+      <description>ID: ef_disjuntor13
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76406616045453,-3.1237253978400195,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR12</name>
+      <description>ID: ef_disjuntor12
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76445029862703,-3.12359090705142,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>DISJUNTOR11</name>
+      <description>ID: ef_disjuntor11
+Largura: 4.92m
+Altura: 1.48m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.764450171937774,-3.1236605488899976,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP47.001</name>
+      <description>ID: ef_busip47.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763823623226656,-3.1233328321022515,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP36.x001</name>
+      <description>ID: ef_busip36.x001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390467003393,-3.123150224604049,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP33.001</name>
+      <description>ID: ef_busip33.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390138445273,-3.123282817893469,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP32.001</name>
+      <description>ID: ef_busip32.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76390129343826,-3.1233329729959864,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP3.003</name>
+      <description>ID: ef_busip3.003
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76550666075544,-3.122370824263452,76</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSIP13.001</name>
+      <description>ID: ef_busip13.001
+Largura: 1.45m
+Altura: 1.05m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.76492851456587,-3.1227277755501874,77</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <name>BUSCSB21.001</name>
+      <description>ID: ef_buscsb21.001
+Largura: 1.56m
+Altura: 1.10m</description>
+      <styleUrl>#other</styleUrl>
+      <Point>
+        <coordinates>-41.763979673645096,-3.1228533428975878,77</coordinates>
+      </Point>
+    </Placemark>
+  </Document>
+</kml>
