@@ -3,6 +3,7 @@
 ###############################################################################
 import math
 
+import pandas as pd
 from sympy import false
 
 from roverclass import ObstacleLoader
@@ -36,6 +37,68 @@ class SegmentUtils:
 
         return data  # dict: {label: [[lat, lon], [lat, lon], ...]}
 
+
+    # @staticmethod
+    # def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
+    #                                 offset_lon_meters=0.0):
+    #     import os
+    #     import math
+    #     from xml.dom.minidom import Document
+    #     from ajusteplanilha import AjustePlanilha
+
+    #     def distance(p1, p2):
+    #         return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
+
+    #     if not os.path.exists(output_folder):
+    #         os.makedirs(output_folder)
+
+    #     # Converter pontos (x, y) para (lat, lon)
+    #     pontos_xy = [(px, py) for px, py, _ in perimeter_points]
+    #     pontos_xy_offset = [(px + offset_lon_meters, py + offset_lat_meters) for px, py, _ in perimeter_points]
+    #     gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_xy_offset, xlsx_path)
+    #     coord_map = dict(zip(pontos_xy, gps_coords))
+
+    #     # Criar documento KML uma única vez
+    #     doc = Document()
+    #     kml = doc.createElement("kml")
+    #     kml.setAttribute("xmlns", "http://www.opengis.net/kml/2.2")
+    #     doc.appendChild(kml)
+
+    #     document = doc.createElement("Document")
+    #     kml.appendChild(document)
+
+    #     # Adicionar todos os obstáculos ao mesmo KML
+    #     for obs in obstacles:
+    #         ox, oy = obs["pos"]
+    #         label = obs["label"]
+    #         pontos_obs = []
+
+    #         for px, py, _ in perimeter_points:
+    #             if distance((ox, oy), (px, py)) <= threshold:
+    #                 lat, lon = coord_map[(px, py)]
+    #                 pontos_obs.append((lat, lon))
+
+    #         for lat, lon in pontos_obs:
+    #             placemark = doc.createElement("Placemark")
+
+    #             # Adicionar label do obstáculo como nome
+    #             name = doc.createElement("name")
+    #             name.appendChild(doc.createTextNode(label))
+    #             placemark.appendChild(name)
+
+    #             point = doc.createElement("Point")
+    #             coordinates = doc.createElement("coordinates")
+    #             coordinates.appendChild(doc.createTextNode(f"{lon},{lat},0"))
+
+    #             point.appendChild(coordinates)
+    #             placemark.appendChild(point)
+    #             document.appendChild(placemark)
+
+    #     filename = os.path.join(output_folder, "all_obstacles.kml")
+    #     with open(filename, "w", encoding="utf-8") as f:
+    #         f.write(doc.toprettyxml(indent="  "))
+
+    #     print(f"✅ KML único salvo com todos os obstáculos: {filename}")
 
     @staticmethod
     def save_observation_points_to_kml(obstacles, perimeter_points, threshold, xlsx_path, output_folder, offset_lat_meters=0.0,
@@ -110,19 +173,40 @@ class SegmentUtils:
         except Exception as e:
             print(f"[ERRO] Falha ao converter pontos para GPS: {e}")
             return
-
+        
         # Agrupa pontos por obstáculo
         obs_points_map = {obs["label"]: [] for obs in obstacles}
+
         for obs in obstacles:
             ox, oy = obs["pos"]
             label = obs["label"]
+
             for px, py, ponto_label in perimeter_points:
-                if distance((ox, oy), (px, py)) <= threshold:
+                # Prefixo antes do ponto (ex: "machine1.1" -> "machine1")
+                ponto_prefix = ponto_label.split(".")[0]
+
+                # Condição de associação:
+                # 1) Prefixo igual OU
+                # 2) Dentro do threshold de distância
+                if ponto_prefix == label: # or distance((ox, oy), (px, py)) <= threshold:
                     lat, lon = coord_map[(px, py)]
                     obs_points_map[label].append({
                         "label": ponto_label,
                         "coord": [lat, lon]
                     })
+
+        # # Agrupa pontos por obstáculo
+        # obs_points_map = {obs["label"]: [] for obs in obstacles}
+        # for obs in obstacles:
+        #     ox, oy = obs["pos"]
+        #     label = obs["label"]
+        #     for px, py, ponto_label in perimeter_points:
+        #         if distance((ox, oy), (px, py)) <= threshold:
+        #             lat, lon = coord_map[(px, py)]
+        #             obs_points_map[label].append({
+        #                 "label": ponto_label,
+        #                 "coord": [lat, lon]
+        #             })
 
         # Salva em JSON
         with open(json_path, "w", encoding="utf-8") as f:
@@ -660,13 +744,32 @@ class SegmentUtils:
 
 
     @staticmethod
-    def save_graph_json(G, filename):
+    def save_graph_json(G, filename, filename_geo, xlsx_path):
+        from ajusteplanilha import AjustePlanilha
+
         graph_data = {
             "nodes": {str(node): G.nodes[node] for node in G.nodes()},
             "edges": [(str(u), str(v), G.edges[u, v]["weight"]) for u, v in G.edges()]
         }
         with open(filename, "w") as f:
             json.dump(graph_data, f, indent=4)
+
+        pontos_para_converter = [
+            (px, py) 
+            for node in G.nodes() if "pos" in G.nodes[node]
+            for px, py in [G.nodes[node]["pos"]]
+        ]
+        gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_para_converter, xlsx_path)
+
+        geo_nodes = []
+        for node, coord in zip(G.nodes(), gps_coords):
+            geo_nodes.append({
+                "label": str(node),
+                "coord": coord
+            })
+
+        with open(filename_geo, "w") as f:
+            json.dump(geo_nodes, f, indent=4)
 
     @staticmethod
     def load_graph_json(filename):

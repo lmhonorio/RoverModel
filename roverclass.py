@@ -15,7 +15,6 @@ class ObstacleLoader:
     def load_obstacles(self):
         df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
 
-
         self.obstacles = [
             {
                 "pos": (row["Px"], row["Py"]),

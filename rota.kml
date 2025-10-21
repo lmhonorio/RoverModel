@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2">
+    <Document id="1">
+        <Style id="4">
+            <LineStyle id="5">
+                <color>ffff0000</color>
+                <colorMode>normal</colorMode>
+                <width>3</width>
+            </LineStyle>
+        </Style>
+        <Style id="8">
+            <IconStyle id="9">
+                <color>ff008000</color>
+                <colorMode>normal</colorMode>
+                <scale>1</scale>
+                <heading>0</heading>
+                <Icon id="10">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+        </Style>
+        <Style id="13">
+            <IconStyle id="14">
+                <color>ff0000ff</color>
+                <colorMode>normal</colorMode>
+                <scale>1</scale>
+                <heading>0</heading>
+                <Icon id="15">
+                    <href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+                </Icon>
+            </IconStyle>
+        </Style>
+        <Placemark id="3">
+            <name>Minha Rota</name>
+            <styleUrl>#4</styleUrl>
+            <LineString id="2">
+                <coordinates>-41.765399197300724,-3.123211593420434,0.0 -41.7655257434927,-3.123211593420434,0.0 -41.7655257434927,-3.123247586653706,0.0 -41.76550715497968,-3.123272281611054,0.0 -41.76547542711749,-3.123272281611054,0.0 -41.76547542711749,-3.1232835798869782,0.0 -41.76547542711749,-3.1233082748443266,0.0 -41.76550715497968,-3.1233082748443266,0.0 -41.765543140872666,-3.1233082748443266,0.0 -41.76557912676565,-3.1233195731202508,0.0 -41.76557912676565,-3.1233624671561717,0.0 -41.76557912676565,-3.123389462081126,0.0 -41.76557912676565,-3.12341645700608,0.0 -41.765579229325446,-3.123417996616633,0.0 -41.76561511265864,-3.123417996616633,0.0 -41.76561511265864,-3.123463546053339,0.0 -41.76564796597964,-3.123463546053339,0.0 -41.76564796597964,-3.123494639707732,0.0 -41.76565109855162,-3.123494639707732,0.0 -41.76565109855162,-3.123697026958929,0.0 -41.76568708444461,-3.123697026958929,0.0 -41.76572307033759,-3.123697026958929,0.0 -41.76572425607277,-3.123697026958929,0.0 -41.76572425607277,-3.12374741748551,0.0 -41.76572307033759,-3.12374741748551,0.0 -41.76572307033759,-3.1239498047367067,0.0 -41.76572425607277,-3.1239498047367067,0.0 -41.76572425607277,-3.124000195263288,0.0</coordinates>
+            </LineString>
+        </Placemark>
+        <Placemark id="7">
+            <name>Início</name>
+            <styleUrl>#8</styleUrl>
+            <Point id="6">
+                <coordinates>-41.765399197300724,-3.123211593420434,0.0</coordinates>
+            </Point>
+        </Placemark>
+        <Placemark id="12">
+            <name>Fim</name>
+            <styleUrl>#13</styleUrl>
+            <Point id="11">
+                <coordinates>-41.76572425607277,-3.124000195263288,0.0</coordinates>
+            </Point>
+        </Placemark>
+    </Document>
+</kml>

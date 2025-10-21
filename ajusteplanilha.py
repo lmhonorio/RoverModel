@@ -19,11 +19,27 @@ class AjustePlanilha:
             # lista = ast.literal_eval(lista)
             lista = json.loads(lista)
         return [(y, x) for x, y in lista]
+    
+    @staticmethod
+    def posicao_em_metros_lat(lat, lat_ref=None, file_path_parametros=None):
+        if lat_ref is None:
+            try:
+                df_params = pd.read_excel(file_path_parametros, sheet_name="ParametrosConversao")
+                lat_ref = float(df_params[df_params["Parametro"] == "Latitude Média"]["Valor"].values[0])
+            except Exception as e:
+                raise ValueError(f"Erro ao ler parâmetros de conversão: {e}")
 
-    def posicao_em_metros_lat(self, lat, lat_ref):
         return (lat - lat_ref) * 111132.0
-
-    def posicao_em_metros_lon(self, lon, lon_ref, lat_ref):
+    
+    @staticmethod
+    def posicao_em_metros_lon(lon, lon_ref=None, lat_ref=None, file_path_parametros=None):
+        if lon_ref is None or lat_ref is None:
+            try:
+                df_params = pd.read_excel(file_path_parametros, sheet_name="ParametrosConversao")
+                lon_ref = float(df_params[df_params["Parametro"] == "Longitude Média"]["Valor"].values[0])
+                lat_ref = float(df_params[df_params["Parametro"] == "Latitude Média"]["Valor"].values[0])
+            except Exception as e:
+                raise ValueError(f"Erro ao ler parâmetros de conversão: {e}")
         return (lon - lon_ref) * (111320.0 * math.cos(math.radians(lat_ref)))
 
     def separar_altura(self, lista):
@@ -104,7 +120,7 @@ class AjustePlanilha:
         plt.show()
 
     @staticmethod
-    def metros_para_geocoordenadas(lista_metros, file_path_parametros):
+    def metros_para_geocoordenadas(lista_metros, file_path_parametros, offset_lat_m=0.0, offset_lon_m=0.0):
         """
         Converte lista de coordenadas em metros para coordenadas geográficas (lat, lon),
         lendo os parâmetros da aba 'ParametrosConversao' de um arquivo Excel.
@@ -125,8 +141,8 @@ class AjustePlanilha:
 
         resultado = []
         for x, y in lista_metros:
-            lon = x / (111320.0 * math.cos(math.radians(med_lat))) + med_lon
-            lat = y / 111132.0 + med_lat
+            lon = (x + offset_lon_m) / (111320.0 * math.cos(math.radians(med_lat))) + med_lon
+            lat = (y + offset_lat_m) / 111132.0 + med_lat
             resultado.append((lat, lon))
         return resultado
     

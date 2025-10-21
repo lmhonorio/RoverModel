@@ -11,11 +11,13 @@ from networkx.algorithms.approximation import traveling_salesman_problem as tsp
 
 
 class FixedTaskPlanner:
+    """ Planejador de tarefas fixas e distribuídas para múltiplos robôs com otimização TSP. """
+
     def __init__(self, grafo_mapa, mission_positions, mission_times, mission_execution):
-        self.grafo_mapa = grafo_mapa
-        self.mission_positions = mission_positions
-        self.mission_times = mission_times
-        self.mission_execution = mission_execution
+        self.grafo_mapa = grafo_mapa # Grafo completo do mapa
+        self.mission_positions = mission_positions # Nó do grafo onde a missão deve ser executada
+        self.mission_times = mission_times # Tempo de execução da missão
+        self.mission_execution = mission_execution # Quais robôs podem executar a missão
 
 
     @staticmethod
@@ -48,6 +50,9 @@ class FixedTaskPlanner:
 
     @staticmethod
     def tsp_nearest_neighbor(G, ponto_inicial, pontos):
+        """
+        Implementa o algoritmo do vizinho mais próximo para o TSP.
+        """
         nao_visitados = set(pontos)
         atual = ponto_inicial
         rota = [atual]
@@ -65,6 +70,12 @@ class FixedTaskPlanner:
 
     @staticmethod
     def clusterizar_pontos_balanceado(G, pontos, robots_positions, mission_execution):
+        """
+        G: Grafo completo do mapa
+        pontos: Dicionário de pontos a serem distribuídos {label: (lat, lon)}
+        robots_positions: Posições iniciais dos robôs {robot_id: label}
+        mission_execution: Quais robôs podem executar cada missão {label: [robot_ids]}
+        """
         os.environ["OMP_NUM_THREADS"] = "1"
         # Obter coordenadas dos pontos
         labels_pontos = list(pontos.keys())
@@ -99,6 +110,9 @@ class FixedTaskPlanner:
         return pontos_por_robo
 
     def a_star(self, start, goal):
+        """
+        Implementa o algoritmo A* para encontrar o caminho mais curto entre dois pontos.
+        """
         if isinstance(start, list): start = start[0]
         if isinstance(goal, list): goal = goal[0]
 
@@ -142,11 +156,21 @@ class FixedTaskPlanner:
 
     def distribute_and_schedule_tasks(self, robots_positions, fixed_tasks_per_robot, distributed_tasks,
                                       method="permutation"):
+        """
+        Distribui tarefas fixas e distribuídas entre múltiplos robôs e otimiza a rota usando TSP.
+        robots_positions: Posições iniciais dos robôs {robot_id: label}
+        fixed_tasks_per_robot: Tarefas fixas por robô {robot_id: [labels]}
+        distributed_tasks: Tarefas distribuídas a serem alocadas [labels]
+        method: Método de planejamento ("permutation" ou "nearest")
+        """
         if method == "nearest":
             return self.nearest_neighbor_planner(robots_positions, fixed_tasks_per_robot, distributed_tasks)
 
 
     def nearest_neighbor_planner(self, robots_positions, fixed_tasks_per_robot, distributed_tasks):
+        """
+        Planejador baseado no algoritmo do vizinho mais próximo com otimização TSP.
+        """
         robot_time = {robot: 0 for robot in robots_positions}
         plan = {robot: [] for robot in robots_positions}
         schedule = []
