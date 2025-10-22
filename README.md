@@ -58,7 +58,7 @@ Primeiro, configure o ambiente. É recomendado o uso de um ambiente virtual Pyth
 
 3.  **Instalar as dependências Python:**
     ```bash
-    pip install -r requirements-criar-pontos-observacao.txt
+    pip install -r requirements.txt
     ```
     *(Nota: Este `requirements` contém as bibliotecas principais como `pandas`, `networkx`, `shapely`, etc., usadas em todo o projeto).*
 
