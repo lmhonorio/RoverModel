@@ -104,24 +104,21 @@ class AjustePlanilha:
         plt.show()
 
     @staticmethod
-    def metros_para_geocoordenadas(lista_metros, file_path_parametros):
+    def metros_para_geocoordenadas(lista_metros, file_path_parametros=None):
         """
         Converte lista de coordenadas em metros para coordenadas geográficas (lat, lon),
-        lendo os parâmetros da aba 'ParametrosConversao' de um arquivo Excel.
+        usando valores padrão de conversão.
 
         Parâmetros:
             - lista_metros: lista de [x, y] ou [(x1, y1), (x2, y2), ...]
-            - file_path_parametros: caminho do arquivo Excel com aba 'ParametrosConversao'
+            - file_path_parametros: (ignorado) mantido para compatibilidade
 
         Retorna:
             Lista de (latitude, longitude)
         """
-        try:
-            df_params = pd.read_excel(file_path_parametros, sheet_name="ParametrosConversao")
-            med_lat = float(df_params[df_params["Parametro"] == "Latitude Média"]["Valor"].values[0])
-            med_lon = float(df_params[df_params["Parametro"] == "Longitude Média"]["Valor"].values[0])
-        except Exception as e:
-            raise ValueError(f"Erro ao ler parâmetros de conversão: {e}")
+        # Valores padrão de conversão
+        med_lat = -3.123139
+        med_lon = -41.764440
 
         resultado = []
         for x, y in lista_metros:

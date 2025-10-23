@@ -17,7 +17,13 @@ class ObstacleLoader:
         if self.file_path.endswith('.csv'):
             df = pd.read_csv(self.file_path)
         else:
-            df = pd.read_excel(self.file_path, sheet_name=self.sheet_name)
+            result = pd.read_excel(self.file_path, sheet_name=self.sheet_name, engine='openpyxl')
+            # Se sheet_name é None, pd.read_excel retorna um dicionário
+            if isinstance(result, dict):
+                # Pega o primeiro sheet
+                df = list(result.values())[0]
+            else:
+                df = result
 
 
         self.obstacles = [
