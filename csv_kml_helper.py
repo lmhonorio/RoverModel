@@ -35,3 +35,8 @@ def save_observation_points_to_kml_csv(obstacles, observation_points, threshold,
 
 __all__ = ['save_observation_points_to_kml_csv']
 
+
+
+
+
+
