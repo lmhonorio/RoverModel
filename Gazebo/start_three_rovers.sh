@@ -15,7 +15,8 @@ ARDUPILOT_ROVER_DIR="${ARDUPILOT_DIR}/Rover"
 PARAM_FILE="$ARDUPILOT_ROVER_DIR/gzrover.param"
 
 # Localização padrão
-DEFAULT_LOCATION="SEParnaiba"
+#DEFAULT_LOCATION="SEParnaiba"
+DEFAULT_LOCATION="ARGO"
 
 # ===================== PARÂMETROS =====================
 QGC_PORT=14550          # QGC recebe de todas as instâncias
@@ -203,6 +204,49 @@ kill_existing_processes() {
 
 # ===================== EXECUTAR LIMPEZA DE PROCESSOS =====================
 kill_existing_processes
+
+# ===================== LIMPAR ARQUIVOS DE ESTADO DO SITL =====================
+echo "🧹 Limpando arquivos de estado do ArduPilot SITL e Gazebo..."
+echo ""
+
+# Limpar eeprom.bin e arquivos de terrain que podem persistir estado antigo
+if [ -f "$ARDUPILOT_ROVER_DIR/eeprom.bin" ]; then
+    echo "  🗑️  Removendo eeprom.bin (parâmetros salvos)"
+    rm -f "$ARDUPILOT_ROVER_DIR/eeprom.bin"
+fi
+
+if [ -d "$ARDUPILOT_ROVER_DIR/terrain" ]; then
+    echo "  🗑️  Removendo pasta terrain"
+    rm -rf "$ARDUPILOT_ROVER_DIR/terrain"
+fi
+
+# Limpar arquivos de estado de múltiplas instâncias
+for i in {0..2}; do
+    if [ -f "$ARDUPILOT_ROVER_DIR/eeprom${i}.bin" ]; then
+        echo "  🗑️  Removendo eeprom${i}.bin"
+        rm -f "$ARDUPILOT_ROVER_DIR/eeprom${i}.bin"
+    fi
+done
+
+# Limpar cache e estado do Gazebo
+if [ -d "$HOME/.gazebo/log" ]; then
+    echo "  🗑️  Limpando logs do Gazebo"
+    rm -rf "$HOME/.gazebo/log/"*
+fi
+
+if [ -f "$HOME/.gazebo/server-11345/default.log" ]; then
+    echo "  🗑️  Removendo logs de servidor do Gazebo"
+    rm -f "$HOME/.gazebo/server-"*/default.log 2>/dev/null || true
+fi
+
+# Limpar possíveis arquivos de estado de modelos
+if [ -d "/tmp/.gazebo" ]; then
+    echo "  🗑️  Limpando cache temporário do Gazebo"
+    rm -rf /tmp/.gazebo 2>/dev/null || true
+fi
+
+echo "✅ Limpeza concluída!"
+echo ""
 
 echo "🚀 Iniciando $NUM_ROVERS rover(s) com mundo: $WORLD_NAME"
 echo ""

@@ -137,3 +137,9 @@ Isso significa que o Gazebo espera o ArduPilot enviar comandos sincronizados.
 
 
 
+
+
+
+
+
+
