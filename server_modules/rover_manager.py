@@ -5,9 +5,9 @@ Módulo para gerenciamento de robôs e mapeamento de identificadores
 # Mapeamento de rovers do banco Django para identificadores do mission_server
 ROVER_ID_MAPPING = {
     # Mapear identifiers do banco para IDs simples do mission_server
-    "Rover-Beta": "R1",
-    "Rover-Charlie": "R2", 
-    "Rover-Delta": "R3"
+    "Rover_Beta": "R1",
+    "Rover_Charlie": "R2", 
+    "Rover_Delta": "R3"
 }
 
 # Mapeamento reverso para logs e debug
@@ -18,7 +18,7 @@ def map_rover_identifier_to_mission_id(rover_identifier):
     Mapeia identifier do banco Django para ID do mission_server
     
     Args:
-        rover_identifier: Identifier do banco (ex: "Rover-Beta")
+        rover_identifier: Identifier do banco (ex: "Rover_Beta")
     
     Returns:
         str: ID mapeado (ex: "R1") ou identifier original se não encontrado
@@ -47,7 +47,7 @@ def create_rover_config_from_frontend_data(rover_data, index):
     # Configuração para mission_server
     config = {
         'name': mission_id,  # ID mapeado (R1, R2, R3, etc.)
-        'channel': f"udp:0.0.0.0:145{5+index}1",  # 14551, 14561, 14571, etc.
+        'channel': f"udp:0.0.0.0:{14551 + (index * 100)}",  # 14551, 14651, 14751, etc.
         'source_system': index + 1,
         # Dados originais para referência
         'original_identifier': original_identifier,
@@ -80,12 +80,12 @@ def create_position_monitoring_manager():
         },
         {
             'name': 'R2', 
-            'channel': 'udp:0.0.0.0:14561',
+            'channel': 'udp:0.0.0.0:14651',
             'source_system': 2
         },
         {
             'name': 'R3',
-            'channel': 'udp:0.0.0.0:14571', 
+            'channel': 'udp:0.0.0.0:14751', 
             'source_system': 3
         }
     ]

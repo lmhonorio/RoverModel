@@ -63,16 +63,28 @@ def preparar_e_enviar_missoes(
         _ = mm.set_home_to_current(robot=robot["name"])
         print(all_states[robot["name"]])
 
-    # 4) Lê lat/lon atuais dos dois primeiros robôs (R1/R2) e converte para x,y
-    #    (ajuste se houver mais robôs)
-    lat1, lon1 = get_latlon(all_states, "R1")
-    lat2, lon2 = get_latlon(all_states, "R2")
-
-    tx1, ty1 = MissionManager.gps_to_xy(lat1, lon1, lat_ref, lon_ref)
-    tx2, ty2 = MissionManager.gps_to_xy(lat2, lon2, lat_ref, lon_ref)
-
-    print((tx1, ty1))
-    print((tx2, ty2))
+    # 4) Lê lat/lon atuais de todos os robôs e converte para x,y
+    robot_positions_xy = {}
+    
+    for i, robot in enumerate(robots):
+        robot_name = robot["name"]  # Nome mapeado (R1, R2, R3, etc.)
+        lat, lon = get_latlon(all_states, robot_name)
+        
+        # Se o robô não estiver conectado, usar posição padrão
+        if lat is None or lon is None:
+            print(f"⚠️  Robô {robot_name} não conectado, usando posição padrão")
+            if i == 0:
+                # Primeiro robô: usar posição de referência
+                lat, lon = lat_ref, lon_ref
+            else:
+                # Outros robôs: usar offset baseado no índice
+                offset_m = 3.0 * i  # 3 metros por robô
+                lat = lat_ref + (offset_m / 111132.0)  # ~3m norte por robô
+                lon = lon_ref + (offset_m / (111132.0 * 0.99))  # ~3m leste por robô
+        
+        tx, ty = MissionManager.gps_to_xy(lat, lon, lat_ref, lon_ref)
+        robot_positions_xy[robot_name] = (tx - deltax_m, ty - deltay_m)
+        print(f"📍 {robot_name}: ({tx - deltax_m:.2f}, {ty - deltay_m:.2f})")
 
     # 5) Executa o planner com as posições reais (corrigidas pelos deltas)
     saida = run_planner(
@@ -81,10 +93,7 @@ def preparar_e_enviar_missoes(
         file_path_parametros,
         missions,
         mission_execution_config,
-        robot_positions_xy={
-            "R1": (tx1 - deltax_m, ty1 - deltay_m),
-            "R2": (tx2 - deltax_m, ty2 - deltay_m),
-        },
+        robot_positions_xy=robot_positions_xy,
         do_plots=do_plots,
     )
 
