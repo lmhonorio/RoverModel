@@ -643,6 +643,11 @@ def run_planner(
     observacao_por_obstaculo = SegmentUtils.load_observation_points_from_json(observation_points_json_path)  # noqa
     mission_positions = MultiGraphPlanner.gerar_mission_positions_from_json(observacao_por_obstaculo, missions)  # noqa
 
+    # Validar se há pontos de missão
+    if not mission_positions or all(len(pts) == 0 for pts in mission_positions.values()):
+        raise ValueError(f"Nenhum ponto de observação encontrado para as missões: {missions}. "
+                        f"Verifique se os IDs das missões correspondem aos dados em {observation_points_json_path}")
+
     point_mission_positions = {}
     for mission, points in mission_positions.items():
         for p in points:

@@ -12,20 +12,12 @@ from csv_kml_helper import save_observation_points_to_kml_csv
 
 
 ###############################################################################
-# CONFIGURAÇÕES PADRÃO
-###############################################################################
-# Parâmetros de conversão de coordenadas
-LATITUDE_MEDIA = -3.123139
-LONGITUDE_MEDIA = -41.764440
-
-
-###############################################################################
 # MAIN
 ###############################################################################
 def main():
     # Config
     # file_path = "./planilhas/obstaculos_processado6.xlsx"
-    file_path = "./Gazebo/todos_pontos_gps.csv"  # Usando CSV que já inclui os taludes
+    file_path = "./Gazebo/todos_pontos_gps_modificado.csv"
     sheet_name = None  # CSV não usa sheet_name
     # grafo_path = "./jsons/graph9F_new.json"
     grafo_path = "./jsons/graph_equipment.json"
@@ -33,21 +25,13 @@ def main():
     observation_path ="./jsons/obs_equipment.json"
     observation_folter = "./pontos_observacao"
     padding = 15
-    margin = 1  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 1.5
     threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
-
-    print(f"📍 Usando parâmetros de conversão:")
-    print(f"   Latitude Média: {LATITUDE_MEDIA}")
-    print(f"   Longitude Média: {LONGITUDE_MEDIA}")
 
     # Carregar obstáculos
     loader = ObstacleLoader(file_path, sheet_name)
     obstacles = loader.get_obstacles()
-    
-    print(f"📊 Total de obstáculos carregados: {len(obstacles)}")
-    taludes = [o for o in obstacles if 'talude' in o['label'].lower()]
-    print(f"📊 Taludes encontrados: {len(taludes)}")
 
     # AABBs
 

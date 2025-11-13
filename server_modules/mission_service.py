@@ -2,6 +2,7 @@
 Módulo para execução e gerenciamento de missões
 """
 
+import os
 import time
 from datetime import datetime
 from mission_bridgetoap import preparar_e_enviar_missoes
@@ -14,10 +15,25 @@ class MissionService:
         self.mission_manager = None
         self.mission_active = False
         
-        # Configurações padrão
-        self.graph_path = "./jsons/graph_equipament.json"
-        # self.observation_points_json_path = "./jsons/obpc_7.json"
-        self.parameters_file_path = "./Gazebo/todos_pontos_gps.xlsx"
+        # Configurações com caminhos relativos ao diretório RoverModel
+        # (assumindo que o servidor executa de /home/viki/OLHE-5G-Dashboard/RoverModel/)
+        self.graph_path = "./jsons/graph_equipment.json"
+        self.observation_points_json_path = "./jsons/obs_equipment.json"
+        self.parameters_file_path = "./planilhas/equipment_processado.xlsx"
+        
+        # Validar se arquivos existem ao inicializar
+        for path_name, path_value in [
+            ("graph_path", self.graph_path),
+            ("observation_points_json_path", self.observation_points_json_path),
+            ("parameters_file_path", self.parameters_file_path)
+        ]:
+            if not os.path.exists(path_value):
+                abs_path = os.path.abspath(path_value)
+                print(f"⚠️  AVISO: Arquivo não encontrado: {path_name} = {path_value} (absoluto: {abs_path})")
+            else:
+                abs_path = os.path.abspath(path_value)
+                print(f"✅ Arquivo encontrado: {path_name} = {abs_path}")
+        
         self.deltax_m = -2
         self.deltay_m = -12.0
     
@@ -272,7 +288,16 @@ class MissionService:
                 "status_code": 200
             }
             
+        except ValueError as e:
+            # Erros de validação (arrays vazios, missões inválidas, etc.)
+            print(f"\n❌ Erro de validação: {str(e)}")
+            return {
+                "success": False,
+                "message": f"Validação falhou: {str(e)}",
+                "status_code": 400
+            }
         except Exception as e:
+            # Outros erros
             print(f"\n❌ Erro durante execução: {str(e)}")
             import traceback
             traceback.print_exc()

@@ -8,6 +8,26 @@ set -euo pipefail
 #          ./start_three_rovers.sh 3  (abre 3 rovers)
 #          ./start_three_rovers.sh    (pergunta quantos rovers)
 
+# ===================== DESATIVAR VENV =====================
+echo "🔍 Verificando e desativando ambientes virtuais Python..."
+if [[ -n "${VIRTUAL_ENV:-}" ]]; then
+    echo "  ⚠️  Ambiente virtual detectado: $VIRTUAL_ENV"
+    echo "  🔓 Desativando venv..."
+    deactivate 2>/dev/null || true
+    unset VIRTUAL_ENV
+    unset PYTHONHOME
+    echo "  ✅ Venv desativado!"
+else
+    echo "  ✅ Nenhum venv ativo"
+fi
+
+# Limpar variáveis de ambiente relacionadas ao venv
+unset VIRTUAL_ENV
+unset PYTHONHOME
+export PATH=$(echo "$PATH" | sed -e 's|[^:]*venv[^:]*:||g' -e 's|:[^:]*venv[^:]*||g')
+echo "  ✅ Variáveis de ambiente limpas"
+echo ""
+
 # ===================== CONFIGURAÇÃO =====================
 # Diretório do ArduPilot
 ARDUPILOT_DIR="${HOME}/ardupilot/ardupilot"
@@ -20,8 +40,8 @@ DEFAULT_LOCATION="ARGO"
 
 # ===================== PARÂMETROS =====================
 QGC_PORT=14550          # QGC recebe de todas as instâncias
-MAV_BASE=14555          # porta base p/ MAVROS (instância 0)
-STEP=10                 # incremento por instância: 14555, 14565, 14575...
+MAV_BASE=14551          # porta base p/ MAVROS (instância 0)
+STEP=100                # incremento por instância: 14551, 14651, 14751...
 SYSID0=1                # SYSID da instância 0
 I0=0                    # índice base do --instance (-I)
 FRAME="rover-skid"
@@ -264,7 +284,7 @@ echo "✅ GAZEBO_PLUGIN_PATH configurado com plugin ArduPilot"
 echo ""
 
 # Iniciar Gazebo com roslaunch
-gazebo_cmd="export GAZEBO_PLUGIN_PATH=/home/viki/catkin_ws/src/ardupilot_gazebo/build:\${GAZEBO_PLUGIN_PATH} && cd /home/viki/catkin_ws && source devel/setup.bash && roslaunch rover_argo_gazebo multi_rover_argo.launch N:=$NUM_ROVERS world_name:=$WORLD_NAME; echo; echo 'Gazebo finalizado. Pressione ENTER para fechar.'; read"
+gazebo_cmd="unset VIRTUAL_ENV; unset PYTHONHOME; export GAZEBO_PLUGIN_PATH=/home/viki/catkin_ws/src/ardupilot_gazebo/build:\${GAZEBO_PLUGIN_PATH} && cd /home/viki/catkin_ws && source devel/setup.bash && roslaunch rover_argo_gazebo multi_rover_argo.launch N:=$NUM_ROVERS world_name:=$WORLD_NAME; echo; echo 'Gazebo finalizado. Pressione ENTER para fechar.'; read"
 
 open_term "ROS Gazebo - $NUM_ROVERS Rovers" "$gazebo_cmd"
 
@@ -287,10 +307,14 @@ for ((i=0; i<NUM_ROVERS; i++)); do
 
   # Comando que será executado DENTRO de cada terminal
   remote_cmd=$(cat <<EOF
+# Desativar venv se existir
+unset VIRTUAL_ENV;
+unset PYTHONHOME;
 export PATH=0;
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games";
 source ~/.bashrc 2>/dev/null || true;
 [ -d "\$HOME/.local/bin" ] && export PATH="\$PATH:\$HOME/.local/bin";
+echo "[ENV] VENV desativado (se existia)";
 echo "[ENV] PATH=\$PATH";
 echo "[ENV] using: $SIMV_BIN";
 echo "[INFO] Mudando para diretório: $ARDUPILOT_ROVER_DIR";
@@ -321,7 +345,9 @@ echo "   - Gazebo: $NUM_ROVERS rovers no mundo $WORLD_NAME"
 echo "   - ArduPilot SITL: $NUM_ROVERS instâncias rodando"
 echo ""
 echo "💡 Lembrete: cada MAVROS deve escutar nessas portas (udp://:<porta>@):"
-echo "  Instância 0 → ${MAV_BASE}, 1 → $((MAV_BASE+STEP)), 2 → $((MAV_BASE+STEP*2)) ..."
+echo "  Instância 0 → ${MAV_BASE} (14551)"
+echo "  Instância 1 → $((MAV_BASE+STEP)) (14651)"
+echo "  Instância 2 → $((MAV_BASE+STEP*2)) (14751)"
 echo "  Se 'não acontecer nada', veja os logs em /tmp/sitl_<I>.log."
 echo ""
 
@@ -380,7 +406,7 @@ echo "   • Número de rovers: $NUM_ROVERS"
 echo "   • Mundo: $WORLD_NAME"
 echo "   • Localização: $DEFAULT_LOCATION"
 echo "   • Porta QGC: $QGC_PORT"
-echo "   • Portas MAVROS: $MAV_BASE, $((MAV_BASE+STEP)), $((MAV_BASE+STEP*2)), ..."
+echo "   • Portas MAVROS: $MAV_BASE (14551), $((MAV_BASE+STEP)) (14651), $((MAV_BASE+STEP*2)) (14751)"
 echo ""
 echo "🔧 Verifique os terminais para mais informações"
 echo "📝 Logs disponíveis em: /tmp/sitl_*.log"

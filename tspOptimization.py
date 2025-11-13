@@ -68,6 +68,12 @@ class FixedTaskPlanner:
         os.environ["OMP_NUM_THREADS"] = "1"
         # Obter coordenadas dos pontos
         labels_pontos = list(pontos.keys())
+        
+        # Validar se há pontos para clusterizar
+        if not labels_pontos:
+            raise ValueError("Nenhum ponto de observação encontrado para as missões selecionadas. "
+                            "Verifique se os equipamentos selecionados têm IDs válidos.")
+        
         coords_pontos = np.array([G.nodes[label]['pos'] for label in labels_pontos])
 
         # Obter coordenadas dos robôs
