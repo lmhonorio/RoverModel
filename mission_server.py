@@ -153,6 +153,34 @@ def disconnect_robots():
             "message": f"Erro ao desconectar robôs: {str(e)}"
         }), 500
 
+@app.route('/gazebo/clear-waypoints', methods=['POST'])
+def clear_waypoints():
+    """Endpoint para limpar waypoints do Gazebo"""
+    try:
+        from server_modules import remover_waypoints_missao
+        
+        resultado = remover_waypoints_missao(max_workers=8)
+        
+        if resultado['success']:
+            return jsonify({
+                "success": True,
+                "message": f"{resultado['waypoints_removed']} waypoints removidos do Gazebo",
+                "data": resultado,
+                "timestamp": time.time()
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "message": resultado.get('message', 'Falha ao remover waypoints'),
+                "timestamp": time.time()
+            }), 500
+        
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "message": f"Erro ao limpar waypoints: {str(e)}"
+        }), 500
+
 # WebSocket events
 @socketio.on('connect')
 def handle_connect():
@@ -356,6 +384,7 @@ if __name__ == '__main__':
     print(f"   POST /stop-mission - Parar missão atual")
     print(f"   POST /connect-robots - Conectar aos robôs para monitoramento")
     print(f"   POST /disconnect-robots - Desconectar dos robôs")
+    print(f"   POST /gazebo/clear-waypoints - Limpar waypoints visualizados no Gazebo")
     print(f"\n🌐 Servidor rodando em: http://localhost:5001")
     print(f"🔄 CORS habilitado para requisições da interface web")
     print(f"🔌 WebSocket habilitado para monitoramento de posições (2 em 2 segundos)")

@@ -8,6 +8,7 @@ Funcionalidades:
 - Carregamento otimizado de dados
 """
 
+import rospy
 import pandas as pd
 import json
 import math
@@ -389,6 +390,22 @@ def adicionar_modelo_ros_gazebo(sdf_content, model_name):
         
         # Remove arquivo temporário
         os.remove(temp_file)
+        
+        # Se falhou, mostra o erro (apenas para os primeiros 3 erros)
+        if result.returncode != 0:
+            # Conta erros globalmente para mostrar apenas os primeiros
+            if not hasattr(adicionar_modelo_ros_gazebo, 'erro_count'):
+                adicionar_modelo_ros_gazebo.erro_count = 0
+            
+            if adicionar_modelo_ros_gazebo.erro_count < 3:
+                print(f"\n⚠️  Erro ao adicionar '{model_name}':")
+                if result.stderr:
+                    print(f"   STDERR: {result.stderr[:200]}")
+                if result.stdout:
+                    print(f"   STDOUT: {result.stdout[:200]}")
+                adicionar_modelo_ros_gazebo.erro_count += 1
+                if adicionar_modelo_ros_gazebo.erro_count == 3:
+                    print("   (suprimindo próximos erros similares...)")
         
         return result.returncode == 0
         

@@ -7,6 +7,7 @@ import time
 from datetime import datetime
 from mission_bridgetoap import preparar_e_enviar_missoes
 from .rover_manager import create_rover_config_from_frontend_data, REVERSE_ROVER_MAPPING
+from .gazebo_visualizer import adicionar_waypoints_missao, remover_waypoints_missao
 
 class MissionService:
     def __init__(self, socketio, monitoring_service):
@@ -223,6 +224,25 @@ class MissionService:
                     }
                     waypoints_by_robot[robot_name].append(waypoint)
             
+            # Adicionar waypoints no Gazebo como bolas coloridas
+            try:
+                print(f"\n🎨 Adicionando waypoints no Gazebo...")
+                visualizacao_resultado = adicionar_waypoints_missao(
+                    waypoints_by_robot,
+                    z_altura=3.0,  # Altura das bolas (3 metros)
+                    adicionar_linhas=True,  # Adicionar linhas conectando waypoints
+                    max_workers=8  # Threads paralelas (mesmo do RealTime_CSV2World.py)
+                )
+                if visualizacao_resultado['success']:
+                    print(f"✅ {visualizacao_resultado['waypoints_added']} waypoints adicionados no Gazebo")
+                    print(f"✅ {visualizacao_resultado['lines_added']} linhas adicionadas no Gazebo")
+                else:
+                    print(f"⚠️ Falha ao adicionar waypoints no Gazebo: {visualizacao_resultado.get('message', 'Erro desconhecido')}")
+            except Exception as e:
+                print(f"⚠️ Erro ao visualizar waypoints no Gazebo: {e}")
+                import traceback
+                traceback.print_exc()
+            
             # Emitir via WebSocket
             try:
                 print(f"\n📡 [WEBSOCKET] Enviando waypoints da missão:")
@@ -321,6 +341,17 @@ class MissionService:
             except Exception as e:
                 print(f"⚠️ Erro ao fechar conexões do canal de missão: {e}")
             self.mission_manager = None
+        
+        # Remover waypoints do Gazebo
+        try:
+            print(f"🧹 Removendo waypoints do Gazebo...")
+            remocao_resultado = remover_waypoints_missao(max_workers=8)
+            if remocao_resultado['success']:
+                print(f"✅ {remocao_resultado['waypoints_removed']} waypoints removidos do Gazebo")
+            else:
+                print(f"⚠️ Falha ao remover waypoints do Gazebo: {remocao_resultado.get('message', 'Erro desconhecido')}")
+        except Exception as e:
+            print(f"⚠️ Erro ao remover waypoints do Gazebo: {e}")
         
         # Configurar monitoramento para voltar ao monitoramento contínuo
         self.monitoring_service.set_mission_manager(None, False)
