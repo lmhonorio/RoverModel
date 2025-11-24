@@ -10,6 +10,17 @@ import json
 from csv_kml_helper import save_observation_points_to_kml_csv
 # from baseclasses import *
 
+# Ajustes visuais para os plots: aumenta fontes de títulos, labels, ticks e legendas
+plt.rcParams.update({
+  'figure.titlesize': 18,
+  'axes.titlesize': 18,
+  'axes.labelsize': 14,
+  'xtick.labelsize': 12,
+  'ytick.labelsize': 12,
+  'legend.fontsize': 12,
+  'font.size': 12,
+})
+
 
 ###############################################################################
 # MAIN
@@ -18,12 +29,14 @@ def main():
     # Config
     # file_path = "./planilhas/obstaculos_processado6.xlsx"
     file_path = "./Gazebo/todos_pontos_gps_modificado.csv"
+
     sheet_name = None  # CSV não usa sheet_name
     # grafo_path = "./jsons/graph9F_new.json"
     grafo_path = "./jsons/graph_equipment.json"
+    grafo_path_geo = "./jsons/graph_equipment_geo.json" # grafo com coordenadas geograficas
     # observation_path ="./jsons/obpc_8.json"
     observation_path ="./jsons/obs_equipment.json"
-    observation_folter = "./pontos_observacao"
+    observation_folder = "./pontos_observacao"
     padding = 15
     margin = 2  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 1.5
@@ -48,7 +61,7 @@ def main():
 #salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
   #  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
     SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 8, observation_path, file_path)
-    save_observation_points_to_kml_csv(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=5, offset_lon_meters=5)
+    save_observation_points_to_kml_csv(obstacles, observation_points, 6, file_path, observation_folder, offset_lat_meters=5, offset_lon_meters=5)
 
     print("🔹 criando o plot_aabbs_obstacles_points ...")
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
@@ -87,8 +100,8 @@ def main():
 
     PlotUtils.plot_aabbs_obstacles_points(obstacles,aabbs,observation_points)
 
-    print(f"🔹 Salvando grafo em: {grafo_path}")
-    SegmentUtils.save_graph_json(G_corrigido, grafo_path)
+    print(f"🔹 Salvando grafo em: {grafo_path} e {grafo_path_geo}")
+    SegmentUtils.save_graph_json(G_corrigido, grafo_path, grafo_path_geo, file_path)
 
     print("✅ Fim do processo ---")
 

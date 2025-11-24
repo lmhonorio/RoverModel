@@ -3,7 +3,7 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76425461176388,-3.12290861079707,0</coordinates>
+        <coordinates>-41.76420063292125,-3.122957881342008,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -13,27 +13,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76425785129602,-3.12290861079707,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76420063292125,-3.122957881342008,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76422762234257,-3.122957881342008,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76425461176388,-3.122957881342008,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76420063292125,-3.12290861079707,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -43,7 +23,17 @@
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76425461176388,-3.122957881342008,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.76425785129602,-3.122957881342008,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76420063292125,-3.12290861079707,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -53,7 +43,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76425773290243,-3.1229774027741786,0</coordinates>
+        <coordinates>-41.76425785129602,-3.12290861079707,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76425461176388,-3.12290861079707,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -63,12 +58,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76425461176388,-3.1229774027741786,0</coordinates>
+        <coordinates>-41.76425773290243,-3.1229774027741786,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76426930751908,-3.1229142014451283,0</coordinates>
+        <coordinates>-41.76425461176388,-3.1229774027741786,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -78,12 +73,17 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76426930751908,-3.122908510951841,0</coordinates>
+        <coordinates>-41.76426930751908,-3.1229577908874133,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76426930751908,-3.1229577908874133,0</coordinates>
+        <coordinates>-41.76426930751908,-3.1229142014451283,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76426930751908,-3.122908510951841,0</coordinates>
       </Point>
     </Placemark>
   </Document>

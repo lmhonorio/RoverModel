@@ -3,57 +3,12 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.763711888635704,-3.1229411963700824,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.763711888635704,-3.1229681912950364,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76373797548578,-3.1229411963700824,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76378698661054,-3.122979779446064,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76376880218025,-3.1229343645988554,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76373797548578,-3.122979779446064,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76378698661054,-3.1229411963700824,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76373797548578,-3.1229343645988554,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76378698661054,-3.1229343645988554,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76374181275894,-3.122979779446064,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76373797548578,-3.1229681912950364,0</coordinates>
+        <coordinates>-41.763711888635704,-3.1229411963700824,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -68,17 +23,57 @@
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76373797548578,-3.1229411963700824,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76373797548578,-3.122979779446064,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76376880218025,-3.1229343645988554,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76374181275894,-3.122979779446064,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76378698661054,-3.1229411963700824,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76378698661054,-3.122979779446064,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76373797548578,-3.1229343645988554,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76373797548578,-3.1229681912950364,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76378698661054,-3.1229343645988554,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.76374181275894,-3.1229343645988554,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76378719982697,-3.122995186219991,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76374181275894,-3.1229799159252063,0</coordinates>
+        <coordinates>-41.76376880218025,-3.1229799159252063,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -88,12 +83,17 @@
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76374181275894,-3.1229799159252063,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.76378719982697,-3.1229799159252063,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76376880218025,-3.1229799159252063,0</coordinates>
+        <coordinates>-41.76378719982697,-3.122995186219991,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

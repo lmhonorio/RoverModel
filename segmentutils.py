@@ -117,7 +117,15 @@ class SegmentUtils:
             ox, oy = obs["pos"]
             label = obs["label"]
             for px, py, ponto_label in perimeter_points:
-                if distance((ox, oy), (px, py)) <= threshold:
+                
+                # Atribui ponto de observação ao objeto se estiver dentro do threshold
+                # Prefixo antes do ponto (ex: "machine1.1" -> "machine1")
+                ponto_prefix = ponto_label.split(".")[0]
+
+                # Condição de associação:
+                # 1) Prefixo igual OU
+                # 2) Dentro do threshold de distância
+                if ponto_prefix == label: # or distance((ox, oy), (px, py)) <= threshold:
                     lat, lon = coord_map[(px, py)]
                     obs_points_map[label].append({
                         "label": ponto_label,
@@ -658,15 +666,33 @@ class SegmentUtils:
 
 
 
-
     @staticmethod
-    def save_graph_json(G, filename):
+    def save_graph_json(G, filename, filename_geo, xlsx_path):
+        from ajusteplanilha import AjustePlanilha
+
         graph_data = {
             "nodes": {str(node): G.nodes[node] for node in G.nodes()},
             "edges": [(str(u), str(v), G.edges[u, v]["weight"]) for u, v in G.edges()]
         }
         with open(filename, "w") as f:
             json.dump(graph_data, f, indent=4)
+
+        pontos_para_converter = [
+            (px, py) 
+            for node in G.nodes() if "pos" in G.nodes[node]
+            for px, py in [G.nodes[node]["pos"]]
+        ]
+        gps_coords = AjustePlanilha.metros_para_geocoordenadas(pontos_para_converter, xlsx_path)
+
+        geo_nodes = []
+        for node, coord in zip(G.nodes(), gps_coords):
+            geo_nodes.append({
+                "label": str(node),
+                "coord": coord
+            })
+
+        with open(filename_geo, "w") as f:
+            json.dump(geo_nodes, f, indent=4)
 
     @staticmethod
     def load_graph_json(filename):

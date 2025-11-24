@@ -3,11 +3,6 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76452450597701,-3.123833615154051,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76457773981355,-3.123833615154051,0</coordinates>
       </Point>
     </Placemark>
@@ -23,12 +18,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76455149539832,-3.123851395877875,0</coordinates>
+        <coordinates>-41.76452450597701,-3.123833615154051,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76452461006387,-3.1239000628918765,0</coordinates>
+        <coordinates>-41.764577625828224,-3.1239000628918765,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -43,7 +38,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.764577625828224,-3.1239000628918765,0</coordinates>
+        <coordinates>-41.764577625828224,-3.123851395877875,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76455149539832,-3.123851395877875,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -53,7 +53,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.764577625828224,-3.123851395877875,0</coordinates>
+        <coordinates>-41.76452461006387,-3.1239000628918765,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -68,17 +68,17 @@
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76457891369683,-3.123859023818522,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.76457891369683,-3.1238988661852574,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
         <coordinates>-41.76457891369683,-3.123849586249685,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76457891369683,-3.123859023818522,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>

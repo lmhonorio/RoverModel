@@ -3,7 +3,7 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.763256003175314,-3.1234544438541554,0</coordinates>
+        <coordinates>-41.76329746828278,-3.1234540999442104,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -13,7 +13,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.763249119374066,-3.1234073258971313,0</coordinates>
+        <coordinates>-41.763256003175314,-3.1234073258971313,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -23,7 +23,22 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76329746828278,-3.1234540999442104,0</coordinates>
+        <coordinates>-41.76329746828278,-3.1234544438541554,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.763256003175314,-3.1234544438541554,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.763249119374066,-3.1234073258971313,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76328299259662,-3.1234544438541554,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -38,17 +53,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.763256003175314,-3.1234073258971313,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76328299259662,-3.1234544438541554,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76329746828278,-3.1234544438541554,0</coordinates>
+        <coordinates>-41.76328299259662,-3.1234073258971313,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -58,7 +63,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76328299259662,-3.1234073258971313,0</coordinates>
+        <coordinates>-41.763311016578164,-3.1234131110701844,0</coordinates>
       </Point>
     </Placemark>
   </Document>

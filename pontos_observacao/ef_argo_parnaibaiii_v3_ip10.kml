@@ -3,22 +3,22 @@
   <Document>
     <Placemark>
       <Point>
-        <coordinates>-41.76499502533105,-3.123646570276788,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76499502533105,-3.123616069493935,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76499502533105,-3.123600682143757,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
+        <coordinates>-41.76499502533105,-3.123646570276788,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
         <coordinates>-41.76498332613932,-3.123600682143757,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.76499502533105,-3.123616069493935,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -33,7 +33,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.765050115908416,-3.123577894660404,0</coordinates>
+        <coordinates>-41.765001104783664,-3.123577894660404,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -43,12 +43,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76503730498195,-3.123577894660404,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.765001104783664,-3.123577894660404,0</coordinates>
+        <coordinates>-41.76500098737968,-3.123616069493935,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -58,22 +53,7 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76501031556064,-3.123600936963251,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76504999850444,-3.1236430644188893,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76503730498195,-3.12364635181046,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76500098737968,-3.123616069493935,0</coordinates>
+        <coordinates>-41.76501031556064,-3.12364635181046,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -83,42 +63,12 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76503730498195,-3.123600936963251,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76504999850444,-3.123616069493935,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76504999850444,-3.12364635181046,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76501031556064,-3.12364635181046,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76504999850444,-3.123600936963251,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
         <coordinates>-41.76500098737968,-3.123600936963251,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76501081132662,-3.123652912644423,0</coordinates>
-      </Point>
-    </Placemark>
-    <Placemark>
-      <Point>
-        <coordinates>-41.76498332613932,-3.123652912644423,0</coordinates>
+        <coordinates>-41.76501031556064,-3.123600936963251,0</coordinates>
       </Point>
     </Placemark>
     <Placemark>
@@ -128,7 +78,17 @@
     </Placemark>
     <Placemark>
       <Point>
-        <coordinates>-41.76501081132662,-3.1236700593438433,0</coordinates>
+        <coordinates>-41.76498332613932,-3.123652912644423,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.765010541972195,-3.123589074568981,0</coordinates>
+      </Point>
+    </Placemark>
+    <Placemark>
+      <Point>
+        <coordinates>-41.765010541972195,-3.123652103059702,0</coordinates>
       </Point>
     </Placemark>
   </Document>

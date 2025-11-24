@@ -56,9 +56,9 @@ class PlotUtils:
             ax.plot(px, py, 'o', color=color, markersize=point_radius * 5)
 
         ax.set_aspect('equal')
-        ax.set_xlabel("X (m)")
-        ax.set_ylabel("Y (m)")
-        ax.set_title("AABBs, Obstáculos e Pontos de Observação")
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title("AABBs, Obstacles and Observation Points")
         plt.show()
 
 
@@ -75,7 +75,7 @@ class PlotUtils:
         edge_labels = {(u, v): f"{u} → {v}" for u, v in G_m.edges()}
         nx.draw_networkx_edge_labels(G_m, pos, edge_labels=edge_labels, font_size=8, font_color="red")
 
-        plt.title("Grafo de Dependências das Missões (G_m)")
+        plt.title("Mission Dependency Graph (G_m)")
         plt.show()
 
     @staticmethod
@@ -114,9 +114,9 @@ class PlotUtils:
             plt.plot(coords_rota[:, 0], coords_rota[:, 1], marker='o', linestyle='-', linewidth=2,
                      color=cores[i % len(cores)], label=f'Rota {robo}')
 
-        plt.xlabel("X (metros)")
-        plt.ylabel("Y (metros)")
-        plt.title("Rotas Otimizadas por Robô (Grafo)")
+        plt.xlabel("X (meters)")
+        plt.ylabel("Y (meters)")
+        plt.title("Optimized Routes per Robot (Graph)")
         plt.legend()
         plt.grid(True)
         plt.axis('equal')
@@ -166,9 +166,9 @@ class PlotUtils:
                           shape='full', lw=0, length_includes_head=True, head_width=1.0,
                           color=cores[i % len(cores)], alpha=0.4, zorder=3)
 
-        plt.xlabel("X (metros)")
-        plt.ylabel("Y (metros)")
-        plt.title("Rotas Otimizadas (Vistoria vs Passagem)")
+        plt.xlabel("X (meters)")
+        plt.ylabel("Y (meters)")
+        plt.title("Optimized Routes (Inspection vs Passage)")
         plt.legend()
         plt.grid(True)
         plt.axis('equal')
@@ -302,7 +302,7 @@ class PlotUtils:
         )
 
 
-        plt.title("Grafo do Robô - Layout baseado em distâncias (Kamada-Kawai)")
+        plt.title("Robot Graph - Distance-based Layout (Kamada-Kawai)")
         plt.axis("equal")  # para evitar distorção dos eixos
         plt.show()
 
@@ -412,9 +412,9 @@ class PlotUtils:
             ax.add_patch(rect)
 
         ax.set_aspect('equal','box')
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_title(f"AABBs Coloridas por Cluster (total = {num_clusters})")
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title(f"AABBs Colored by Cluster (total = {num_clusters})")
         plt.show()
 
     @staticmethod
@@ -441,9 +441,9 @@ class PlotUtils:
             ax.add_patch(c2)
 
         ax.set_aspect('equal', 'box')
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_title("AABBs (vermelho claro), Segmentos (verde), Vértices (vermelho)")
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title("AABBs (light red), Segments (green), Vertices (red)")
         plt.show()
 
     @staticmethod
@@ -467,9 +467,9 @@ class PlotUtils:
         # Ajuste dos limites do gráfico
         ax.autoscale()
 
-        ax.set_xlabel("X (m)")
-        ax.set_ylabel("Y (m)")
-        ax.set_title("Obstáculos e AABBs")
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title("Obstacles and AABBs")
         plt.legend(["Obstáculo", "AABB"], loc="upper right")
         plt.show()
 
@@ -486,7 +486,7 @@ class PlotUtils:
             ax.add_patch(c2)
 
         ax.set_aspect('equal','box')
-        ax.set_xlabel("X")
-        ax.set_ylabel("Y")
-        ax.set_title(f"Segmentos em verde + vértices vermelhos (raio={raio})")
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title(f"Segments in green + red vertices (radius={raio})")
         plt.show()

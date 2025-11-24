@@ -30,7 +30,7 @@ echo ""
 
 # ===================== CONFIGURAÇÃO =====================
 # Diretório do ArduPilot
-ARDUPILOT_DIR="${HOME}/ardupilot/ardupilot"
+ARDUPILOT_DIR="${HOME}/ardupilot"
 ARDUPILOT_ROVER_DIR="${ARDUPILOT_DIR}/Rover"
 PARAM_FILE="$ARDUPILOT_ROVER_DIR/gzrover.param"
 
@@ -279,12 +279,12 @@ echo "   Aguarde o Gazebo carregar completamente antes de iniciar os rovers..."
 echo ""
 
 # CRÍTICO: Adicionar plugin ArduPilot ao GAZEBO_PLUGIN_PATH
-export GAZEBO_PLUGIN_PATH=/home/viki/catkin_ws/src/ardupilot_gazebo/build:${GAZEBO_PLUGIN_PATH}
+export GAZEBO_PLUGIN_PATH=/home/gabrielle/catkin_ws/src/ardupilot_gazebo/build:${GAZEBO_PLUGIN_PATH}
 echo "✅ GAZEBO_PLUGIN_PATH configurado com plugin ArduPilot"
 echo ""
 
 # Iniciar Gazebo com roslaunch
-gazebo_cmd="unset VIRTUAL_ENV; unset PYTHONHOME; export GAZEBO_PLUGIN_PATH=/home/viki/catkin_ws/src/ardupilot_gazebo/build:\${GAZEBO_PLUGIN_PATH} && cd /home/viki/catkin_ws && source devel/setup.bash && roslaunch rover_argo_gazebo multi_rover_argo.launch N:=$NUM_ROVERS world_name:=$WORLD_NAME; echo; echo 'Gazebo finalizado. Pressione ENTER para fechar.'; read"
+gazebo_cmd="unset VIRTUAL_ENV; unset PYTHONHOME; export GAZEBO_PLUGIN_PATH=/home/gabrielle/catkin_ws/src/ardupilot_gazebo/build:\${GAZEBO_PLUGIN_PATH} && cd /home/gabrielle/catkin_ws && source devel/setup.bash && roslaunch rover_argo_gazebo multi_rover_argo.launch N:=$NUM_ROVERS world_name:=$WORLD_NAME; echo; echo 'Gazebo finalizado. Pressione ENTER para fechar.'; read"
 
 open_term "ROS Gazebo - $NUM_ROVERS Rovers" "$gazebo_cmd"
 
@@ -365,15 +365,15 @@ if [[ "$qgc_choice" =~ ^[Ss]$ ]]; then
     # Procurar QGroundControl em Downloads
     QGCPATH=""
     
-    if [ -f "$HOME/Downloads/QGroundControl.AppImage" ]; then
-        QGCPATH="$HOME/Downloads/QGroundControl.AppImage"
-    elif [ -f "$HOME/Downloads/qgroundcontrol.AppImage" ]; then
-        QGCPATH="$HOME/Downloads/qgroundcontrol.AppImage"
-    elif [ -f "$HOME/Downloads/QGC.AppImage" ]; then
-        QGCPATH="$HOME/Downloads/QGC.AppImage"
+    if [ -f "$HOME/QGroundControl.AppImage" ]; then
+        QGCPATH="$HOME/QGroundControl.AppImage"
+    elif [ -f "$HOME/qgroundcontrol.AppImage" ]; then
+        QGCPATH="$HOME/qgroundcontrol.AppImage"
+    elif [ -f "$HOME/QGC.AppImage" ]; then
+        QGCPATH="$HOME/QGC.AppImage"
     else
         # Procurar qualquer AppImage que contenha "ground" no nome
-        QGCPATH=$(find "$HOME/Downloads" -maxdepth 1 -iname "*ground*.AppImage" 2>/dev/null | head -1)
+        QGCPATH=$(find "$HOME" -maxdepth 1 -iname "*ground*.AppImage" 2>/dev/null | head -1)
     fi
     
     if [ -n "$QGCPATH" ] && [ -f "$QGCPATH" ]; then
