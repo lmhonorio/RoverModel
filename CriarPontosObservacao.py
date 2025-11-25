@@ -9,6 +9,16 @@ import pickle
 import json
 # from baseclasses import *
 
+# Ajustes visuais para os plots: aumenta fontes de títulos, labels, ticks e legendas
+plt.rcParams.update({
+  'figure.titlesize': 18,
+  'axes.titlesize': 18,
+  'axes.labelsize': 14,
+  'xtick.labelsize': 12,
+  'ytick.labelsize': 12,
+  'legend.fontsize': 12,
+  'font.size': 12,
+})
 
 ###############################################################################
 # MAIN
