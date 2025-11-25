@@ -6,9 +6,9 @@ from collections import defaultdict
 from typing import Dict, List, Tuple
 
 import networkx as nx
-import requests
+# import requests
 
-from old.multigraphplanner import MultiGraphPlanner
+from multigraphplanner import MultiGraphPlanner
 from persistent_astar_cache import PersistentAStarCache
 from segmentutils import SegmentUtils
 from aabbutils import AABBUtils
@@ -203,8 +203,8 @@ MISSION_PRESET_KEY = "default" #"example_22"  # escolha aqui
 # --- Execução ---
 RUN_MOVNS = False
 RUN_BASELINE_CLUSTER = True
-SEND_MISSIONS = True
-DO_PLOTS = False
+SEND_MISSIONS = False
+DO_PLOTS = True
 SEND_TO_SERVER = True
 
 # --- MOVNS ---
@@ -456,37 +456,37 @@ def send_gps_routes_to_vehicles(coords_by_robot: Dict[str, List[Tuple[float, flo
         except Exception as e:
             print(f"   ❌ Falha ao enviar missão para {robot_key}: {e}")
 
-def send_gps_routes_to_server(coords_by_robot: dict, servidor_url: str, timeout: float = 2.0):
-    """
-    Envia a trajetória completa de cada robô para o servidor Flask.
+# def send_gps_routes_to_server(coords_by_robot: dict, servidor_url: str, timeout: float = 2.0):
+#     """
+#     Envia a trajetória completa de cada robô para o servidor Flask.
     
-    Args:
-        coords_by_robot: dict {robot_id: [(lat, lon), ...]}
-        servidor_url: URL base do servidor Flask (ex: "http://127.0.0.1:5000")
-        timeout: tempo máximo de espera por resposta HTTP
-    """
-    for robot_key, trajetoria_gps in coords_by_robot.items():
-        # Normaliza o ID do robô
-        if "_" in robot_key:
-            rid = robot_key.split("_")[-1]
-        elif robot_key.upper().startswith("R") and len(robot_key) > 1:
-            rid = robot_key[1:]
-        else:
-            rid = robot_key
+#     Args:
+#         coords_by_robot: dict {robot_id: [(lat, lon), ...]}
+#         servidor_url: URL base do servidor Flask (ex: "http://127.0.0.1:5000")
+#         timeout: tempo máximo de espera por resposta HTTP
+#     """
+#     for robot_key, trajetoria_gps in coords_by_robot.items():
+#         # Normaliza o ID do robô
+#         if "_" in robot_key:
+#             rid = robot_key.split("_")[-1]
+#         elif robot_key.upper().startswith("R") and len(robot_key) > 1:
+#             rid = robot_key[1:]
+#         else:
+#             rid = robot_key
 
-        payload = {
-            "robo": rid,
-            "trajetoria": [{"latitude": lat, "longitude": lon} for lat, lon in trajetoria_gps]
-        }
+#         payload = {
+#             "robo": rid,
+#             "trajetoria": [{"latitude": lat, "longitude": lon} for lat, lon in trajetoria_gps]
+#         }
 
-        try:
-            response = requests.post(f"{servidor_url}/waypoints", json=payload, timeout=timeout)
-            if response.status_code == 200:
-                print(f"✅ Trajetória enviada para robô {rid} ({robot_key})")
-            else:
-                print(f"❌ Falha ao enviar para robô {rid}: {response.status_code} - {response.text}")
-        except requests.exceptions.RequestException as e:
-            print(f"❌ Erro de conexão ao enviar trajetória do robô {rid}: {e}")
+#         try:
+#             response = requests.post(f"{servidor_url}/waypoints", json=payload, timeout=timeout)
+#             if response.status_code == 200:
+#                 print(f"✅ Trajetória enviada para robô {rid} ({robot_key})")
+#             else:
+#                 print(f"❌ Falha ao enviar para robô {rid}: {response.status_code} - {response.text}")
+#         except requests.exceptions.RequestException as e:
+#             print(f"❌ Erro de conexão ao enviar trajetória do robô {rid}: {e}")
 
 def prepare_cluster_baseline_and_routes(G_mapa: nx.Graph,
                                         missions: List[str],
@@ -633,7 +633,7 @@ def mrta(missions, selected_robots):
         # --- Envio para o servidor Flask ---
         if SEND_TO_SERVER and coords_by_robot:
             SERVER_URL = "http://127.0.0.1:5000"  # ajuste para o seu servidor
-            send_gps_routes_to_server(coords_by_robot, SERVER_URL)
+            # send_gps_routes_to_server(coords_by_robot, SERVER_URL)
 
     # 6) Baseline cluster + TSP (opcional)
     Greduced_map = None
@@ -676,7 +676,7 @@ def mrta(missions, selected_robots):
 
             if SEND_TO_SERVER and coords_by_robot_baseline:
                 SERVER_URL = "http://127.0.0.1:5000"
-                send_gps_routes_to_server(coords_by_robot_baseline, SERVER_URL )
+                # send_gps_routes_to_server(coords_by_robot_baseline, SERVER_URL )
 
     # 7) Plots
     plot_all(G_mapa, Greduced_map, rotas_otimas_por_robo, rotas_por_robo_movns, point_mission_positions or {})
