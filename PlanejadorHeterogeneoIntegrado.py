@@ -15,6 +15,8 @@ import numpy as np
 
 
 R = 6378137.0  # raio WGS84
+DO_PLOTS = False
+CLUSTER_TITLE = "Abordagem padrão"
 
 def _to_xy_m(lat: float, lon: float, lat0: float, lon0: float):
     """Converte (lat,lon) para coords locais (x,y) em metros, referenciadas em (lat0,lon0)."""
@@ -599,6 +601,25 @@ def retorna_rotas_completas(G_robot, rotas_por_robo, pontos_vistoria, xlsx_param
 
     return resultados_por_robo
 
+def plot_all(G_mapa: nx.Graph,
+             Greduced_map: nx.Graph,
+             rotas_otimas_por_robo: Dict[str, List[str]],
+             point_mission_positions: Dict[str, List[str]]):
+    """Centraliza plots; pode ser desligado pelos toggles."""
+    if not DO_PLOTS:
+        return
+
+    if Greduced_map and rotas_otimas_por_robo:
+        try:
+            PlotUtils.plot_rotas_grafo(Greduced_map, rotas_otimas_por_robo)
+        except Exception as e:
+            print(f"⚠️ plot_rotas_grafo falhou: {e}")
+
+        try:
+            PlotUtils.plot_rotas_reais(G_mapa, rotas_otimas_por_robo, point_mission_positions, CLUSTER_TITLE)
+        except Exception as e:
+            print(f"⚠️ plot_rotas_reais (baseline) falhou: {e}")
+
 
 def run_planner(
     file_path: str,
@@ -655,6 +676,7 @@ def run_planner(
 
     # 2) Carregar grafo e localizar posições iniciais
     G_mapa = SegmentUtils.load_graph_json(file_path)
+    G_original = G_mapa.copy()
 
     robots_positions = {}
     for rname, (x, y) in robot_positions_xy.items():
@@ -696,6 +718,8 @@ def run_planner(
     missoes_completas = retorna_rotas_completas(
         G_mapa, rotas_otimas_por_robo, list(point_mission_positions.keys()), file_path_parametros
     )
+
+    plot_all(G_original, Greduced_map, rotas_otimas_por_robo, point_mission_positions or {})
 
     return {
         "G_reduced": Greduced_map,
