@@ -10,6 +10,14 @@ import matplotlib.pyplot as plt
 ###############################################################################
 class AABBUtils:
 
+    # Margens padrão por tipo de equipamento/obstáculo.
+    margin_aabb = {
+        'bombeiro': 1.5, 'caixa': 1.5, 'torre': 1.5, 'tpc': 1.5, 'tc': 1.5, 'secv': 1.5, 'sech': 1.5, 'reator': 1.5,
+        'pr': 1.5, 'ip': 1.5, 'busip': 1.5, 'buscsb': 1.5, 'disjuntor': 1.5,
+        'estrutura': 1.5, 'transformador': 1.5, 'talude': 1.5, 'canaleta': 1.5, 'diversos': 1.5, 'obstsech': 1.5,
+        'cercado': 1.5, 'obstaculo': 1.5, 'svc': 1.5
+    }
+
     @staticmethod
     def connect_neighbor_aabbs(aabbs, points, threshold):
         """
@@ -302,23 +310,43 @@ class AABBUtils:
             if not merged_flag:
                 merged.append(base)
         return merged
-
+    
     @staticmethod
     def get_aabbs(obstacles, margin, threshold=6.0):
         """
-        Cria AABBs a partir de obstacles, adicionando 'margin'.
-        Retorna lista [((ax, ay), w, h, label), ...].
+        Cria AABBs a partir de obstacles, adicionando uma margem por tipo.
+
+        Parâmetros:
+            - obstacles: lista de dicts com chaves "pos", "size", "label"
+            - margin: valor de margem padrão (usado se o tipo não tiver entrada em
+              `margin_aabb`)
+            - threshold: (não usado aqui diretamente) mantido por compatibilidade
+
+        Retorna:
+            - Lista de AABBs no formato [((ax, ay), w, h), ...]
         """
         aabbs = []
         for obs in obstacles:
+            label = obs["label"]
             x, y = obs["pos"]
             w, h = obs["size"]
+
+            # Procura margem específica por tipo; usa `margin` como fallback.
+            # Implementação simples: procura cada chave de `margin_aabb` como
+            # substring dentro do label (lowercase). Ordenamos as chaves por
+            # comprimento decrescente para evitar colisões (p.ex. 'tpc' vs 'tc').
+            label_l = label.lower()
+            margin_value = margin
+            for key in sorted(AABBUtils.margin_aabb.keys(), key=len, reverse=True):
+                if key in label_l:
+                    margin_value = AABBUtils.margin_aabb[key]
+                    break
             
             # Canto inferior esquerdo da AABB
-            aabb_x = x - (w / 2 + margin)
-            aabb_y = y - (h / 2 + margin)
-            aabb_w = w + 2 * margin
-            aabb_h = h + 2 * margin
+            aabb_x = x - (w / 2 + margin_value)
+            aabb_y = y - (h / 2 + margin_value)
+            aabb_w = w + 2 * margin_value
+            aabb_h = h + 2 * margin_value
 
             # Agora cada AABB carrega o label do obstáculo original
             aabbs.append(((aabb_x, aabb_y), aabb_w, aabb_h))
