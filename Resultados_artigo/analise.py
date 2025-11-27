@@ -107,8 +107,8 @@ def main():
 	file_path = os.path.abspath(os.path.join(RESULTS_DIR, "..", "planilhas", "equipment_processado.xlsx"))
 	sheet_name = "Parnaiba3_Transformado"
 
-	margins = [1.5]
-	thresholds = [10]
+	margins = [1.5, 2.0]
+	thresholds = [10, 20]
 	
     # margins = [1.5, 2.0, 2.5, 3.0, 3.5]
 	# thresholds = [10, 20, 30, 40, 50]
