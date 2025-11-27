@@ -6,6 +6,7 @@ import math
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
+from typing import Optional
 from networkx.drawing.nx_agraph import to_agraph
 from pygraphviz import AGraph
 import networkx as nx
@@ -98,84 +99,197 @@ class PlotUtils:
 
         plt.show()
 
-    @staticmethod
-    def plot_rotas_grafo(G, rotas_por_robo):
+    def plot_rotas_grafo(G, rotas_por_robo, save_path: Optional[str] = None):
+        """Plota as rotas no grafo reduzido. Se save_path for fornecido, salva a imagem em vez de apenas mostrar.
+
+        Args:
+            G: grafo com atributo 'pos' nos nós
+            rotas_por_robo: dict robot -> lista de labels
+            save_path: caminho do arquivo PNG onde salvar o plot (se None, chama plt.show())
+        """
         pos = nx.get_node_attributes(G, 'pos')
 
-        plt.figure(figsize=(12, 10))
+        fig, ax = plt.subplots(figsize=(12, 10))
 
         # Plotar o grafo base
-        nx.draw(G, pos, node_color='lightgray', edge_color='gray', node_size=50, with_labels=False)
+        nx.draw(G, pos, node_color='lightgray', edge_color='gray', node_size=50, with_labels=False, ax=ax)
 
         # Plotar rotas por robô com cores diferentes
         cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
         for i, (robo, rota) in enumerate(rotas_por_robo.items()):
             coords_rota = np.array([pos[node] for node in rota])
-            plt.plot(coords_rota[:, 0], coords_rota[:, 1], marker='o', linestyle='-', linewidth=2,
-                     color=cores[i % len(cores)], label=f'Rota {robo}')
+            ax.plot(coords_rota[:, 0], coords_rota[:, 1], marker='o', linestyle='-', linewidth=2,
+                    color=cores[i % len(cores)], label=f'Rota {robo}')
 
-        plt.xlabel("X (meters)")
-        plt.ylabel("Y (meters)")
-        plt.title("Optimized Routes per Robot (Graph)")
-        plt.legend()
-        plt.grid(True)
-        plt.axis('equal')
-        plt.show()
+        ax.set_xlabel("X (meters)")
+        ax.set_ylabel("Y (meters)")
+        ax.set_title("Optimized Routes per Robot (Graph)")
+        ax.legend()
+        ax.grid(True)
+        ax.axis('equal')
+
+        if save_path:
+            fig.savefig(save_path, bbox_inches='tight')
+            plt.close(fig)
+        else:
+            plt.show()
+
+    # @staticmethod
+    # def plot_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria):
+    #     plt.figure(figsize=(12, 10))
+
+    #     cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+    #     for i, (robo, rota) in enumerate(rotas_por_robo.items()):
+    #         caminho_completo = []
+
+    #         for j in range(len(rota) - 1):
+    #             u, v = rota[j], rota[j + 1]
+
+    #             subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+
+    #             if caminho_completo and subpath[0] == caminho_completo[-1]:
+    #                 caminho_completo.extend(subpath[1:])
+    #             else:
+    #                 caminho_completo.extend(subpath)
+
+    #         coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+
+    #         # Plota todo o caminho em linha
+    #         plt.plot(coords_caminho[:, 0], coords_caminho[:, 1],
+    #                  linestyle='-', linewidth=2,
+    #                  color=cores[i % len(cores)], label=f'Rota {robo}')
+
+    #         # Diferencia pontos de vistoria dos pontos intermediários
+    #         for ponto in caminho_completo:
+    #             x, y = G_robot.nodes[ponto]['pos']
+    #             if ponto in pontos_vistoria:
+    #                 plt.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
+    #             else:
+    #                 plt.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
+
+    #         # Marca posição inicial claramente
+    #         plt.plot(coords_caminho[0, 0], coords_caminho[0, 1], marker='s', color='black', markersize=12, zorder=6)
+
+    #         # Setas indicando o percurso
+    #         for k in range(len(coords_caminho) - 1):
+    #             plt.arrow(coords_caminho[k, 0], coords_caminho[k, 1],
+    #                       coords_caminho[k + 1, 0] - coords_caminho[k, 0],
+    #                       coords_caminho[k + 1, 1] - coords_caminho[k, 1],
+    #                       shape='full', lw=0, length_includes_head=True, head_width=1.0,
+    #                       color=cores[i % len(cores)], alpha=0.4, zorder=3)
+
+    #     plt.xlabel("X (meters)")
+    #     plt.ylabel("Y (meters)")
+    #     plt.title("Optimized Routes (Inspection vs Passage)")
+    #     plt.legend()
+    #     plt.grid(True)
+    #     plt.axis('equal')
+    #     plt.show()
 
     @staticmethod
-    def plot_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria):
-        plt.figure(figsize=(12, 10))
+    def plot_rotas_reais(G_robot, rotas_por_robo, pontos_vistoria, title=None, ax=None, cor_fixa=None, save_path: Optional[str] = None):
+        """
+        Plota as rotas reais sobre o grafo G_robot. Desenha o grafo (nós e arestas)
+        como fundo (faint) e, em cima, desenha as rotas detalhadas.
 
+        Parâmetros adicionais opcionais:
+        - title: título do plot
+        - ax: eixo matplotlib para desenhar (se None, cria um novo)
+        - cor_fixa: se fornecida, força essa cor para todas as rotas
+        """
+        # Se não foi passado um eixo, crie figura/axis
+        created_fig = False
+        if ax is None:
+            fig, ax = plt.subplots(figsize=(12, 10))
+            created_fig = True
+
+        # --- Desenhar o grafo G_robot como fundo (apenas nós/arestas com posição) ---
+        pos = nx.get_node_attributes(G_robot, 'pos')
+        # Subgrafo apenas com nós que têm posição definida
+        nodes_with_pos = [n for n in G_robot.nodes() if n in pos]
+        if nodes_with_pos:
+            subG = G_robot.subgraph(nodes_with_pos)
+            # Desenha arestas e nós levemente (fundo)
+            nx.draw_networkx_edges(subG, pos=pos, ax=ax, edge_color='lightgray', alpha=0.6, width=0.6)
+            nx.draw_networkx_nodes(subG, pos=pos, ax=ax, node_color='lightgray', alpha=0.6, node_size=20)
+
+        # Paleta de cores se cor_fixa não for fornecida
         cores = ['blue', 'green', 'red', 'purple', 'orange', 'cyan']
+
         for i, (robo, rota) in enumerate(rotas_por_robo.items()):
             caminho_completo = []
 
             for j in range(len(rota) - 1):
                 u, v = rota[j], rota[j + 1]
+                try:
+                    subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
+                except Exception:
+                    # Se não houver caminho, pule esse segmento
+                    continue
 
-                subpath = nx.shortest_path(G_robot, source=u, target=v, weight="weight")
-
-                if caminho_completo and subpath[0] == caminho_completo[-1]:
+                if caminho_completo and subpath and subpath[0] == caminho_completo[-1]:
                     caminho_completo.extend(subpath[1:])
                 else:
                     caminho_completo.extend(subpath)
 
-            coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo])
+            if not caminho_completo:
+                continue
+
+            # Extrai coordenadas somente para nós com atributo 'pos'
+            coords_caminho = np.array([G_robot.nodes[n]['pos'] for n in caminho_completo if 'pos' in G_robot.nodes[n]])
+            if coords_caminho.size == 0:
+                continue
+
+            # Escolhe cor (fixa ou da paleta)
+            cor = cor_fixa if cor_fixa is not None else cores[i % len(cores)]
 
             # Plota todo o caminho em linha
-            plt.plot(coords_caminho[:, 0], coords_caminho[:, 1],
-                     linestyle='-', linewidth=2,
-                     color=cores[i % len(cores)], label=f'Rota {robo}')
+            ax.plot(coords_caminho[:, 0], coords_caminho[:, 1],
+                    linestyle='-', linewidth=2,
+                    color=cor, label=f'Rota {robo}')
 
             # Diferencia pontos de vistoria dos pontos intermediários
             for ponto in caminho_completo:
+                if 'pos' not in G_robot.nodes[ponto]:
+                    continue
                 x, y = G_robot.nodes[ponto]['pos']
                 if ponto in pontos_vistoria:
-                    plt.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
+                    ax.plot(x, y, marker='o', markersize=10, color='yellow', markeredgecolor='black', zorder=5)
                 else:
-                    plt.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
+                    ax.plot(x, y, marker='.', markersize=5, color='gray', zorder=4)
 
-            # Marca posição inicial claramente
-            plt.plot(coords_caminho[0, 0], coords_caminho[0, 1], marker='s', color='black', markersize=12, zorder=6)
+            # Marca posição inicial claramente (se existir)
+            ax.plot(coords_caminho[0, 0], coords_caminho[0, 1], marker='s', color='black', markersize=12, zorder=6)
 
             # Setas indicando o percurso
             for k in range(len(coords_caminho) - 1):
-                plt.arrow(coords_caminho[k, 0], coords_caminho[k, 1],
-                          coords_caminho[k + 1, 0] - coords_caminho[k, 0],
-                          coords_caminho[k + 1, 1] - coords_caminho[k, 1],
-                          shape='full', lw=0, length_includes_head=True, head_width=1.0,
-                          color=cores[i % len(cores)], alpha=0.4, zorder=3)
+                ax.arrow(coords_caminho[k, 0], coords_caminho[k, 1],
+                         coords_caminho[k + 1, 0] - coords_caminho[k, 0],
+                         coords_caminho[k + 1, 1] - coords_caminho[k, 1],
+                         shape='full', lw=0, length_includes_head=True, head_width=1.0,
+                         color=cor, alpha=0.4, zorder=3)
 
-        plt.xlabel("X (meters)")
-        plt.ylabel("Y (meters)")
-        plt.title("Optimized Routes (Inspection vs Passage)")
-        plt.legend()
-        plt.grid(True)
-        plt.axis('equal')
-        plt.show()
+        # Configurações dos rótulos e legendas com fonte maior
+        ax.set_xlabel("X (metros)", fontsize=16)
+        ax.set_ylabel("Y (metros)", fontsize=16)
+        ax.tick_params(axis='both', which='major', labelsize=16)
+        if title:
+            ax.set_title(title)
+        # Somente mostrar legenda se houver entradas
+        if any(True for _ in rotas_por_robo.items()):
+            ax.legend(fontsize=12)
+        ax.grid(True)
+        ax.axis('equal')
 
-
-
+        # Se um caminho para salvar foi fornecido, salve a figura (mesmo que ax tenha sido passado)
+        if save_path:
+            try:
+                ax.figure.savefig(save_path, bbox_inches='tight')
+            finally:
+                plt.close(ax.figure)
+        else:
+            if created_fig:
+                plt.show()
 
     ###############################################################################
     # Função para plotar subgrafos em cores diferentes

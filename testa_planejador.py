@@ -34,8 +34,13 @@ if __name__ == "__main__":
     graph_path = "./jsons/graph9d_new.json"
     observation_points_json_path = "./jsons/obpc_7.json"
     # missions = ['b_busip4',  'ls_tpc1']
+    missions = ['ef_argo_parnaibaiii_v3_busip35']
 
-    missions = ['b_busip20', 'b_busip21', 'b_busip25', 'b_busip33', 'cd_reator3', 'cd_reator4' ]
+    graph_path = "./jsons/graph_equipment.json"
+    observation_points_json_path = "./jsons/obs_equipment.json"
+    file_path_parametros = "./planilhas/equipment_processado.xlsx"
+
+    # missions = ['b_busip20', 'b_busip21', 'b_busip25', 'b_busip33', 'cd_reator3', 'cd_reator4' ]
 
     # missions = ['b_busip4', 'ef_reator1', 'ls_pr4', 'ef_reator10', 'ef_disjuntor6', 'ls_tpc1']
     robots = [

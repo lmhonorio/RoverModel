@@ -11,11 +11,14 @@ import json
 import time
 from copy import deepcopy
 import numpy as np
+import os
+from datetime import datetime
+import matplotlib.pyplot as plt
 
 
 
 R = 6378137.0  # raio WGS84
-DO_PLOTS = False
+DO_PLOTS = True
 CLUSTER_TITLE = "Abordagem padrão"
 
 def _to_xy_m(lat: float, lon: float, lat0: float, lon0: float):
@@ -608,17 +611,43 @@ def plot_all(G_mapa: nx.Graph,
     """Centraliza plots; pode ser desligado pelos toggles."""
     if not DO_PLOTS:
         return
+    # prepara pasta de saída
+    outdir = os.path.join(os.getcwd(), "plots")
+    os.makedirs(outdir, exist_ok=True)
 
     if Greduced_map and rotas_otimas_por_robo:
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # 1) rotas no grafo reduzido
+        grafo_path = os.path.join(outdir, f"rotas_grafo_{ts}.png")
         try:
-            PlotUtils.plot_rotas_grafo(Greduced_map, rotas_otimas_por_robo)
+            PlotUtils.plot_rotas_grafo(Greduced_map, rotas_otimas_por_robo, save_path=grafo_path)
+            print(f"Saved plot: {grafo_path}")
         except Exception as e:
             print(f"⚠️ plot_rotas_grafo falhou: {e}")
+            # cria uma imagem de erro com a mensagem
+            err_path = os.path.join(outdir, f"rotas_grafo_error_{ts}.png")
+            fig, ax = plt.subplots(figsize=(8, 3))
+            ax.text(0.5, 0.5, f"plot_rotas_grafo failed:\n{e}", ha='center', va='center', fontsize=12)
+            ax.axis('off')
+            fig.savefig(err_path, bbox_inches='tight')
+            plt.close(fig)
+            print(f"Saved error image: {err_path}")
 
+        # 2) rotas reais sobre o grafo completo
+        reais_path = os.path.join(outdir, f"rotas_reais_{ts}.png")
         try:
-            PlotUtils.plot_rotas_reais(G_mapa, rotas_otimas_por_robo, point_mission_positions, CLUSTER_TITLE)
+            PlotUtils.plot_rotas_reais(G_mapa, rotas_otimas_por_robo, point_mission_positions, CLUSTER_TITLE, save_path=reais_path)
+            print(f"Saved plot: {reais_path}")
         except Exception as e:
             print(f"⚠️ plot_rotas_reais (baseline) falhou: {e}")
+            err_path = os.path.join(outdir, f"rotas_reais_error_{ts}.png")
+            fig, ax = plt.subplots(figsize=(8, 3))
+            ax.text(0.5, 0.5, f"plot_rotas_reais failed:\n{e}", ha='center', va='center', fontsize=12)
+            ax.axis('off')
+            fig.savefig(err_path, bbox_inches='tight')
+            plt.close(fig)
+            print(f"Saved error image: {err_path}")
 
 
 def run_planner(
