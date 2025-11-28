@@ -1,17 +1,18 @@
-"""Experimento Avançado: Análise de Sensibilidade da Topologia do Grafo
+"""Advanced Experiment: Graph Topology Sensitivity Analysis
 
-Este script realiza uma análise de sensibilidade dos parâmetros `margin` e
-`threshold` na estrutura do grafo de observação.
+This script performs a sensitivity analysis of the `margin` and `threshold`
+parameters on the structure of the observation graph.
 
-Ele calcula métricas avançadas de grafos (densidade, nós isolados,
-componente gigante) e gera duas visualizações principais para análise:
+It calculates advanced graph metrics (density, isolated nodes, largest
+component) and generates several key visualizations for analysis:
 
-1.  Gráficos de Linha de Interação: Mostram como cada métrica varia com o
-    `margin` para diferentes níveis de `threshold`.
-2.  Matriz de Topologia: Uma grade que exibe a estrutura visual do grafo
-    para cada combinação de `(margin, threshold)`.
+1.  Metric Heatmaps: Show how each metric varies with `margin` and `threshold`.
+2.  Topology Matrix: A grid displaying the visual structure of the graph for
+    each `(margin, threshold)` combination.
+3.  Correlation and Distribution Plots: Statistical analysis of the relationships
+    between metrics.
 
-Uso: python3 Resultados_artigo/analise_avancada.py
+Usage: python3 Resultados_artigo/analise_avancada.py
 """
 import os
 import sys
@@ -19,8 +20,9 @@ import time
 import pandas as pd
 import matplotlib.pyplot as plt
 import networkx as nx
+import seaborn as sns
 
-# Garante que os módulos locais (roverclass, etc.) possam ser importados
+# Ensures local modules (roverclass, etc.) can be imported
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
@@ -32,41 +34,44 @@ RESULTS_DIR = os.path.dirname(__file__)
 
 def run_graph_sensitivity_analysis(file_path, sheet_name, margins, thresholds):
     """
-    Executa a análise de sensibilidade, calcula métricas e armazena os grafos.
+    Runs the sensitivity analysis, calculates metrics, and stores the graphs.
     """
     results = []
-    print("Iniciando análise de sensibilidade do grafo...")
+    print("Starting graph sensitivity analysis...")
 
     for m in margins:
         for t in thresholds:
-            print(f"Processando: margin={m}, threshold={t}...")
+            print(f"Processing: margin={m}, threshold={t}...")
             g0 = time.perf_counter()
             G, _, obs_points, _ = build_graph(
                 file_path, sheet_name, margin=m, threshold=t, plotting=False
             )
             elapsed = time.perf_counter() - g0
 
-            # Cálculo das métricas
+            # Metric calculation
             n_nodes = G.number_of_nodes()
             n_edges = G.number_of_edges()
             density = nx.density(G) if n_nodes > 1 else 0
             isolated_nodes = nx.number_of_isolates(G)
             n_components = nx.number_connected_components(G)
 
-            giant_ratio = 0
+            largest_component_ratio = 0
+            fragmentation_index = 1.0  # Maximum fragmentation if there are no nodes
             if n_nodes > 0:
                 largest_cc = max(nx.connected_components(G), key=len, default=set())
-                giant_ratio = len(largest_cc) / n_nodes
+                largest_component_ratio = len(largest_cc) / n_nodes
+                fragmentation_index = 1.0 - largest_component_ratio
 
             results.append({
                 "margin": m,
                 "threshold": t,
                 "nodes": n_nodes,
                 "edges": n_edges,
+                "components": n_components,
                 "density": density,
                 "isolated_nodes": isolated_nodes,
-                "components": n_components,
-                "giant_component_ratio": giant_ratio,
+                "largest_component_ratio": largest_component_ratio,
+                "fragmentation_index": fragmentation_index,
                 "graph": G,
                 "pos": {i: (p[0], p[1]) for i, p in enumerate(obs_points)},
                 "time_s": elapsed,
@@ -75,47 +80,51 @@ def run_graph_sensitivity_analysis(file_path, sheet_name, margins, thresholds):
     return pd.DataFrame(results)
 
 
-def plot_interaction_graphs(df, metrics, output_dir):
+def plot_metric_heatmaps(df, metrics, output_dir):
     """
-    Gera gráficos de linha de interação para as métricas especificadas.
+    Generates heatmaps to visualize the impact of parameters on graph metrics.
     """
-    print("Gerando gráficos de linha de interação...")
-    thresholds = sorted(df['threshold'].unique())
+    print("Generating metric heatmaps...")
+    sns.set_theme(style="whitegrid")
 
     for metric in metrics:
-        plt.style.use('seaborn-v0_8-whitegrid')
-        fig, ax = plt.subplots(figsize=(10, 6))
+        # Pivot the data for the heatmap format
+        pivot_table = df.pivot(index="margin", columns="threshold", values=metric)
 
-        for t in thresholds:
-            subset = df[df['threshold'] == t]
-            ax.plot(subset['margin'], subset[metric], marker='o', linestyle='-', label=f'Threshold = {t}')
-
-        ax.set_xlabel("Margin", fontsize=12)
-        ax.set_ylabel(metric.replace('_', ' ').title(), fontsize=12)
-        ax.set_title(f"Análise de Sensibilidade: {metric.replace('_', ' ').title()} vs. Margin", fontsize=14)
-        ax.legend(title="Threshold")
-        ax.grid(True)
-
-        filename = os.path.join(output_dir, f"interaction_plot_{metric}.png")
+        fig, ax = plt.subplots(figsize=(10, 8))
+        sns.heatmap(
+            pivot_table,
+            annot=True,
+            fmt=".2f" if metric in ['nodes', 'edges', 'components', 'isolated_nodes'] else ".3f",
+            cmap="viridis",
+            linewidths=.5,
+            ax=ax
+        )
+        
+        metric_title = metric.replace('_', ' ').title()
+        ax.set_title(f'Sensitivity Heatmap: {metric_title}', fontsize=16, pad=20)
+        ax.set_xlabel('Threshold', fontsize=12)
+        ax.set_ylabel('Margin', fontsize=12)
+        filename = os.path.join(output_dir, f"heatmap_{metric}.png")
         plt.savefig(filename, dpi=300, bbox_inches='tight')
         plt.close(fig)
-        print(f" - Gráfico salvo em: {filename}")
+        print(f" - Plot saved to: {filename}")
 
 
 def plot_topology_matrix(df, output_dir):
     """
-    Gera uma matriz visual com a topologia dos grafos.
+    Generates a visual matrix with the topology of the graphs.
     """
-    print("Gerando matriz de topologia...")
+    print("Generating topology matrix...")
     margins = sorted(df['margin'].unique())
     thresholds = sorted(df['threshold'].unique())
     
-    # Ajusta o tamanho da figura dinamicamente
+    # Dynamically adjust figure size
     fig, axes = plt.subplots(
         nrows=len(margins), 
         ncols=len(thresholds), 
         figsize=(4 * len(thresholds), 4 * len(margins)),
-        squeeze=False # Garante que 'axes' seja sempre 2D
+        squeeze=False # Ensures 'axes' is always 2D
     )
 
     for i, m in enumerate(margins):
@@ -140,46 +149,93 @@ def plot_topology_matrix(df, output_dir):
     filename = os.path.join(output_dir, "topology_matrix.png")
     fig.savefig(filename, dpi=300)
     plt.close(fig)
-    print(f" - Matriz de topologia salva em: {filename}")
+    print(f" - Topology matrix saved to: {filename}")
+
+
+def plot_correlation_matrix(df, metrics, output_dir):
+    """
+    Generates a correlation matrix (pairplot) between the graph metrics.
+    """
+    print("Generating correlation matrix (pairplot)...")
+    sns.set_theme(style="ticks")
+    
+    # Select only the metric and parameter columns
+    df_subset = df[metrics + ['margin', 'threshold']]
+    
+    g = sns.pairplot(df_subset, hue="threshold", palette="viridis", diag_kind="kde")
+    g.figure.suptitle("Correlation Matrix and Metric Distribution", y=1.02, fontsize=16)
+    
+    filename = os.path.join(output_dir, "correlation_pairplot.png")
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f" - Pairplot saved to: {filename}")
+
+
+def plot_distribution_analysis(df, metric, group_by, output_dir):
+    """
+    Creates a boxplot and a stripplot to analyze the distribution of a metric.
+    """
+    print(f"Generating distribution analysis for '{metric}'...")
+    sns.set_theme(style="whitegrid")
+    
+    fig, ax = plt.subplots(figsize=(12, 7))
+    
+    sns.boxplot(x=group_by, y=metric, data=df, ax=ax, palette="coolwarm")
+    sns.stripplot(x=group_by, y=metric, data=df, ax=ax, color=".25", size=6, jitter=True, alpha=0.7)
+    
+    metric_title = metric.replace('_', ' ').title()
+    group_by_title = group_by.replace('_', ' ').title()
+    
+    ax.set_title(f'Distribution of "{metric_title}" by "{group_by_title}"', fontsize=16)
+    ax.set_xlabel(group_by_title, fontsize=12)
+    ax.set_ylabel(metric_title, fontsize=12)
+    
+    filename = os.path.join(output_dir, f"distribution_{metric}_by_{group_by}.png")
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
+    plt.close(fig)
+    print(f" - Distribution plot saved to: {filename}")
 
 
 def main():
     """
-    Função principal para executar a análise.
+    Main function to run the analysis.
     """
-    # --- Configuração do Experimento ---
+    # --- Experiment Setup ---
     file_path = os.path.abspath(os.path.join(RESULTS_DIR, "..", "planilhas", "equipment_processado.xlsx"))
     sheet_name = "Parnaiba3_Transformado"
 
-    # Use uma grade maior para uma análise mais rica
-    # margins = [1.5, 2.0, 2.5, 3.0]
-    # thresholds = [10, 20, 30, 40]
-    margins = [2.5, 3.0]
-    thresholds = [10, 20]
+    # Use a larger grid for a richer analysis
+    margins = [1.5, 2.0, 2.5, 3.0, 3.5]
+    thresholds = [10, 20, 30, 40, 50]
 
-    # --- Execução ---
+    # --- Execution ---
     df_results = run_graph_sensitivity_analysis(file_path, sheet_name, margins, thresholds)
 
-    # Salva os dados brutos em CSV
+    # Save raw data to CSV
     csv_path = os.path.join(RESULTS_DIR, "advanced_graph_metrics.csv")
-    # Exclui colunas de objetos para salvar o CSV
+    # Exclude object columns to save the CSV
     df_to_save = df_results.drop(columns=['graph', 'pos'])
     df_to_save.to_csv(csv_path, index=False, float_format='%.5f')
-    print(f"\nMétricas avançadas salvas em: {csv_path}")
+    print(f"\nAdvanced metrics saved to: {csv_path}")
 
-    # --- Visualização ---
+    # --- Visualization ---
     metrics_to_plot = [
-        'density',
-        'isolated_nodes',
-        'giant_component_ratio',
         'nodes',
         'edges',
-        'components'
+        'components',
+        'density',
+        'isolated_nodes',
+        'largest_component_ratio',
+        'fragmentation_index'
     ]
-    plot_interaction_graphs(df_results, metrics_to_plot, RESULTS_DIR)
+    
+    # Generate the new statistical plots
+    plot_metric_heatmaps(df_results, metrics_to_plot, RESULTS_DIR)
+    plot_correlation_matrix(df_results, metrics_to_plot, RESULTS_DIR)
+    plot_distribution_analysis(df_results, metric='largest_component_ratio', group_by='margin', output_dir=RESULTS_DIR)
+    
     plot_topology_matrix(df_results, RESULTS_DIR)
-
-    print("\nAnálise concluída com sucesso!")
+    print("\nAnalysis completed successfully!")
 
 
 if __name__ == "__main__":
