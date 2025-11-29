@@ -111,47 +111,6 @@ def plot_metric_heatmaps(df, metrics, output_dir):
         print(f" - Plot saved to: {filename}")
 
 
-def plot_topology_matrix(df, output_dir):
-    """
-    Generates a visual matrix with the topology of the graphs.
-    """
-    print("Generating topology matrix...")
-    margins = sorted(df['margin'].unique())
-    thresholds = sorted(df['threshold'].unique())
-    
-    # Dynamically adjust figure size
-    fig, axes = plt.subplots(
-        nrows=len(margins), 
-        ncols=len(thresholds), 
-        figsize=(4 * len(thresholds), 4 * len(margins)),
-        squeeze=False # Ensures 'axes' is always 2D
-    )
-
-    for i, m in enumerate(margins):
-        for j, t in enumerate(thresholds):
-            ax = axes[i, j]
-            data = df[(df['margin'] == m) & (df['threshold'] == t)].iloc[0]
-            G = data['graph']
-            pos = data['pos']
-
-            nx.draw(
-                G, pos, ax=ax, 
-                node_size=10, 
-                width=0.5,
-                node_color='skyblue',
-                edge_color='gray'
-            )
-            
-            ax.set_title(f"Margin={m}, Threshold={t}", fontsize=10)
-            ax.tick_params(left=True, bottom=True, labelleft=True, labelbottom=True)
-
-    plt.tight_layout(pad=3.0)
-    filename = os.path.join(output_dir, "topology_matrix.png")
-    fig.savefig(filename, dpi=300)
-    plt.close(fig)
-    print(f" - Topology matrix saved to: {filename}")
-
-
 def plot_correlation_matrix(df, metrics, output_dir):
     """
     Generates a correlation matrix (pairplot) between the graph metrics.
@@ -233,8 +192,6 @@ def main():
     plot_metric_heatmaps(df_results, metrics_to_plot, RESULTS_DIR)
     plot_correlation_matrix(df_results, metrics_to_plot, RESULTS_DIR)
     plot_distribution_analysis(df_results, metric='largest_component_ratio', group_by='margin', output_dir=RESULTS_DIR)
-    
-    plot_topology_matrix(df_results, RESULTS_DIR)
     print("\nAnalysis completed successfully!")
 
 
