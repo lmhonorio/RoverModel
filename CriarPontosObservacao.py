@@ -35,7 +35,7 @@ observation_folter = "./pontos_observacao2"
 ###############################################################################
 # MAIN
 ###############################################################################
-def build_graph(file_path, sheet_name, margin=1.5, threshold=30, plotting=False):
+def build_graph(file_path, sheet_name, margin=3.5, threshold=20, plotting=False):
   """Constrói o grafo final a partir do arquivo de planilha e parâmetros.
 
   Retorna: (G_corrigido, aabbs, observation_points, obstacles)
@@ -77,16 +77,16 @@ def build_graph(file_path, sheet_name, margin=1.5, threshold=30, plotting=False)
 
 def main():
     padding = 15
-    margin = 1.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
+    margin = 3.5 #1.5  #colocar esta coluna no xml para definir de forma personalizada a distancia do rover para cada objeto
     # margin = 2.5
-    threshold = 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
+    threshold = 20 # 30 # verifica largura e altura do aabb após o merge para permitir sobreposicao de aabbs
 
     # Carregar obstáculos e construir grafo final
     loader = ObstacleLoader(file_path, sheet_name)
     obstacles = loader.get_obstacles()
 
     # Usa a função auxiliar para construir o grafo (retorna também aabbs e pontos)
-    G_corrigido, aabbs, observation_points = build_graph(file_path, sheet_name, margin, threshold, plotting=True)
+    G_corrigido, aabbs, observation_points, obstacles = build_graph(file_path, sheet_name, margin, threshold, plotting=True)
 
     # print(f"verificando ilhas....")
     # hasislands = SegmentUtils.has_islands(G_corrigido)

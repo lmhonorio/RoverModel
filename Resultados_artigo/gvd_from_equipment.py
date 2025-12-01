@@ -36,31 +36,42 @@ if REPO_ROOT not in os.sys.path:
 
 from CriarPontosObservacao import build_graph
 from roverclass import ObstacleLoader
+from aabbutils import AABBUtils
 
 RESULTS_DIR = os.path.dirname(__file__)
 
+from shapely.geometry import Point, box
+from shapely.geometry import JOIN_STYLE
 
-def obstacle_polygons_from_obstacles(obstacles):
+def obstacle_polygons_from_obstacles(obstacles, margin=0.0):
     """Create shapely Polygons from obstacles entries.
 
     Assumes each `obs` has:
       - 'pos': (x, y) center
       - 'size': (w, h)
-      - 'label' optional
+    Applies a uniform margin to each polygon with square corners.
     """
     polys = []
     for obs in obstacles:
         cx, cy = obs['pos']
         w, h = obs.get('size', (0.0, 0.0))
-        # If sizes are zero or missing, create a small buffer
+
+        # Obstáculos pontuais ou sem tamanho válido → vira círculo com margem
         if w is None or h is None or w <= 0 or h <= 0:
-            polys.append(Point(cx, cy).buffer(0.5))
+            polys.append(Point(cx, cy).buffer(0.5 + margin))
             continue
-        # Build rectangle centered at (cx,cy)
+
+        # Monta retângulo centrado em (cx, cy)
         x0 = cx - w / 2.0
         y0 = cy - h / 2.0
         rect = box(x0, y0, x0 + w, y0 + h)
+
+        # Aplica margem sem cantos arredondados
+        if margin != 0:
+            rect = rect.buffer(margin, join_style=JOIN_STYLE.mitre)
+
         polys.append(rect)
+
     return polys
 
 
@@ -261,6 +272,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--show', action='store_true', help='Show plot interactively after creating it')
     parser.add_argument('--overlay', action='store_true', help='Overlay original graph and observation points')
+    parser.add_argument('--margin', type=float, default=3.5, help='Security margin around obstacles')
     parser.add_argument('--points-density', type=float, default=1.0, help='Boundary sampling density (points per meter)')
     args = parser.parse_args()
 
@@ -273,7 +285,7 @@ def main():
     print(f'Loaded {len(obstacles)} obstacles')
 
     # Build polygons from obstacles
-    polygons = obstacle_polygons_from_obstacles(obstacles)
+    polygons = obstacle_polygons_from_obstacles(obstacles, margin=args.margin)
 
     # Sample boundary points (tune density via points_per_meter)
     boundary_samples = sample_boundary_points(polygons, points_per_meter=args.points_density, min_points_per_poly=12)
@@ -292,7 +304,7 @@ def main():
     if args.overlay:
         try:
             print('Building original graph (for overlay) using CriarPontosObservacao.build_graph...')
-            G_orig, aabbs, obs_pts_list, obstacles2 = build_graph(file_path, sheet_name, margin=1.5, threshold=30, plotting=False)
+            G_orig, aabbs, obs_pts_list, obstacles2 = build_graph(file_path, sheet_name, margin=args.margin, threshold=30, plotting=False)
             overlay_graph = G_orig
             # obs_pts_list is a list of (x,y,label) -> convert to (x,y)
             try:
