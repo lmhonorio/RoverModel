@@ -1,0 +1,4 @@
+Grafo,Vértices,Arestas,Comprimento Total (m),Densidade,Tortuosidade Média,Índice Fragmentação,Nº de Ilhas
+AABB (margin=3.5),6048,10574,119904.9,0.0006,2.304,0.040,8
+GVD (margin=3.5),16597,14650,43907.0,0.0001,1.730,0.882,1964
+GVD (margin=0),25645,25057,76058.1,0.0001,3.091,0.096,1179
