@@ -249,6 +249,14 @@ def plot_gvd_graph(G, free_space, obstacles_union, out_png, show=False, overlay_
 
     ax.set_aspect('equal', adjustable='box')
     ax.set_title('Approximate GVD (Voronoi of obstacle boundaries, clipped to free space)')
+    ax.set_xlabel('X (meters)', fontsize=16)
+    ax.set_ylabel('Y (meters)', fontsize=16)
+    ax.tick_params(axis='both', which='major', labelsize=14)
+    # Legend (if obs points are plotted)
+    try:
+        ax.legend(fontsize=14)
+    except Exception:
+        pass
     plt.tight_layout()
     plt.savefig(out_png, dpi=300)
     try:
