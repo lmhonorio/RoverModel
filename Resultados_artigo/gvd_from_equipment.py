@@ -272,7 +272,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--show', action='store_true', help='Show plot interactively after creating it')
     parser.add_argument('--overlay', action='store_true', help='Overlay original graph and observation points')
-    parser.add_argument('--margin', type=float, default=3.5, help='Security margin around obstacles')
+    parser.add_argument('--margin', type=float, default=1.5, help='Security margin around obstacles')
     parser.add_argument('--points-density', type=float, default=1.0, help='Boundary sampling density (points per meter)')
     args = parser.parse_args()
 
