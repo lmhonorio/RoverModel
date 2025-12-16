@@ -57,8 +57,8 @@ def build_graph(file_path, sheet_name, margin=1.5, threshold=50, plotting=False)
   )
 
   # Salva os arquivos para visualizacao no excel, importacao no planner e visualizacao em gis - aqui encontra os pontos que olham para o objeto da melhor forma (melhor = perto)
-  # SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
-  # SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
+  SegmentUtils.save_observation_points_to_excel(obstacles, observation_points, 6, file_path)
+  SegmentUtils.save_observation_points_to_json(obstacles, observation_points, 6, observation_path, file_path)
   # SegmentUtils.save_observation_points_to_kml(obstacles, observation_points, 6, file_path, observation_folter, offset_lat_meters=0.0, offset_lon_meters=0.0)
 
   # Resolver interseções e criar grafo
