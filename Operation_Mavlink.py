@@ -23,6 +23,7 @@ Exemplos:
 
 import sys
 import time
+import threading
 import socket
 import select
 from datetime import datetime
@@ -529,17 +530,143 @@ class MavlinkMissionListener:
                             print(f"      • param2: {item['params']['param2']:.6f}")
                             print(f"      • param3: {item['params']['param3']:.6f}")
                             print(f"      • param4: {item['params']['param4']:.6f}")
-                            
+
                             if 'latitude' in item and 'longitude' in item:
                                 if item['latitude'] != 0 or item['longitude'] != 0:
                                     print(f"   {CYAN}📍 Coordenadas alcançadas:{RESET}")
                                     print(f"      • Latitude:  {item['latitude']:11.7f}°")
                                     print(f"      • Longitude: {item['longitude']:11.7f}°")
                                     print(f"      • Altitude:  {item['altitude']:8.2f} m")
-                            
+
                             print(f"   ⚙️  Frame: {item['frame']} | AutoContinue: {item['autocontinue']}")
+
+                            # Se for comando 205, executar giro (usando params do waypoint) e colocar veículo em LOITER por 60s,
+                            # depois voltar para AUTO para continuar a missão.
+                            try:
+                                if item.get('command_id') == 205:
+                                    print(f"   🔁 Comando 205 detectado no item {msg.seq}: executando giro e mudando para LOITER por 60s...")
+
+                                    # O giro (yaw) já é executado pelo waypoint 205 — não reenviamos CONDITION_YAW aqui.
+
+                                    # Tentar mudar para LOITER e verificar se entrou. Se não, tentar novamente algumas vezes.
+                                    try:
+                                        max_attempts = 3
+                                        attempt = 0
+                                        entered_hold = False
+
+                                        while attempt < max_attempts and not entered_hold:
+                                            attempt += 1
+                                            try:
+                                                if hasattr(self.master, 'set_mode'):
+                                                    self.master.set_mode('LOITER')
+                                                    print(f"   ✅ Tentativa {attempt}: pedido set_mode('LOITER') enviado")
+                                                else:
+                                                    # Fallback: enviar DO_SET_MODE
+                                                    try:
+                                                        self.master.mav.command_long_send(
+                                                            self.master.target_system,
+                                                            self.master.target_component,
+                                                            mavutil.mavlink.MAV_CMD_DO_SET_MODE,
+                                                            0,
+                                                            0, 0, 0, 0, 0, 0, 0
+                                                        )
+                                                        print(f"   ✅ Tentativa {attempt}: enviado DO_SET_MODE (fallback)")
+                                                    except Exception as e:
+                                                        print(f"   ⚠️ Tentativa {attempt}: erro ao enviar DO_SET_MODE: {e}")
+                                            except Exception as e:
+                                                print(f"   ⚠️ Tentativa {attempt}: erro ao solicitar HOLD: {e}")
+
+                                            # Verificar status do modo: primeiro via atributos do master se disponíveis
+                                            try:
+                                                mode_attr = getattr(self.master, 'mode', None) or getattr(self.master, 'flightmode', None)
+                                                if mode_attr and 'LOITER' in str(mode_attr).upper():
+                                                    entered_hold = True
+                                                    break
+                                            except Exception:
+                                                pass
+
+                                            # Tentar ler heartbeats por até 2s para conferir o modo
+                                            try:
+                                                hb = self.master.recv_match(type='HEARTBEAT', blocking=True, timeout=2)
+                                                if hb is not None:
+                                                    try:
+                                                        mode_str = mavutil.mode_string_v10(hb)
+                                                    except Exception:
+                                                        mode_str = None
+                                                    if mode_str and 'LOITER' in mode_str.upper():
+                                                        entered_hold = True
+                                                        break
+                                            except Exception as e:
+                                                print(f"   ⚠️ Erro ao ler HEARTBEAT para checar modo: {e}")
+
+                                            if not entered_hold:
+                                                print(f"   ℹ️ Tentativa {attempt} não confirmou LOITER; aguardando 1s antes de nova tentativa")
+                                                time.sleep(1)
+
+                                        if entered_hold:
+                                            print("   ✅ Veículo confirmou modo LOITER")
+                                        else:
+                                            print("   ❌ Falha ao confirmar LOITER após tentativas — aplicando fallback para forçar parada")
+                                            # Enviar comandos de fallback para garantir parada: speed=0 e pausar missão
+                                            try:
+                                                self.master.mav.command_long_send(
+                                                    self.master.target_system,
+                                                    self.master.target_component,
+                                                    mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
+                                                    0,
+                                                    1,    # speed type = ground speed
+                                                    0.0,  # speed m/s
+                                                    0, 0, 0, 0, 0
+                                                )
+                                                print("   ✅ (Fallback) Enviado MAV_CMD_DO_CHANGE_SPEED (ground speed = 0)")
+                                            except Exception as e:
+                                                print(f"   ⚠️ Erro no fallback DO_CHANGE_SPEED: {e}")
+
+                                            try:
+                                                self.master.mav.command_long_send(
+                                                    self.master.target_system,
+                                                    self.master.target_component,
+                                                    mavutil.mavlink.MAV_CMD_DO_PAUSE_CONTINUE,
+                                                    0,
+                                                    1,  # pause
+                                                    0, 0, 0, 0, 0, 0
+                                                )
+                                                print("   ✅ (Fallback) Enviado MAV_CMD_DO_PAUSE_CONTINUE (pausar missão)")
+                                            except Exception as e:
+                                                print(f"   ⚠️ Erro no fallback DO_PAUSE_CONTINUE: {e}")
+                                    except Exception as e:
+                                        print(f"   ⚠️ Erro durante tentativas de setar HOLD: {e}")
+
+                                    # Thread para aguardar 60s e depois retornar para AUTO
+                                    def resume_after(delay, master):
+                                        try:
+                                            time.sleep(delay)
+                                            print(f"   ⏳ {delay}s se passaram — tentando retornar para AUTO...")
+                                            if hasattr(master, 'set_mode'):
+                                                master.set_mode('AUTO')
+                                                print("   ✅ Modo alterado para AUTO — missão continuará")
+                                            else:
+                                                try:
+                                                    master.mav.command_long_send(
+                                                        master.target_system,
+                                                        master.target_component,
+                                                        mavutil.mavlink.MAV_CMD_DO_SET_MODE,
+                                                        0,
+                                                        0, 0, 0, 0, 0, 0, 0
+                                                    )
+                                                    print("   ⚠️ Fallback: enviado DO_SET_MODE para tentar retornar a AUTO")
+                                                except Exception as e:
+                                                    print(f"   ⚠️ Erro ao enviar DO_SET_MODE para retornar a AUTO: {e}")
+                                        except Exception as e:
+                                            print(f"   ⚠️ Erro na thread de retomada: {e}")
+
+                                    t = threading.Thread(target=resume_after, args=(60, self.master), daemon=True)
+                                    t.start()
+                            except Exception as e:
+                                print(f"   ⚠️ Erro ao processar comando 205: {e}")
                         else:
                             print(f"   ⚠️  Detalhes do item {msg.seq} não disponíveis no cache")
+
                         print("-" * 80)
                         print()
                 
