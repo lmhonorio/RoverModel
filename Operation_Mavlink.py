@@ -55,12 +55,16 @@ class MavlinkMissionListener:
         self.last_reached_item = -1  # Último item MISSION_ITEM_REACHED exibido
         self.last_mode = None
         self.loiter_active = False
-        # Estado da lógica de loiter/hold para o WP 205 (state-machine)
-        self.loiter_requested = False      # Pedido para entrar em LOITER recebido (no WP handler)
-        self.loiter_start_time = None      # Timestamp quando a velocidade ficou ~0 e começamos a contar
-        self.loiter_hold_duration = 60     # segundos a manter parada (pode ajustar)
-        self.loiter_stop_threshold_cm_s = 5.0  # limiar velocidade em cm/s para considerar parado
-        self.loiter_retry_attempts = 3     # tentativas de pedir LOITER
+        # Estado da lógica de hold para o WP 205 (state-machine)
+        # Aqui mantemos os nomes antigos por compatibilidade interna (algumas referencias anteriores usam loiter_active).
+        # Principais variáveis para controlar o comportamento de parada:
+        self.hold_requested = False      # Pedido para entrar em HOLD recebido (no WP handler)
+        self.hold_active = False         # Equivalente a loiter_active (modo detectado)
+        self.hold_start_time = None      # Timestamp quando a velocidade ficou ~0 e começamos a contar
+        self.hold_hold_duration = 60     # segundos a manter parada (pode ajustar)
+        self.hold_stop_threshold_cm_s = 5.0  # limiar velocidade em cm/s para considerar parado
+        self.hold_retry_attempts = 3     # tentativas de pedir HOLD
+        self.last_mission_seq_when_hold = None  # seq do mission_current no momento do pedido de hold
         
         # Dicionário de nomes de comandos MAV_CMD (mais completo)
         self.command_names = {
@@ -520,6 +524,48 @@ class MavlinkMissionListener:
                             print(f"   ⚙️  Frame: {item['frame']} | AutoContinue: {item['autocontinue']}")
                         else:
                             print(f"   ⚠️  Detalhes do item {msg.seq} não disponíveis no cache")
+                        # Se já pedimos HOLD e ainda não começamos a contar, verificar se o mission_current avançou
+                        if getattr(self, 'hold_requested', False) and getattr(self, 'hold_start_time', None) is None:
+                            # Se não temos registro do seq original, armazenar o primeiro
+                            if getattr(self, 'last_mission_seq_when_hold', None) is None:
+                                # registrar o seq que estava ativo quando pedimos hold (pode ter sido o reached seq)
+                                self.last_mission_seq_when_hold = self.last_current_item
+                            else:
+                                # Se o mission_current mudou para outro seq antes de iniciarmos o hold, o pause pode não ter surtido efeito
+                                if msg.seq != self.last_mission_seq_when_hold:
+                                    print(f"   ⚠️ Mission_current avançou ({self.last_mission_seq_when_hold} -> {msg.seq}) enquanto aguardávamos HOLD — re-solicitando pause/speed/mode")
+                                    # re-enviar pause e speed=0 e tentar BRAKE/HOLD novamente
+                                    try:
+                                        self.master.mav.command_long_send(
+                                            self.master.target_system,
+                                            self.master.target_component,
+                                            mavutil.mavlink.MAV_CMD_DO_PAUSE_CONTINUE,
+                                            0,
+                                            1,
+                                            0, 0, 0, 0, 0, 0
+                                        )
+                                        print("   ✅ (Re)Enviado MAV_CMD_DO_PAUSE_CONTINUE (pausar missão)")
+                                    except Exception as e:
+                                        print(f"   ⚠️ Erro ao reenviar MAV_CMD_DO_PAUSE_CONTINUE: {e}")
+                                    try:
+                                        self.master.mav.command_long_send(
+                                            self.master.target_system,
+                                            self.master.target_component,
+                                            mavutil.mavlink.MAV_CMD_DO_CHANGE_SPEED,
+                                            0,
+                                            1,
+                                            0.0,
+                                            0, 0, 0, 0, 0
+                                        )
+                                        print("   ✅ (Re)Enviado MAV_CMD_DO_CHANGE_SPEED (ground speed = 0)")
+                                    except Exception as e:
+                                        print(f"   ⚠️ Erro ao reenviar DO_CHANGE_SPEED: {e}")
+                                    try:
+                                        if hasattr(self.master, 'set_mode'):
+                                            self.master.set_mode('BRAKE')
+                                            print("   ✅ Tentativa: pedido set_mode('BRAKE') enviado")
+                                    except Exception:
+                                        pass
                         print("-" * 80)
                         print()
                 
@@ -548,24 +594,24 @@ class MavlinkMissionListener:
 
                             print(f"   ⚙️  Frame: {item['frame']} | AutoContinue: {item['autocontinue']}")
 
-                            # Se for comando 205, executar giro (usando params do waypoint) e colocar veículo em LOITER por 60s,
+                            # Se for comando 205, executar giro (usando params do waypoint) e colocar veículo em HOLD/BRAKE por 60s,
                             # depois voltar para AUTO para continuar a missão.
                             try:
                                 if item.get('command_id') == 205:
-                                    print(f"   🔁 Comando 205 detectado no item {msg.seq}: solicitando LOITER e aguardando confirmação/stop antes de contar {self.loiter_hold_duration}s...")
+                                    print(f"   🔁 Comando 205 detectado no item {msg.seq}: solicitando HOLD e aguardando confirmação/stop antes de contar {self.hold_hold_duration}s...")
 
                                     # O giro (yaw) já é executado pelo waypoint 205 — não reenviamos CONDITION_YAW aqui.
 
                                     # Tentar pedir LOITER algumas vezes, mas não iniciar contagem aqui.
                                     try:
                                         attempt = 0
-                                        entered_loiter = False
-                                        while attempt < self.loiter_retry_attempts and not entered_loiter:
+                                        entered_hold = False
+                                        while attempt < self.hold_retry_attempts and not entered_hold:
                                             attempt += 1
                                             try:
                                                 if hasattr(self.master, 'set_mode'):
-                                                    self.master.set_mode('LOITER')
-                                                    print(f"   ✅ Tentativa {attempt}: pedido set_mode('LOITER') enviado")
+                                                    self.master.set_mode('HOLD')
+                                                    print(f"   ✅ Tentativa {attempt}: pedido set_mode('HOLD') enviado")
                                                 else:
                                                     try:
                                                         self.master.mav.command_long_send(
@@ -584,8 +630,8 @@ class MavlinkMissionListener:
                                             # tentar detectar modo já através de atributos/heartbeat curto
                                             try:
                                                 mode_attr = getattr(self.master, 'mode', None) or getattr(self.master, 'flightmode', None)
-                                                if mode_attr and 'LOITER' in str(mode_attr).upper():
-                                                    entered_loiter = True
+                                                if mode_attr and ('LOITER' in str(mode_attr).upper() or 'HOLD' in str(mode_attr).upper() or 'BRAKE' in str(mode_attr).upper()):
+                                                    entered_hold = True
                                                     break
                                             except Exception:
                                                 pass
@@ -597,26 +643,37 @@ class MavlinkMissionListener:
                                                         mode_str = mavutil.mode_string_v10(hb)
                                                     except Exception:
                                                         mode_str = None
-                                                    if mode_str and 'LOITER' in mode_str.upper():
-                                                        entered_loiter = True
+                                                    if mode_str and ('LOITER' in mode_str.upper() or 'HOLD' in mode_str.upper() or 'BRAKE' in mode_str.upper()):
+                                                        entered_hold = True
                                                         break
                                             except Exception:
                                                 pass
 
-                                            if not entered_loiter:
-                                                time.sleep(0.5)
-
-                                        # Marcar que pedimos LOITER; a confirmação real e a contagem começarão no loop principal via HEARTBEAT/GLOBAL_POSITION_INT/VFR_HUD
-                                        self.loiter_requested = True
-                                        self.loiter_start_time = None
-                                        if entered_loiter:
-                                            print("   ✅ Veículo aparenta ter entrado em LOITER (confirmação final será via HEARTBEAT/telemetria)")
-                                            self.loiter_active = True
+                                        # Marcar que pedimos HOLD; a confirmação real e a contagem começarão no loop principal via HEARTBEAT/GLOBAL_POSITION_INT/VFR_HUD
+                                        self.hold_requested = True
+                                        self.hold_start_time = None
+                                        if entered_hold:
+                                            print("   ✅ Veículo aparenta ter entrado em HOLD/BRAKE (confirmação final será via HEARTBEAT/telemetria)")
+                                            self.hold_active = True
                                         else:
-                                            print("   ⚠️ Não confirmou LOITER nas tentativas iniciais — ainda assim aguardando status/telemetria para tomar ação")
+                                            print("   ⚠️ Não confirmou HOLD nas tentativas iniciais — ainda assim aguardando status/telemetria para tomar ação")
 
-                                        # Caso não entre, aplicar fallback para reduzir velocidade/pausar missão (não iniciar contagem aqui)
-                                        if not entered_loiter:
+                                        # Enviar comando para pausar a missão imediatamente (garantir que o sequenciador pare)
+                                        try:
+                                            self.master.mav.command_long_send(
+                                                self.master.target_system,
+                                                self.master.target_component,
+                                                mavutil.mavlink.MAV_CMD_DO_PAUSE_CONTINUE,
+                                                0,
+                                                1,  # pause
+                                                0, 0, 0, 0, 0, 0
+                                            )
+                                            print("   ✅ Enviado MAV_CMD_DO_PAUSE_CONTINUE (pausar missão) imediatamente")
+                                        except Exception as e:
+                                            print(f"   ⚠️ Erro ao enviar MAV_CMD_DO_PAUSE_CONTINUE: {e}")
+
+                                        # Caso não entre, aplicar fallback para reduzir velocidade (não iniciar contagem aqui)
+                                        if not entered_hold:
                                             try:
                                                 self.master.mav.command_long_send(
                                                     self.master.target_system,
@@ -644,7 +701,7 @@ class MavlinkMissionListener:
                                             except Exception as e:
                                                 print(f"   ⚠️ Erro no fallback DO_PAUSE_CONTINUE: {e}")
                                     except Exception as e:
-                                        print(f"   ⚠️ Erro durante tentativas de setar LOITER: {e}")
+                                        print(f"   ⚠️ Erro durante tentativas de setar HOLD: {e}")
                             except Exception as e:
                                 print(f"   ⚠️ Erro ao processar comando 205: {e}")
                         else:
@@ -661,16 +718,17 @@ class MavlinkMissionListener:
                         vy = getattr(msg, 'vy', 0) or 0
                         speed = (vx * vx + vy * vy) ** 0.5
 
-                        # Se pedimos loiter e já confirmamos o modo LOITER, checar se velocidade é menor que o limiar
-                        if self.loiter_active and self.loiter_requested:
-                            if self.loiter_start_time is None and speed <= self.loiter_stop_threshold_cm_s:
-                                self.loiter_start_time = time.time()
-                                print(f"   ⏱️ Velocidade reduzida ({speed:.1f} cm/s). Iniciando contagem de {self.loiter_hold_duration}s...")
+                        # Se pedimos hold e já confirmamos o modo HOLD/BRAKE/LOITER, checar se velocidade é menor que o limiar
+                        if getattr(self, 'hold_active', False) and getattr(self, 'hold_requested', False):
+                            threshold = getattr(self, 'hold_stop_threshold_cm_s', 5.0)
+                            if self.hold_start_time is None and speed <= threshold:
+                                self.hold_start_time = time.time()
+                                print(f"   ⏱️ Velocidade reduzida ({speed:.1f} cm/s). Iniciando contagem de {self.hold_hold_duration}s...")
                             # Se já estamos contando, verificar se tempo atingido
-                            if self.loiter_start_time is not None:
-                                elapsed = time.time() - self.loiter_start_time
-                                if elapsed >= self.loiter_hold_duration:
-                                    print(f"   ✅ Contagem de {self.loiter_hold_duration}s completa — retornando para AUTO e limpando flags")
+                            if self.hold_start_time is not None:
+                                elapsed = time.time() - self.hold_start_time
+                                if elapsed >= getattr(self, 'hold_hold_duration', 60):
+                                    print(f"   ✅ Contagem de {self.hold_hold_duration}s completa — retornando para AUTO e limpando flags")
                                     try:
                                         if hasattr(self.master, 'set_mode'):
                                             self.master.set_mode('AUTO')
@@ -687,9 +745,9 @@ class MavlinkMissionListener:
                                     except Exception as e:
                                         print(f"   ⚠️ Erro ao retornar para AUTO: {e}")
                                     # limpar flags
-                                    self.loiter_requested = False
-                                    self.loiter_active = False
-                                    self.loiter_start_time = None
+                                    self.hold_requested = False
+                                    self.hold_active = False
+                                    self.hold_start_time = None
                     except Exception:
                         pass
 
@@ -699,14 +757,15 @@ class MavlinkMissionListener:
                         gs = getattr(msg, 'groundspeed', None)
                         if gs is not None:
                             speed_cm = abs(gs) * 100.0
-                            if self.loiter_active and self.loiter_requested:
-                                if self.loiter_start_time is None and speed_cm <= self.loiter_stop_threshold_cm_s:
-                                    self.loiter_start_time = time.time()
-                                    print(f"   ⏱️ Groundspeed baixo ({speed_cm:.1f} cm/s). Iniciando contagem de {self.loiter_hold_duration}s...")
-                                if self.loiter_start_time is not None:
-                                    elapsed = time.time() - self.loiter_start_time
-                                    if elapsed >= self.loiter_hold_duration:
-                                        print(f"   ✅ Contagem de {self.loiter_hold_duration}s completa — retornando para AUTO e limpando flags")
+                            if getattr(self, 'hold_active', False) and getattr(self, 'hold_requested', False):
+                                threshold = getattr(self, 'hold_stop_threshold_cm_s', 5.0)
+                                if self.hold_start_time is None and speed_cm <= threshold:
+                                    self.hold_start_time = time.time()
+                                    print(f"   ⏱️ Groundspeed baixo ({speed_cm:.1f} cm/s). Iniciando contagem de {self.hold_hold_duration}s...")
+                                if self.hold_start_time is not None:
+                                    elapsed = time.time() - self.hold_start_time
+                                    if elapsed >= getattr(self, 'hold_hold_duration', 60):
+                                        print(f"   ✅ Contagem de {self.hold_hold_duration}s completa — retornando para AUTO e limpando flags")
                                         try:
                                             if hasattr(self.master, 'set_mode'):
                                                 self.master.set_mode('AUTO')
@@ -722,9 +781,9 @@ class MavlinkMissionListener:
                                                 print("   ⚠️ Fallback: enviado DO_SET_MODE para tentar retornar a AUTO")
                                         except Exception as e:
                                             print(f"   ⚠️ Erro ao retornar para AUTO: {e}")
-                                        self.loiter_requested = False
-                                        self.loiter_active = False
-                                        self.loiter_start_time = None
+                                        self.hold_requested = False
+                                        self.hold_active = False
+                                        self.hold_start_time = None
                     except Exception:
                         pass
 
@@ -745,19 +804,19 @@ class MavlinkMissionListener:
                             print(f"🔔 HEARTBEAT: Modo mudou -> {mode_str}")
                             self.last_mode = mode_str
 
-                            # Se detectamos LOITER e foi requisitado, marcar ativo
-                            if self.loiter_requested and 'LOITER' in str(mode_str).upper() and not self.loiter_active:
-                                self.loiter_active = True
-                                print("   ✅ LOITER ativo (detecção via HEARTBEAT). Aguardando telemetria para confirmar parada antes de iniciar contagem.")
+                            # Se detectamos HOLD/BRAKE/LOITER e foi requisitado, marcar ativo
+                            if getattr(self, 'hold_requested', False) and ('HOLD' in str(mode_str).upper() or 'BRAKE' in str(mode_str).upper() or 'LOITER' in str(mode_str).upper()) and not getattr(self, 'hold_active', False):
+                                self.hold_active = True
+                                print("   ✅ HOLD/BRAKE ativo (detecção via HEARTBEAT). Aguardando telemetria para confirmar parada antes de iniciar contagem.")
 
-                            # Se o veículo mudou para AUTO enquanto esperávamos loiter, logar aviso e limpar flags
-                            if self.loiter_active and 'AUTO' in str(mode_str).upper():
+                            # Se o veículo mudou para AUTO enquanto esperávamos hold, logar aviso e limpar flags
+                            if getattr(self, 'hold_active', False) and 'AUTO' in str(mode_str).upper():
                                 # Se ainda não começamos a contar, isso é indesejado
-                                if self.loiter_start_time is None:
+                                if getattr(self, 'hold_start_time', None) is None:
                                     print("   ⚠️ Veículo entrou em AUTO antes de completar o hold — limpando flags e notificando")
-                                    self.loiter_active = False
-                                    self.loiter_requested = False
-                                    self.loiter_start_time = None
+                                    self.hold_active = False
+                                    self.hold_requested = False
+                                    self.hold_start_time = None
                                 else:
                                     # se já tínhamos começado a contar, deixar a lógica de tempo cuidar do retorno
                                     pass
@@ -789,7 +848,7 @@ class MavlinkMissionListener:
         Não bloqueia por muito tempo (usa recv_match com timeout curto em loop).
         """
         if vel_threshold_cm_s is None:
-            vel_threshold_cm_s = self.loiter_stop_threshold_cm_s
+            vel_threshold_cm_s = getattr(self, 'hold_stop_threshold_cm_s', getattr(self, 'loiter_stop_threshold_cm_s', 5.0))
 
         if not self.master:
             return False
