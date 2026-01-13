@@ -1,0 +1,182 @@
+[
+    {
+        "seq": 0,
+        "command_id": 16,
+        "command_name": "MAV_CMD_NAV_WAYPOINT",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 0.0,
+            "param2": 0.0,
+            "param3": 0.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.468",
+        "latitude": -3.123143,
+        "longitude": -41.7644529,
+        "altitude": 77.5199966430664,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 1,
+        "command_id": 22,
+        "command_name": "MAV_CMD_NAV_TAKEOFF",
+        "frame": 3,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 0.0,
+            "param2": 0.0,
+            "param3": 0.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.468",
+        "latitude": -3.1231429,
+        "longitude": -41.764448,
+        "altitude": 50.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 2,
+        "command_id": 16,
+        "command_name": "MAV_CMD_NAV_WAYPOINT",
+        "frame": 3,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 30.0,
+            "param2": 0.0,
+            "param3": 0.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.469",
+        "latitude": -3.1231654,
+        "longitude": -41.7646054,
+        "altitude": 50.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 3,
+        "command_id": 205,
+        "command_name": "MAV_CMD_DO_MOUNT_CONTROL",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": -10.0,
+            "param2": 0.0,
+            "param3": 8.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.469",
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 4,
+        "command_id": 2000,
+        "command_name": "MAV_CMD_IMAGE_START_CAPTURE_CUSTOM",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 0.0,
+            "param2": 0.0,
+            "param3": 1.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.469",
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 5,
+        "command_id": 16,
+        "command_name": "MAV_CMD_NAV_WAYPOINT",
+        "frame": 3,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 30.0,
+            "param2": 0.0,
+            "param3": 0.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.469",
+        "latitude": -3.123227,
+        "longitude": -41.7645595,
+        "altitude": 50.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 6,
+        "command_id": 205,
+        "command_name": "MAV_CMD_DO_MOUNT_CONTROL",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": -10.0,
+            "param2": 0.0,
+            "param3": 8.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.469",
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 7,
+        "command_id": 2000,
+        "command_name": "MAV_CMD_IMAGE_START_CAPTURE_CUSTOM",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 0.0,
+            "param2": 0.0,
+            "param3": 1.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.470",
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0.0,
+        "target_system": 254,
+        "target_component": 190
+    },
+    {
+        "seq": 8,
+        "command_id": 20,
+        "command_name": "MAV_CMD_NAV_RETURN_TO_LAUNCH",
+        "frame": 0,
+        "current": 0,
+        "autocontinue": 1,
+        "params": {
+            "param1": 0.0,
+            "param2": 0.0,
+            "param3": 0.0,
+            "param4": 0.0
+        },
+        "timestamp": "2026-01-12 16:39:19.472",
+        "latitude": 0,
+        "longitude": 0,
+        "altitude": 0.0,
+        "target_system": 254,
+        "target_component": 190
+    }
+]

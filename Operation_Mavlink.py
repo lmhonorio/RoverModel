@@ -23,6 +23,7 @@ Exemplos:
 
 import sys
 import time
+import json
 import threading
 import socket
 import select
@@ -361,6 +362,20 @@ class MavlinkMissionListener:
         
         print("-" * 80)
         print()
+
+    def save_mission_to_json(self, filename="mission.json"):
+        """Salva a missão atual em um arquivo JSON."""
+        try:
+            # Converter para lista ordenada por seq
+            mission_list = []
+            for seq in sorted(self.mission_items.keys()):
+                mission_list.append(self.mission_items[seq])
+            
+            with open(filename, 'w') as f:
+                json.dump(mission_list, f, indent=4)
+            print(f"   💾 Missão salva/atualizada em '{filename}'")
+        except Exception as e:
+            print(f"   ❌ Erro ao salvar missão em JSON: {e}")
     
     def listen(self):
         """
@@ -448,6 +463,7 @@ class MavlinkMissionListener:
                         print()
                     elif len(self.mission_items) == self.last_mission_count:
                         print(f"   {GREEN}✅ Cache completo! Todos os {self.last_mission_count} comandos armazenados.{RESET}")
+                        self.save_mission_to_json()
                         print()
                 
                 # ===== ACKNOWLEDGMENT DE MISSÃO =====
@@ -494,6 +510,7 @@ class MavlinkMissionListener:
                                 print(f"   ⚠️  Erro ao solicitar lista: {e}")
                         else:
                             print(f"   💾 Cache completo: {items_cached} comandos armazenados")
+                            self.save_mission_to_json()
                     
                     print("=" * 80)
                     print()
