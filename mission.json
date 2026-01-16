@@ -12,10 +12,10 @@
             "param3": 0.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.468",
-        "latitude": -3.123143,
-        "longitude": -41.7644529,
-        "altitude": 77.5199966430664,
+        "timestamp": "2026-01-15 14:32:04.849",
+        "latitude": -3.1231432,
+        "longitude": -41.7644481,
+        "altitude": -0.1899999976158142,
         "target_system": 254,
         "target_component": 190
     },
@@ -32,9 +32,9 @@
             "param3": 0.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.468",
-        "latitude": -3.1231429,
-        "longitude": -41.764448,
+        "timestamp": "2026-01-15 14:32:04.849",
+        "latitude": -3.1231432,
+        "longitude": -41.7644481,
         "altitude": 50.0,
         "target_system": 254,
         "target_component": 190
@@ -47,14 +47,14 @@
         "current": 0,
         "autocontinue": 1,
         "params": {
-            "param1": 30.0,
+            "param1": 0.0,
             "param2": 0.0,
             "param3": 0.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.469",
-        "latitude": -3.1231654,
-        "longitude": -41.7646054,
+        "timestamp": "2026-01-15 14:32:04.851",
+        "latitude": -3.1231595,
+        "longitude": -41.7645817,
         "altitude": 50.0,
         "target_system": 254,
         "target_component": 190
@@ -72,7 +72,7 @@
             "param3": 8.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.469",
+        "timestamp": "2026-01-15 14:32:04.851",
         "latitude": 0,
         "longitude": 0,
         "altitude": 0.0,
@@ -92,7 +92,7 @@
             "param3": 1.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.469",
+        "timestamp": "2026-01-15 14:32:04.851",
         "latitude": 0,
         "longitude": 0,
         "altitude": 0.0,
@@ -107,14 +107,14 @@
         "current": 0,
         "autocontinue": 1,
         "params": {
-            "param1": 30.0,
+            "param1": 0.0,
             "param2": 0.0,
             "param3": 0.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.469",
-        "latitude": -3.123227,
-        "longitude": -41.7645595,
+        "timestamp": "2026-01-15 14:32:04.851",
+        "latitude": -3.1232221,
+        "longitude": -41.764541,
         "altitude": 50.0,
         "target_system": 254,
         "target_component": 190
@@ -132,7 +132,7 @@
             "param3": 8.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.469",
+        "timestamp": "2026-01-15 14:32:04.851",
         "latitude": 0,
         "longitude": 0,
         "altitude": 0.0,
@@ -152,7 +152,7 @@
             "param3": 1.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.470",
+        "timestamp": "2026-01-15 14:32:04.851",
         "latitude": 0,
         "longitude": 0,
         "altitude": 0.0,
@@ -172,7 +172,7 @@
             "param3": 0.0,
             "param4": 0.0
         },
-        "timestamp": "2026-01-12 16:39:19.472",
+        "timestamp": "2026-01-15 14:32:04.855",
         "latitude": 0,
         "longitude": 0,
         "altitude": 0.0,

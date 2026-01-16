@@ -28,6 +28,7 @@ import threading
 import socket
 import select
 from datetime import datetime
+import math
 from pymavlink import mavutil
 from collections import OrderedDict
 
@@ -56,6 +57,11 @@ class MavlinkMissionListener:
         self.last_reached_item = -1  # Último item MISSION_ITEM_REACHED exibido
         self.last_mode = None
         self.loiter_active = False
+        
+        # Mapeamento de IDs de sequência para IDs de Grupo (Waypoint principal)
+        self.photo_trigger_groups = {}
+        self.last_processed_group = -1
+        self.photo_sequence_active = False
         
         # Dicionário de nomes de comandos MAV_CMD (mais completo)
         self.command_names = {
@@ -230,6 +236,131 @@ class MavlinkMissionListener:
             print()
             return False
     
+    def set_mode(self, mode):
+        """
+        Muda o modo de voo do veículo.
+        Args:
+            mode: String ('AUTO', 'HOLD', 'GUIDED', etc.)
+        """
+        if not self.master:
+            return False
+
+        # Mapeamento simples de modos para Rover/Copter (ArduPilot)
+        # Nota: Os IDs variam entre veículos, mas 'AUTO' e 'HOLD' costumam ser padrão no custom_mode
+        # O pymavlink tem helpers para isso, mas vamos usar o modo genérico via command_long
+        
+        mode_id = self.master.mode_mapping().get(mode)
+        if mode_id is None:
+            print(f"❌ Modo {mode} desconhecido para este veículo.")
+            return False
+
+        try:
+            self.master.set_mode(mode_id)
+            print(f"🎮 Comando enviado: Mudar para modo {mode} (ID {mode_id})")
+            return True
+        except Exception as e:
+            print(f"❌ Erro ao mudar modo: {e}")
+            return False
+
+    def pause_mission(self):
+        """
+        Pausa a missão mudando para modo HOLD.
+        Mais robusto que DO_PAUSE_CONTINUE para Rovers em transição de comandos.
+        """
+        if not self.master: return False
+        print(f"   🛑 Enviando comando de modo HOLD...")
+        return self.set_mode('HOLD')
+
+    def resume_mission(self):
+        """
+        Retoma a missão mudando para modo AUTO.
+        """
+        if not self.master: return False
+        print(f"   🚀 Enviando comando de modo AUTO...")
+        return self.set_mode('AUTO')
+
+    def execute_photo_sequence(self, seq_id):
+        """
+        Lógica de tirar foto:
+        1. Entra em HOLD
+        2. Simula alinhamento do Gimbal e Foto
+        3. Retorna para AUTO
+        Executado em thread separada para não bloquear o listener.
+        """
+        # Verificar a qual grupo este seq pertence
+        group_id = self.photo_trigger_groups.get(seq_id)
+        if group_id is None:
+            return
+
+        # Se já processamos este grupo recentemente, ignorar
+        if group_id == self.last_processed_group:
+            print(f"   ⚠️ Ignorando gatilho repetido no WP {seq_id} (Grupo {group_id} já processado).")
+            return
+
+        if self.photo_sequence_active:
+            return
+
+        self.last_processed_group = group_id
+        self.photo_sequence_active = True
+
+        def sequence_thread():
+            print(f"\n{BOLD}{YELLOW}📸 INICIANDO SEQUÊNCIA DE FOTO NO WP {seq_id}{RESET}")
+            
+            # 1. Pausar o Robô
+            print(f"   ✋ Pausando missão...")
+            # Pequeno delay para garantir que o FC processou a transição do comando DO
+            time.sleep(0.2)
+            self.pause_mission()
+            
+            # 2. Simular tempo de alinhamento do Gimbal e Foto
+            # Aqui futuramente você checará o status real do gimbal
+            wait_time = 10
+            print(f"   ⏳ Alinhando gimbal e tirando foto (Aguardando {wait_time}s)...")
+            
+            for i in range(wait_time, 0, -1):
+                if i % 2 == 0: print(f"      ... {i}s")
+                time.sleep(1)
+            
+            # 3. Sinal Sintético de Conclusão
+            print(f"   ✅ {GREEN}SINAL SINTÉTICO: Foto Tirada com Sucesso!{RESET}")
+            
+            # 4. Retomar Missão
+            print(f"   🚀 Retomando missão...")
+            self.resume_mission()
+            print(f"{BOLD}{YELLOW}📸 SEQUÊNCIA FINALIZADA{RESET}\n")
+            self.photo_sequence_active = False
+
+        # Inicia a thread
+        threading.Thread(target=sequence_thread, daemon=True).start()
+
+    def update_photo_targets(self):
+        """
+        Analisa a missão e identifica quais IDs (seq) devem disparar a foto.
+        Agrupa comandos associados ao mesmo Waypoint para evitar disparos múltiplos.
+        """
+        self.photo_trigger_groups.clear()
+        last_wp_seq = -1
+        
+        # Comandos que indicam ação de foto ou gimbal
+        photo_cmds = [203, 205, 2000, 2500, 2502]
+
+        for seq in sorted(self.mission_items.keys()):
+            item = self.mission_items[seq]
+            cmd = item['command_id']
+            
+            # Se for waypoint de navegação (16), define novo grupo
+            if cmd == 16: 
+                last_wp_seq = seq
+            
+            # Se for comando de foto, associa ao último WP
+            if cmd in photo_cmds and last_wp_seq != -1:
+                self.photo_trigger_groups[seq] = last_wp_seq # Gatilho de segurança (se pular o WP)
+                self.photo_trigger_groups[last_wp_seq] = last_wp_seq # O próprio WP dispara o grupo
+        
+        if self.photo_trigger_groups:
+            groups = sorted(list(set(self.photo_trigger_groups.values())))
+            print(f"   📸 Zonas de Foto Identificadas (Waypoints): {groups}")
+
     def request_mission_list(self):
         """
         Solicita a lista completa de missão do veículo.
@@ -464,6 +595,7 @@ class MavlinkMissionListener:
                     elif len(self.mission_items) == self.last_mission_count:
                         print(f"   {GREEN}✅ Cache completo! Todos os {self.last_mission_count} comandos armazenados.{RESET}")
                         self.save_mission_to_json()
+                        self.update_photo_targets()
                         print()
                 
                 # ===== ACKNOWLEDGMENT DE MISSÃO =====
@@ -511,6 +643,7 @@ class MavlinkMissionListener:
                         else:
                             print(f"   💾 Cache completo: {items_cached} comandos armazenados")
                             self.save_mission_to_json()
+                            self.update_photo_targets()
                     
                     print("=" * 80)
                     print()
@@ -589,6 +722,15 @@ class MavlinkMissionListener:
                                     print(f"      • Altitude:  {item['altitude']:8.2f} m")
 
                             print(f"   ⚙️  Frame: {item['frame']} | AutoContinue: {item['autocontinue']}")
+                            
+                            # ==========================================================
+                            # LÓGICA DE INTERCEPTAÇÃO PARA FOTO
+                            # ==========================================================
+                            if msg.seq in self.photo_trigger_groups:
+                                print(f"   {BOLD}{YELLOW}🎯 Ponto de Foto Confirmado (Seq {msg.seq})! Iniciando sequência...{RESET}")
+                                self.execute_photo_sequence(msg.seq)
+                            # ==========================================================
+                            
                         else:
                             print(f"   ⚠️  Detalhes do item {msg.seq} não disponíveis no cache")
 
