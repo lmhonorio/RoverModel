@@ -13,12 +13,16 @@ Para usar este script, você precisa adicionar uma saída extra no sim_vehicle.p
 Ou rode este script e ele tentará se conectar à porta 14551 (MAVROS do primeiro rover).
 
 Uso:
-    python3 Operation_Mavlink.py [porta]
+    python3 Operation_Mavlink.py [ip] [porta]
     
 Exemplos:
     python3 Operation_Mavlink.py          # Conecta a 14551 (porta MAVROS rover 0)
     python3 Operation_Mavlink.py 14550    # Conecta a 14550 (porta QGC)
     python3 Operation_Mavlink.py 14552    # Escuta na 14552 (precisa adicionar --out no SITL)
+    python3 Operation_Mavlink.py 192.168.0.191 14550 # Conecta a um IP externo
+    python3 Operation_Mavlink.py 0.0.0.0 14552      # Escuta em todas as interfaces
+    192.168.0.219
+
 """
 
 import sys
@@ -38,14 +42,16 @@ class MavlinkMissionListener:
     Classe para escutar e registrar comandos de missão MAVLink.
     """
     
-    def __init__(self, port=14551, use_udpin=False):
+    def __init__(self, host='127.0.0.1', port=14551, use_udpin=False):
         """
         Inicializa o listener MAVLink.
         
         Args:
+            host: Endereço IP para conectar/escutar (padrão: 127.0.0.1)
             port: Porta para conectar/escutar (padrão: 14551)
             use_udpin: Se True, escuta conexões de entrada (servidor)
         """
+        self.host = host
         self.port = port
         self.use_udpin = use_udpin
         self.master = None
@@ -173,12 +179,12 @@ class MavlinkMissionListener:
         print("=" * 80)
         
         if self.use_udpin:
-            connection_string = f'udpin:127.0.0.1:{self.port}'
+            connection_string = f'udpin:{self.host}:{self.port}'
             print(f"📡 Escutando em: {connection_string} (modo servidor)")
             print("   ⚠️  IMPORTANTE: Adicione ao sim_vehicle.py:")
-            print(f"      --out=udp:127.0.0.1:{self.port}")
+            print(f"      --out=udp:{self.host}:{self.port}")
         else:
-            connection_string = f'udp:127.0.0.1:{self.port}'
+            connection_string = f'udp:{self.host}:{self.port}'
             print(f"📡 Conectando a: {connection_string} (modo cliente)")
         
         print("⏳ Aguardando heartbeat...")
@@ -822,17 +828,34 @@ def main():
     Função principal.
     """
     # Verificar argumentos de linha de comando
+    host = '127.0.0.1'
     port = 14551  # Porta padrão (MAVROS do primeiro rover)
     use_udpin = False
     
-    if len(sys.argv) > 1:
-        try:
-            port = int(sys.argv[1])
-            print(f"💡 Usando porta especificada: {port}")
-        except ValueError:
-            print(f"❌ Porta inválida: {sys.argv[1]}")
-            print("Uso: python3 Operation_Mavlink.py [porta]")
-            sys.exit(1)
+    args = sys.argv[1:]
+    if len(args) > 0:
+        # Verifica se o primeiro argumento é um IP (contém ponto)
+        if '.' in args[0]:
+            host = args[0]
+            if len(args) > 1:
+                try:
+                    port = int(args[1])
+                except ValueError:
+                    print(f"❌ Porta inválida: {args[1]}")
+                    sys.exit(1)
+        else:
+            try:
+                port = int(args[0])
+            except ValueError:
+                print(f"❌ Porta inválida: {args[0]}")
+                print("Uso: python3 Operation_Mavlink.py [ip] [porta]")
+                sys.exit(1)
+            
+            # Se houver segundo argumento, assume que é o IP (caso ordem invertida ou explícita)
+            if len(args) > 1 and '.' in args[1]:
+                host = args[1]
+
+    print(f"💡 Configuração: Host={host}, Porta={port}")
     
     # Se porta for 14552, usar modo udpin (servidor)
     if port == 14552:
@@ -845,7 +868,7 @@ def main():
     print()
     
     # Criar listener
-    listener = MavlinkMissionListener(port=port, use_udpin=use_udpin)
+    listener = MavlinkMissionListener(host=host, port=port, use_udpin=use_udpin)
     
     # Conectar
     if not listener.connect():
