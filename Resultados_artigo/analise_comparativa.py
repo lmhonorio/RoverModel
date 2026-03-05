@@ -158,11 +158,11 @@ def main():
     
     # Cenário 2: Grafo GVD com Margem
     polys_gvd_margin = obstacle_polygons_from_obstacles(obstacles, margin=GVD_MARGIN)
-    samples_gvd_margin = sample_boundary_points(polys_gvd_margin, points_per_meter=1.0)
+    samples_gvd_margin = sample_boundary_points(polys_gvd_margin)
     G_gvd_margin, _, _ = build_gvd_by_clipping(polys_gvd_margin, samples_gvd_margin)
 
     # Cenário 3: Grafo GVD sem Margem
-    samples_gvd_no_margin = sample_boundary_points(obstacle_polys_no_margin, points_per_meter=1.0)
+    samples_gvd_no_margin = sample_boundary_points(obstacle_polys_no_margin)
     G_gvd_no_margin, _, _ = build_gvd_by_clipping(obstacle_polys_no_margin, samples_gvd_no_margin)
 
     graphs = {
@@ -200,6 +200,79 @@ def main():
             "Fragmentation Index": f"{fragmentation_index:.3f}",
             "Number of Islands": num_islands,
         })
+
+        # Análise detalhada das ilhas (para todos os grafos)
+        print(f"\n--- Análise das ilhas do grafo {name} ---")
+        components = list(nx.connected_components(G))
+        if not components:
+            continue
+        
+        # Ordenar componentes por tamanho
+        components.sort(key=len, reverse=True)
+        sizes = [len(c) for c in components]
+        print(f"Total de componentes: {len(sizes)}")
+        print("Tamanhos das 10 maiores ilhas:", sizes[:10])
+        if len(sizes) > 10:
+            print(f"Tamanho da menor ilha: {sizes[-1]}")
+
+        # Plotar somente as ilhas (componentes menores), cada uma de uma cor
+        if len(components) > 1:
+            islands = components[1:]  # Ignora o maior componente
+            
+            fig, ax = plt.subplots(figsize=(12, 10))
+            
+            # Plotar obstáculos para contexto
+            for poly in obstacle_polys_no_margin:
+                if poly.geom_type == 'Polygon':
+                    x, y = poly.exterior.xy
+                    ax.fill(x, y, color='#dddddd', edgecolor='gray', alpha=0.5)
+                elif poly.geom_type == 'MultiPolygon':
+                    for geom in poly.geoms:
+                        x, y = geom.exterior.xy
+                        ax.fill(x, y, color='#dddddd', edgecolor='gray', alpha=0.5)
+
+            # Configurar cores
+            import matplotlib.cm as cm
+            num_islands = len(islands)
+            if num_islands <= 10:
+                cmap = cm.get_cmap('tab10')
+            elif num_islands <= 20:
+                cmap = cm.get_cmap('tab20')
+            else:
+                cmap = cm.get_cmap('nipy_spectral')
+
+            for i, comp in enumerate(islands):
+                if num_islands > 20:
+                    color = cmap(i / num_islands)
+                else:
+                    color = cmap(i)
+
+                xs = []
+                ys = []
+                for node in comp:
+                    pos = G.nodes[node].get('pos')
+                    if pos:
+                        xs.append(pos[0])
+                        ys.append(pos[1])
+                
+                if xs:
+                    ax.scatter(xs, ys, color=color, s=20, label=f"Ilha {i+1} ({len(comp)})")
+
+            ax.set_title(f"Ilhas Desconectadas (excluindo maior componente) - {name}")
+            ax.set_xlabel('X (m)')
+            ax.set_ylabel('Y (m)')
+            ax.set_aspect('equal', adjustable='box')
+            plt.grid(True, linestyle='--', alpha=0.5)
+            
+            if num_islands <= 15:
+                ax.legend(loc='best', fontsize='small')
+
+            out_path = os.path.join(RESULTS_DIR, f"ilhas_coloridas_{name.replace(' ', '_').replace('(', '').replace(')', '')}.png")
+            plt.savefig(out_path, dpi=200)
+            print(f"Plot das ilhas salvo em: {out_path}")
+            plt.close()
+        else:
+            print(f"Grafo {name} não possui ilhas (totalmente conectado).")
 
     df = pd.DataFrame(results)
     print("\n--- Results Table ---")

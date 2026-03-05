@@ -1,4 +1,4 @@
 Graph,Vertices,Edges,Total Length (m),Density,Average Tortuosity,Fragmentation Index,Number of Islands
-AABB (margin=1.5),4672,8188,96578.9,0.0008,1.802,0.072,12
-GVD (margin=1.5),30736,28854,66173.3,0.0001,2.490,0.288,2100
-GVD (margin=0),25645,25057,76058.1,0.0001,3.116,0.096,1179
+AABB (margin=1.5),4672,8188,96578.9,0.0008,1.968,0.072,12
+GVD (margin=1.5),32742,34474,71524.1,0.0001,3.169,0.049,89
+GVD (margin=0),28482,31492,80742.0,0.0001,2.985,0.000,1

@@ -24,7 +24,7 @@ import json
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.spatial import Voronoi
+from scipy.spatial import Voronoi, cKDTree
 import networkx as nx
 from shapely.geometry import Polygon, LineString, Point, box
 from shapely.ops import unary_union
@@ -120,6 +120,93 @@ def extend_infinite_ridge(point, direction, bbox, max_dist=None):
     return LineString([a, b])
 
 
+def connect_islands(G, obstacles_union):
+    """Reduce graph fragmentation by connecting isolated components with obstacle-free edges.
+    
+    Optimized approach:
+    - Uses KDTree for fast nearest-neighbor search.
+    - Uses shapely.prepared for fast geometry checks.
+    - Attempts to connect all islands in fewer passes.
+    """
+    try:
+        from shapely.prepared import prep
+        prepared_obstacles = prep(obstacles_union)
+    except ImportError:
+        prepared_obstacles = obstacles_union
+
+    # Initial search parameter
+    current_k = 5
+
+    # Iterate until graph is connected or no more connections can be made
+    while True:
+        components = list(nx.connected_components(G))
+        if len(components) <= 1:
+            break
+
+        # Sort components by size (largest is main)
+        components.sort(key=len, reverse=True)
+        main_comp = components[0]
+        main_nodes_list = list(main_comp)
+        
+        # Build KDTree for main component
+        main_positions = [G.nodes[n]['pos'] for n in main_nodes_list]
+        tree = cKDTree(main_positions)
+
+        edges_added = 0
+        
+        # Try to connect each island to the main component
+        for comp in components[1:]:
+            island_nodes = list(comp)
+            island_positions = [G.nodes[n]['pos'] for n in island_nodes]
+
+            # Query k nearest neighbors in main component
+            k_neighbors = min(current_k, len(main_nodes_list))
+            dists_arr, indices_arr = tree.query(island_positions, k=k_neighbors)
+            
+            # Normalize shapes
+            if len(island_nodes) == 1:
+                dists_arr = [[dists_arr]] if k_neighbors == 1 else [dists_arr]
+                indices_arr = [[indices_arr]] if k_neighbors == 1 else [indices_arr]
+            elif k_neighbors == 1:
+                dists_arr = [[d] for d in dists_arr]
+                indices_arr = [[i] for i in indices_arr]
+
+            candidates = []
+            for i, (ds, idxs) in enumerate(zip(dists_arr, indices_arr)):
+                if np.isscalar(ds): ds, idxs = [ds], [idxs]
+                for d, main_idx in zip(ds, idxs):
+                    if d == float('inf') or main_idx >= len(main_nodes_list): continue
+                    candidates.append((d, i, main_idx))
+            
+            candidates.sort(key=lambda x: x[0])
+
+            for d, i_idx, m_idx in candidates:
+                u = island_nodes[i_idx]
+                v = main_nodes_list[m_idx]
+                line = LineString([G.nodes[u]['pos'], G.nodes[v]['pos']])
+                
+                if prepared_obstacles.intersects(line):
+                    inter = line.intersection(obstacles_union)
+                    if not (inter.is_empty or inter.length < 1e-6):
+                        continue
+                
+                G.add_edge(u, v, weight=d)
+                edges_added += 1
+                break
+        
+        if edges_added == 0:
+            # If no edges added, progressively increase search depth
+            if current_k < 70:
+                current_k = 70
+                continue
+            break
+        else:
+            # Reset k to keep performance high for easy connections
+            current_k = 5
+
+    return G
+
+
 def build_gvd_by_clipping(polygons, boundary_samples, bbox_padding=5.0):
     """Build approximate GVD graph by computing Voronoi of boundary samples and clipping ridges to free space."""
     if boundary_samples is None or len(boundary_samples) < 2:
@@ -164,6 +251,9 @@ def build_gvd_by_clipping(polygons, boundary_samples, bbox_padding=5.0):
                 d = math.dist(a, b)
                 if d > 0:
                     G.add_edge(id_a, id_b, weight=d)
+                # Só adiciona se forem nós diferentes e distância > 0
+                # if id_a != id_b and d > 0:
+                #     G.add_edge(id_a, id_b, weight=d)
 
     # iterate ridges
     center_points = vor.points
@@ -189,6 +279,46 @@ def build_gvd_by_clipping(polygons, boundary_samples, bbox_padding=5.0):
             v1 = vor.vertices[ridge_vertices[1]]
             ls = LineString([tuple(v0), tuple(v1)])
             add_linestring_clipped(ls)
+
+    # Remove nodes that landed inside obstacles (floating-point artifacts from clipping)
+    nodes_inside = [nid for nid, data in G.nodes(data=True)
+                    if obstacles_union.contains(Point(data['pos']))]
+    G.remove_nodes_from(nodes_inside)
+
+    # Add one node per polygon corner, offset by a tiny amount outward so the node
+    # sits strictly in free space (not on the obstacle boundary) while remaining
+    # visually indistinguishable from the actual corner.
+    corner_offset = 0.05  # meters — imperceptible visually, but clears shapely boundary
+    node_positions = [(nid, data['pos']) for nid, data in G.nodes(data=True)]
+    for poly in polygons:
+        centroid = poly.centroid
+        corner_coords = list(poly.exterior.coords)[:-1]  # drop repeated closing vertex
+        for cx, cy in corner_coords:
+            dx, dy = cx - centroid.x, cy - centroid.y
+            length = math.hypot(dx, dy)
+            if length == 0:
+                continue
+            ocx = cx + dx / length * corner_offset
+            ocy = cy + dy / length * corner_offset
+            if not free_space.contains(Point(ocx, ocy)):
+                continue  # squeezed between obstacles — skip
+            key = (round(ocx, 6), round(ocy, 6))
+            if key in vert_map:
+                corner_id = vert_map[key]
+            else:
+                corner_id = f"v{len(vert_map)}"
+                vert_map[key] = corner_id
+                G.add_node(corner_id, pos=key)
+                node_positions.append((corner_id, key))
+            # Connect corner to the 2 nearest existing GVD nodes (one per side)
+            candidates = sorted(
+                [(math.dist(key, npos), nid) for nid, npos in node_positions if nid != corner_id]
+            )
+            for d, nid in candidates[:2]:
+                G.add_edge(corner_id, nid, weight=d)
+
+    # Connect remaining islands with obstacle-free edges
+    G = connect_islands(G, obstacles_union)
 
     return G, free_space, obstacles_union
 
